@@ -15,3 +15,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "EasyTelegram"
 include(":app", ":libtd")
+include(":feature:login")
+include(":feature:chat")
+include(":data")
+include(":core")
+include(":shared")
+include(":feature:home")
