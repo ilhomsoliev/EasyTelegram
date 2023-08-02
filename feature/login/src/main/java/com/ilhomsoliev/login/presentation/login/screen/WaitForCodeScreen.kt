@@ -1,4 +1,4 @@
-package com.ilhomsoliev.login.presentation.screen
+package com.ilhomsoliev.login.presentation.login.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WaitForPasswordScreen(
+fun WaitForCodeScreen(
     isLoading: Boolean,
+    error: String?,
     onEnter: (String) -> Unit
 ) {
     val codeNumber = remember { mutableStateOf(TextFieldValue()) }
@@ -40,19 +41,21 @@ fun WaitForPasswordScreen(
             }
         },
         content = {
-            val phoneNumber = remember { mutableStateOf(TextFieldValue()) }
             Column(
                 modifier = Modifier
                     .padding(it)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Password Screen")
-
+                Text(text = "Code Screen")
+                if (error?.isNotEmpty() == true) {
+                    Text(text = error)
+                }
                 TextField(
-                    value = phoneNumber.value,
-                    onValueChange = { phoneNumber.value = it },
+                    value = codeNumber.value,
+                    onValueChange = { codeNumber.value = it },
                     modifier = Modifier.fillMaxWidth(),
+                    //textStyle = MaterialTheme.typography.h5
                 )
             }
         }

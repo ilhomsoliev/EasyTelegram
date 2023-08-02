@@ -9,6 +9,8 @@ import com.ilhomsoliev.data.messages.MessagesRepository
 import com.ilhomsoliev.login.viewmodel.LoginViewModel
 import com.ilhomsoliev.chat.viewmodel.ChatViewModel
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
+import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
+import com.ilhomsoliev.shared.country.CountryManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -44,7 +46,7 @@ class EasyTelegramApplication : Application() {
                         single {
                             TelegramClient(get<TdApi.TdlibParameters>())
                         }
-
+                        single<CountryManager> { CountryManager(this@EasyTelegramApplication) }
                     }
                 )
             )
@@ -57,6 +59,7 @@ class EasyTelegramApplication : Application() {
 val viewModelModule = module {
     viewModel { HomeViewModel(get(), get()) }
     viewModel { LoginViewModel(get()) }
+    viewModel { ChooseCountryViewModel(get()) }
     viewModel { ChatViewModel(get(), get(), get()) }
 }
 

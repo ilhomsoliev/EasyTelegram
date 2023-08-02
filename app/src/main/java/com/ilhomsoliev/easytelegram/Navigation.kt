@@ -4,10 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ilhomsoliev.core.Screen
-import com.ilhomsoliev.login.presentation.LoginScreen
 import com.ilhomsoliev.chat.presentation.ChatScreen
+import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.presentation.HomeContainer
+import com.ilhomsoliev.login.presentation.chooseCountry.ChooseCountryScreen
+import com.ilhomsoliev.login.presentation.login.LoginScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -38,8 +39,14 @@ fun Navigation() {
                 viewModel = hiltNavGraphViewModel(it)
             )
         }*/
+
         composable(Screen.Login.route) {
             LoginScreen(vm = koinViewModel(), navController = navController)
         }
+
+        composable(Screen.ChooseCountry.route) {
+            ChooseCountryScreen(vm = koinViewModel(), navController = navController)
+        }
+
     }
 }
