@@ -24,15 +24,14 @@ fun Navigation() {
         }
 
         composable(Screen.Chat.route) {
-
             val chatId = Screen.Chat.getChatId(it)
-
             ChatScreen(
                 chatId = chatId,
                 navController = navController,
                 vm = koinViewModel()
             )
         }
+
         /*composable(Screen.CreateChat.route) {
             CreateChatScreen(
                 navigateUp = navController::navigateUp,
@@ -41,7 +40,9 @@ fun Navigation() {
         }*/
 
         composable(Screen.Login.route) {
-            LoginScreen(vm = koinViewModel(), navController = navController)
+            val countryCode = it.savedStateHandle.get<String>("country_code")
+            it.savedStateHandle.remove<Boolean>("country_code")
+            LoginScreen(vm = koinViewModel(), navController = navController, countryCode)
         }
 
         composable(Screen.ChooseCountry.route) {

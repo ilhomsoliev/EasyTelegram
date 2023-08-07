@@ -20,5 +20,6 @@ fun HomeScreen(
                 navController.navigate(Screen.Chat.buildRoute(id))
             }
         })
+
 }
 

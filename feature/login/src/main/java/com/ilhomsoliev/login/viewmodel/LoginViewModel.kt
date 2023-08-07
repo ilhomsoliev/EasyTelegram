@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ilhomsoliev.data.TelegramClient
 import com.ilhomsoliev.data.auth.Authentication
+import com.ilhomsoliev.shared.country.Country
+import com.ilhomsoliev.shared.country.CountryManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -13,7 +15,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val client: TelegramClient
+    private val client: TelegramClient,
+    private val countryManager: CountryManager,
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf<UiState>(UiState.Loading)
@@ -21,6 +24,9 @@ class LoginViewModel(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+
+    private val _pickedCountry = MutableStateFlow<Country?>(null)
+    val pickedCountry = _pickedCountry.asStateFlow()
 
     init {
         client.authState.onEach {
@@ -36,9 +42,11 @@ class LoginViewModel(
                 Authentication.WAIT_FOR_CODE -> {
                     _uiState.value = UiState.InsertCode()
                 }
+
                 Authentication.INCORRECT_CODE -> {
                     _uiState.value = UiState.InsertCode("Incorrect code")
                 }
+
                 Authentication.WAIT_FOR_PASSWORD -> {
                     _uiState.value = UiState.InsertPassword()
                 }
@@ -54,16 +62,23 @@ class LoginViewModel(
         }.launchIn(viewModelScope)
     }
 
+    suspend fun loadCountry(countryCode: String) {
+        countryManager.getCountryFromCountryCode(countryCode)?.let {
+            _pickedCountry.emit(it)
+        }
+    }
+
     fun insertPhoneNumber(number: String) {
-        //_uiState.value = UiState.Loading
         viewModelScope.launch {
             _isLoading.emit(true)
         }
-        client.insertPhoneNumber(number)
+        client.insertPhoneNumber(
+            "+992927266950"
+            //number
+        )
     }
 
     fun insertCode(code: String) {
-        //_uiState.value = UiState.Loading
         viewModelScope.launch {
             _isLoading.emit(true)
         }
@@ -71,7 +86,6 @@ class LoginViewModel(
     }
 
     fun insertPassword(password: String) {
-        //_uiState.value = UiState.Loading
         viewModelScope.launch {
             _isLoading.emit(true)
         }

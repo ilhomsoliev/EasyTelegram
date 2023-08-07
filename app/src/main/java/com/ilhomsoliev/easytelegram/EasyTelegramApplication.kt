@@ -58,7 +58,7 @@ class EasyTelegramApplication : Application() {
 @OptIn(ExperimentalCoroutinesApi::class)
 val viewModelModule = module {
     viewModel { HomeViewModel(get(), get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
     viewModel { ChatViewModel(get(), get(), get()) }
 }

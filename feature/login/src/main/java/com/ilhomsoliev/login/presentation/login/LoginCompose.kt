@@ -12,10 +12,12 @@ import com.ilhomsoliev.login.presentation.login.screen.WaitForCodeScreen
 import com.ilhomsoliev.login.presentation.login.screen.WaitForNumberScreen
 import com.ilhomsoliev.login.presentation.login.screen.WaitForPasswordScreen
 import com.ilhomsoliev.login.viewmodel.UiState
+import com.ilhomsoliev.shared.country.Country
 
 data class LoginState(
     val uiState: UiState,
     val isLoading: Boolean,
+    val pickedCountry: Country? = Country(),
 )
 
 interface LoginCallback {
@@ -38,11 +40,15 @@ fun LoginContent(
     ) {
         when (state.uiState) {
             is UiState.InsertNumber -> {
-                WaitForNumberScreen(state.isLoading, onChooseCountryClick = {
-                    callback.onChooseCountryClick()
-                }, onNumberEnter = {
-                    callback.insertPhoneNumber(it)
-                })
+                WaitForNumberScreen(
+                    pickedCountry = state.pickedCountry,
+                    isLoading = state.isLoading,
+                    onChooseCountryClick = {
+                        callback.onChooseCountryClick()
+                    },
+                    onNumberEnter = {
+                        callback.insertPhoneNumber(it)
+                    })
             }
 
             is UiState.InsertCode -> WaitForCodeScreen(

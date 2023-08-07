@@ -28,8 +28,8 @@ fun HomeContainer(
         }
 
         UiState.Login -> {
-            navController.navigate(com.ilhomsoliev.core.Screen.Login.route) {
-                popUpTo(com.ilhomsoliev.core.Screen.Home.route) { inclusive = true }
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Home.route) { inclusive = true }
                 launchSingleTop = true
             }
         }

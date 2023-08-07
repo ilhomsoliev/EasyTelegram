@@ -123,7 +123,7 @@ class TelegramClient(
     fun insertPhoneNumber(phoneNumber: String) {
         Log.d("TelegramClient", "phoneNumber: $phoneNumber")
 
-        val settings = TdApi.PhoneNumberAuthenticationSettings(/*false,false,false,*/)
+        val settings = TdApi.PhoneNumberAuthenticationSettings()
         doAsync {
             client.send(TdApi.SetAuthenticationPhoneNumber(phoneNumber, settings)) {
                 Log.d("TelegramClient", "phoneNumber. result: $it")

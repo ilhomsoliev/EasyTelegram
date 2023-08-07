@@ -22,8 +22,8 @@ data class Country(
 
     constructor() : this(
         "Россия",
-        "RU",
-        "+7",
+        "TJ",
+        "+992",
         "+7 (###) ###-##-##"
     )
 
@@ -86,6 +86,10 @@ class CountryManager(
             countryFrom(it.key, it.value)
         }
     }
+
+    fun getCountryFromCountryCode(countryCode: String) =
+        getCountries().firstOrNull { it.code == countryCode }
+
 
     private val String.dial: String
         get() {

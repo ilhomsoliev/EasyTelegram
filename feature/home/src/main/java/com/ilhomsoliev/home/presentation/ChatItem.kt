@@ -34,7 +34,10 @@ fun ChatTitle(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
+fun ChatSummary(
+    chat: TdApi.Chat,
+    modifier: Modifier = Modifier
+) {
     chat.lastMessage?.content?.let {
         when (it.constructor) {
             TdApi.MessageText.CONSTRUCTOR -> BasicChatSummary(

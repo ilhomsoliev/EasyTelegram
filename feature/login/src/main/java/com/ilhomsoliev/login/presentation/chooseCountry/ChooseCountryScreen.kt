@@ -30,9 +30,14 @@ fun ChooseCountryScreen(
     ChooseCountryContent(
         state = ChooseCountryState(searchText, searchState, countries),
         callback = object : ChooseCountryCallback {
+
             override fun onCountrySelect(country: Country) {
                 scope.launch {
                     vm.select(country)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "country_code",
+                        country.code
+                    )
                     navController.popBackStack()
                 }
             }
