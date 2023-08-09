@@ -41,7 +41,8 @@ android {
 dependencies {
 
     implementation(project(":libtd"))
-    implementation(project(":data"))
+    implementation(project(":data:tgcore"))
+    implementation(project(":data:auth"))
     implementation(project(":core"))
     implementation(project(":shared"))
 

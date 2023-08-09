@@ -4,10 +4,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.data.auth.Authentication
 import com.ilhomsoliev.shared.country.Country
 import com.ilhomsoliev.shared.country.CountryManager
+import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.tgcore.Authentication
+import com.ilhomsoliev.tgcore.Authentication.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -31,27 +32,27 @@ class LoginViewModel(
     init {
         client.authState.onEach {
             when (it) {
-                Authentication.UNAUTHENTICATED, Authentication.UNKNOWN -> {
+                UNAUTHENTICATED, UNKNOWN -> {
                     _uiState.value = UiState.Loading
                 }
 
-                Authentication.WAIT_FOR_NUMBER -> {
+                WAIT_FOR_NUMBER -> {
                     _uiState.value = UiState.InsertNumber()
                 }
 
-                Authentication.WAIT_FOR_CODE -> {
+                WAIT_FOR_CODE -> {
                     _uiState.value = UiState.InsertCode()
                 }
 
-                Authentication.INCORRECT_CODE -> {
+                INCORRECT_CODE -> {
                     _uiState.value = UiState.InsertCode("Incorrect code")
                 }
 
-                Authentication.WAIT_FOR_PASSWORD -> {
+                WAIT_FOR_PASSWORD -> {
                     _uiState.value = UiState.InsertPassword()
                 }
 
-                Authentication.AUTHENTICATED -> {
+                AUTHENTICATED -> {
                     _uiState.value = UiState.Authenticated
                 }
 
@@ -74,7 +75,7 @@ class LoginViewModel(
         }
         client.insertPhoneNumber(
             "+992927266950"
-            //number
+            //number TODO
         )
     }
 

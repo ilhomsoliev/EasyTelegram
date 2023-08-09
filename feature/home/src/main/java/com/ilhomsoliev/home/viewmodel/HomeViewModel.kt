@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.data.auth.Authentication
-import com.ilhomsoliev.data.chats.ChatsPagingSource
+import com.ilhomsoliev.chat.ChatsPagingSource
+import com.ilhomsoliev.tgcore.Authentication
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 

@@ -41,8 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.shared.TelegramImage
+import com.ilhomsoliev.tgcore.TelegramClient
 import org.drinkless.td.libcore.telegram.TdApi
 
 data class ChatState(
@@ -186,7 +185,6 @@ fun MessageInput(
                     }
                 }
             },
-            //colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface)
         )
     }
 }

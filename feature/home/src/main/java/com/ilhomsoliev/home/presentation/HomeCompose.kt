@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.ilhomsoliev.data.TelegramClient
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 
@@ -37,6 +38,7 @@ data class HomeState(
 
 interface HomeCallback {
     fun onChatClick(id: Long)
+    fun onSearchClick()
 
 }
 
@@ -60,6 +62,16 @@ fun HomeContent(
                     }) {
                     Icon(
                         imageVector = Icons.Default.Menu,
+                        contentDescription = null
+                    )
+                }
+            }, actions = {
+                IconButton(
+                    onClick = {
+                        callback.onSearchClick()
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
                         contentDescription = null
                     )
                 }

@@ -19,6 +19,10 @@ fun HomeScreen(
             override fun onChatClick(id: Long) {
                 navController.navigate(Screen.Chat.buildRoute(id))
             }
+
+            override fun onSearchClick() {
+                // TODO
+            }
         })
 
 }

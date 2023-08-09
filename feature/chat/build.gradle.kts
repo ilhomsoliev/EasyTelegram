@@ -40,7 +40,8 @@ android {
 
 dependencies {
     implementation(project(":libtd"))
-    implementation(project(":data"))
+    implementation(project(":data:tgcore"))
+    implementation(project(":data:chat"))
     implementation(project(":core"))
     implementation(project(":shared"))
 

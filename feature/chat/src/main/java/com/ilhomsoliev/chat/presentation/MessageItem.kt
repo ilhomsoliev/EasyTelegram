@@ -23,8 +23,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.shared.TelegramImage
+import com.ilhomsoliev.tgcore.TelegramClient
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.Calendar
 import java.util.Date

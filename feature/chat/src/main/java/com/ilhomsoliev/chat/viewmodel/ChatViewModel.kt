@@ -6,9 +6,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.data.chats.ChatsRepository
-import com.ilhomsoliev.data.messages.MessagesRepository
+import com.ilhomsoliev.chat.ChatsRepository
+import com.ilhomsoliev.chat.messages.MessagesRepository
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

@@ -19,8 +19,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.ilhomsoliev.data.TelegramClient
 import com.ilhomsoliev.shared.TelegramImage
+import com.ilhomsoliev.tgcore.TelegramClient
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -43,8 +43,7 @@ fun ChatSummary(
             TdApi.MessageText.CONSTRUCTOR -> BasicChatSummary(
                 text = (it as TdApi.MessageText).text.text,
                 modifier = modifier,
-
-                )
+            )
 
             TdApi.MessageVideo.CONSTRUCTOR -> HighlightedChatSummary("Video", modifier = modifier)
             TdApi.MessageCall.CONSTRUCTOR -> HighlightedChatSummary("Call", modifier = modifier)
@@ -153,12 +152,12 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun ChatItem(client: TelegramClient, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
-        com.ilhomsoliev.shared.TelegramImage(
+        TelegramImage(
             client = client,
             file = chat.photo?.small,
             modifier = Modifier
                 .clip(shape = CircleShape)
-                .size(52.dp)
+                .size(55.dp)
         )
         Column(
             modifier = Modifier.padding(start = 12.dp),
@@ -171,9 +170,18 @@ fun ChatItem(client: TelegramClient, chat: TdApi.Chat, modifier: Modifier = Modi
                 }
             }
             ChatSummary(chat)
-
         }
     }
+}
+
+@Composable
+fun ChatItemImage(
+    client: TelegramClient,
+    file: TdApi.File?,
+    userName: String,
+    modifier: Modifier = Modifier,
+) {
+
 }
 
 private fun Long.toRelativeTimeSpan(): String =

@@ -2,15 +2,15 @@ package com.ilhomsoliev.easytelegram
 
 import android.app.Application
 import android.os.Build
-import com.ilhomsoliev.data.TelegramClient
-import com.ilhomsoliev.data.chats.ChatsPagingSource
-import com.ilhomsoliev.data.chats.ChatsRepository
-import com.ilhomsoliev.data.messages.MessagesRepository
-import com.ilhomsoliev.login.viewmodel.LoginViewModel
+import com.ilhomsoliev.chat.ChatsPagingSource
+import com.ilhomsoliev.chat.ChatsRepository
+import com.ilhomsoliev.chat.messages.MessagesRepository
 import com.ilhomsoliev.chat.viewmodel.ChatViewModel
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
 import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
+import com.ilhomsoliev.login.viewmodel.LoginViewModel
 import com.ilhomsoliev.shared.country.CountryManager
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -30,8 +30,10 @@ class EasyTelegramApplication : Application() {
                         single<TdApi.TdlibParameters> {
                             TdApi.TdlibParameters().apply {
                                 // Obtain application identifier hash for Telegram API access at https://my.telegram.org
-                                apiId = this@EasyTelegramApplication.resources.getInteger(R.integer.telegram_api_id)
-                                apiHash = this@EasyTelegramApplication.getString(R.string.telegram_api_hash)
+                                apiId =
+                                    this@EasyTelegramApplication.resources.getInteger(R.integer.telegram_api_id)
+                                apiHash =
+                                    this@EasyTelegramApplication.getString(R.string.telegram_api_hash)
                                 useMessageDatabase = true
                                 useSecretChats = true
                                 systemLanguageCode = Locale.getDefault().language
