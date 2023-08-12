@@ -26,6 +26,7 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
 ) : ViewModel() {
     var chat: Flow<TdApi.Chat?>? = null
         private set
+    // Some comment
 
     private val _answer = MutableStateFlow("")
     val answer = _answer.asStateFlow()
