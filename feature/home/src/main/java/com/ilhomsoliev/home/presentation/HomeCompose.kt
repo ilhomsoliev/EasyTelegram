@@ -26,13 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 
 data class HomeState(
     val isLoading: Boolean,
-    val client: TelegramClient,
+    val downloadManager: TgDownloadManager,
     val chats: LazyPagingItems<TdApi.Chat>,
 )
 
@@ -105,18 +106,18 @@ fun HomeContent(
                 }) { item ->
                     item.let { chat ->
                         ChatItem(
-                            client = state.client,
+                            downloadManager = state.downloadManager,
                             chat = chat,
                             modifier = Modifier
-                                .padding(vertical = 4.dp, horizontal = 12.dp)
                                 .clickable(onClick = {
                                     callback.onChatClick(item.id)
                                 })
+                                .padding(vertical = 4.dp, horizontal = 12.dp)
+
                         )
                         Divider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier.padding(start = 71.dp, end = 16.dp),
                             thickness = 0.5.dp,
-                            //startIndent = 64.dp
                         )
                     }
                 }

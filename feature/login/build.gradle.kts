@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":libtd"))
     implementation(project(":data:tgcore"))
     implementation(project(":data:auth"))
+    implementation(project(":data:shared"))
     implementation(project(":core"))
     implementation(project(":shared"))
 

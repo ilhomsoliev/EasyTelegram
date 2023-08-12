@@ -14,7 +14,7 @@ fun HomeScreen(
     val chats = vm.chats.collectAsLazyPagingItems()
 
     HomeContent(
-        state = HomeState(isLoading = false, client = vm.client, chats = chats),
+        state = HomeState(isLoading = false, downloadManager = vm.downloadManager, chats = chats),
         callback = object : HomeCallback {
             override fun onChatClick(id: Long) {
                 navController.navigate(Screen.Chat.buildRoute(id))

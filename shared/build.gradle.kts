@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":libtd"))
     implementation(project(":data:tgcore"))
+    implementation(project(":data:shared"))
     implementation(project(":core"))
 
     implementation("androidx.core:core-ktx:1.9.0")

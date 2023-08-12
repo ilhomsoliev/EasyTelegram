@@ -40,9 +40,11 @@ android {
 
 dependencies {
     implementation(project(":libtd"))
+    implementation(project(":core"))
     implementation(project(":data:tgcore"))
     implementation(project(":data:chat"))
-    implementation(project(":core"))
+    implementation(project(":data:shared"))
+    implementation(project(":data:profile"))
     implementation(project(":shared"))
 
     implementation("androidx.core:core-ktx:1.9.0")

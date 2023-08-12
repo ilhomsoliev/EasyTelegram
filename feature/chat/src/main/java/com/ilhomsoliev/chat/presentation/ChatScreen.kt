@@ -33,7 +33,7 @@ fun ChatScreen(
     })
 
     ChatContent(
-        state = ChatState(chat = chat?.value, answer = answer, client = vm.client, messages = messages),
+        state = ChatState(chat = chat?.value, answer = answer, downloadManager = vm.downloadManager, messages = messages),
         callback = object : ChatCallback {
             override fun onAnswerChange(value: String) {
                 scope.launch {

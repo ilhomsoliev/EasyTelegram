@@ -6,23 +6,25 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.ilhomsoliev.auth.AuthRepository
+import com.ilhomsoliev.auth.Authentication
 import com.ilhomsoliev.chat.ChatsPagingSource
-import com.ilhomsoliev.tgcore.Authentication
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class HomeViewModel(
-    val client: TelegramClient,
+    private val authRepository: AuthRepository,
+    val downloadManager: TgDownloadManager,
     private val chatsPagingSource: ChatsPagingSource
 ) : ViewModel() {
     val uiState = mutableStateOf<UiState>(UiState.Loading)
 
     init {
-        client.authState.onEach {
+        authRepository.authState.onEach {
             when (it) {
                 Authentication.UNAUTHENTICATED -> {
-                    client.startAuthentication()
+                    authRepository.startAuthentication()
                 }
 
                 Authentication.WAIT_FOR_NUMBER, Authentication.WAIT_FOR_CODE, Authentication.WAIT_FOR_PASSWORD, Authentication.INCORRECT_CODE -> uiState.value =

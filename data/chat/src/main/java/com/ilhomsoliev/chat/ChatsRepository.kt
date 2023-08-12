@@ -1,16 +1,26 @@
 package com.ilhomsoliev.chat
 
+import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import org.drinkless.td.libcore.telegram.TdApi
 
 @ExperimentalCoroutinesApi
-class ChatsRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient) {
+class ChatsRepository(
+    private val client: TelegramClient,
+    private val downloadManager: TgDownloadManager
+) {
 
     private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
         callbackFlow {
-            client.client.send(TdApi.GetChats(TdApi.ChatListMain(), /*offsetOrder, 0,*/ limit)) {
+            client.baseClient.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
                 when (it.constructor) {
                     TdApi.Chats.CONSTRUCTOR -> {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
@@ -24,7 +34,6 @@ class ChatsRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient)
                         error("")
                     }
                 }
-                //close()
             }
             awaitClose { }
         }
@@ -39,7 +48,7 @@ class ChatsRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient)
             }
 
     fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
-        client.client.send(TdApi.GetChat(chatId)) {
+        client.baseClient.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
                     trySend(it as TdApi.Chat).isSuccess
@@ -62,7 +71,7 @@ class ChatsRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient)
         chat.photo?.small?.takeIf {
             it.local?.isDownloadingCompleted == false
         }?.id?.let { fileId ->
-            client.downloadFile(fileId).map { chat.photo?.small?.local?.path }
+            downloadManager.downloadFile(fileId).map { chat.photo?.small?.local?.path }
         } ?: flowOf(chat.photo?.small?.local?.path)
 
 }

@@ -4,11 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.shared.country.Country
 import com.ilhomsoliev.shared.country.CountryManager
-import com.ilhomsoliev.tgcore.TelegramClient
-import com.ilhomsoliev.tgcore.Authentication
-import com.ilhomsoliev.tgcore.Authentication.*
+import com.ilhomsoliev.auth.Authentication.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val client: TelegramClient,
+    private val authRepository: AuthRepository,
     private val countryManager: CountryManager,
 ) : ViewModel() {
 
@@ -30,7 +29,7 @@ class LoginViewModel(
     val pickedCountry = _pickedCountry.asStateFlow()
 
     init {
-        client.authState.onEach {
+        authRepository.authState.onEach {
             when (it) {
                 UNAUTHENTICATED, UNKNOWN -> {
                     _uiState.value = UiState.Loading
@@ -73,7 +72,7 @@ class LoginViewModel(
         viewModelScope.launch {
             _isLoading.emit(true)
         }
-        client.insertPhoneNumber(
+        authRepository.insertPhoneNumber(
             "+992927266950"
             //number TODO
         )
@@ -83,14 +82,14 @@ class LoginViewModel(
         viewModelScope.launch {
             _isLoading.emit(true)
         }
-        client.insertCode(code)
+        authRepository.insertCode(code)
     }
 
     fun insertPassword(password: String) {
         viewModelScope.launch {
             _isLoading.emit(true)
         }
-        client.insertPassword(password)
+        authRepository.insertPassword(password)
     }
 
 }

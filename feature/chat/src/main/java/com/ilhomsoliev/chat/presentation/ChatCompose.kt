@@ -41,14 +41,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.shared.TelegramImage
+import com.ilhomsoliev.shared.TgDownloadManager
 import org.drinkless.td.libcore.telegram.TdApi
 
 data class ChatState(
     val chat: TdApi.Chat? = null,
     val answer: String,
-    val client: TelegramClient,
-    val messages: LazyPagingItems<TdApi.Message>?,
+    val downloadManager: TgDownloadManager,
+    val messages: LazyPagingItems<MessageModel>?,
 )
 
 interface ChatCallback {
@@ -77,9 +79,9 @@ fun ChatContent(
                     }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                     }
-                    com.ilhomsoliev.shared.TelegramImage(
+                    TelegramImage(
                         modifier = Modifier.clip(CircleShape),
-                        client = state.client,
+                        downloadManager = state.downloadManager,
                         file = state.chat?.photo?.small
                     )
                     Text(text = state.chat?.title ?: "")
@@ -101,16 +103,6 @@ fun ChatContent(
                     // todo
                 }, sendMessage = {
                     callback.onSendMessage()
-                    /*viewModel.sendMessage(
-                        inputMessageContent = TdApi.InputMessageText(
-                            TdApi.FormattedText(
-                                it,
-                                emptyArray()
-                            ), false, false
-                        )
-                    ).await()
-                    input.value = TextFieldValue()
-                    history.refresh()*/
                 }, onInputChange = {
                     callback.onAnswerChange(it)
                 })
@@ -119,7 +111,7 @@ fun ChatContent(
         state.messages?.run {
             Log.d("Hello messages", this.itemSnapshotList.items.toString())
             ChatHistory(
-                client = state.client,
+                downloadManager = state.downloadManager,
                 messages = this,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -191,8 +183,8 @@ fun MessageInput(
 
 @Composable
 fun ChatHistory(
-    client: TelegramClient,
-    messages: LazyPagingItems<TdApi.Message>,
+    downloadManager: TgDownloadManager,
+    messages: LazyPagingItems<MessageModel>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier, reverseLayout = true) {
@@ -224,12 +216,11 @@ fun ChatHistory(
 
         itemsIndexed(messages.itemSnapshotList.items) { i, message ->
             message.let {
-                val userId = (message.senderId as TdApi.MessageSenderUser).userId
-                val previousMessageUserId =
-                    if (i > 0) (messages[i - 1]?.senderId as TdApi.MessageSenderUser?)?.userId else null
+                val userId = message.sender.id
+                val previousMessageUserId = if (i > 0) messages[i - 1]?.sender?.id else null
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
-                    client = client,
+                    downloadManager = downloadManager,
                     message = it
                 )
             }
@@ -240,8 +231,8 @@ fun ChatHistory(
 @Composable
 private fun MessageItem(
     isSameUserFromPreviousMessage: Boolean,
-    client: TelegramClient,
-    message: TdApi.Message,
+    downloadManager: TgDownloadManager,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     if (message.isOutgoing) {
@@ -253,7 +244,7 @@ private fun MessageItem(
         ) {
             MessageItemCard(modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(
-                    client = client,
+                    downloadManager = downloadManager,
                     message = message,
                     modifier = Modifier
                         .background(Color.Green.copy(alpha = 0.2f))
@@ -268,7 +259,7 @@ private fun MessageItem(
         ) {
             if (!isSameUserFromPreviousMessage) {
                 ChatUserIcon(
-                    client = client,
+                    downloadManager = downloadManager,
                     userId = (message.senderId as TdApi.MessageSenderUser).userId,
                     modifier = Modifier
                         .padding(8.dp)
@@ -284,7 +275,7 @@ private fun MessageItem(
             }
             MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(
-                    client = client,
+                    downloadManager = downloadManager,
                     message = message,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -294,10 +285,13 @@ private fun MessageItem(
 }
 
 @Composable
-private fun ChatUserIcon(client: TelegramClient, userId: Long, modifier: Modifier) {
+private fun ChatUserIcon(
+    downloadManager: TgDownloadManager,
+    userId: Long, modifier: Modifier
+) {
     val user = client.send<TdApi.User>(TdApi.GetUser(userId)).collectAsState(initial = null).value
-    com.ilhomsoliev.shared.TelegramImage(
-        client = client,
+    TelegramImage(
+        downloadManager = downloadManager,
         file = user?.profilePhoto?.small,
         modifier = modifier
     )
@@ -319,8 +313,8 @@ private fun MessageItemCard(
 
 @Composable
 private fun MessageItemContent(
-    client: TelegramClient,
-    message: TdApi.Message,
+    downloadManager: TgDownloadManager,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     when (message.content) {
@@ -328,10 +322,10 @@ private fun MessageItemContent(
         is TdApi.MessageVideo -> VideoMessage(message, modifier)
         is TdApi.MessageCall -> CallMessage(message, modifier)
         is TdApi.MessageAudio -> AudioMessage(message, modifier)
-        is TdApi.MessageSticker -> StickerMessage(client, message, modifier)
-        is TdApi.MessageAnimation -> AnimationMessage(client, message, modifier)
-        is TdApi.MessagePhoto -> PhotoMessage(client, message, Modifier)
-        is TdApi.MessageVideoNote -> VideoNoteMessage(client, message, modifier)
+        is TdApi.MessageSticker -> StickerMessage(downloadManager, message, modifier)
+        is TdApi.MessageAnimation -> AnimationMessage(downloadManager, message, modifier)
+        is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
+        is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
         is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)
         else -> UnsupportedMessage()
     }

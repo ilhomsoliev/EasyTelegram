@@ -54,11 +54,13 @@ dependencies {
     implementation(project(":feature:login"))
     implementation(project(":feature:chat"))
     implementation(project(":feature:home"))
-
-//    implementation(project(":data"))
     implementation(project(":core"))
+    implementation(project(":data:auth"))
+    implementation(project(":data:chat"))
+    implementation(project(":data:tgcore"))
+    implementation(project(":data:shared"))
+    implementation(project(":data:profile"))
     implementation(project(":shared"))
-
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -70,8 +72,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation(project(mapOf("path" to ":data:tgcore")))
-    implementation(project(mapOf("path" to ":data:chat")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -79,7 +79,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    //implementation ("com.google.accompanist:accompanist-coil:0.9.0")
     implementation("io.coil-kt:coil-compose:2.3.0")
 
     val koinVer = "3.2.1"
@@ -87,8 +86,8 @@ dependencies {
     implementation("io.insert-koin:koin-android:$koinVer")
     implementation("io.insert-koin:koin-core:$koinVer")
 
-    implementation ("androidx.paging:paging-compose:3.2.0")
+    implementation("androidx.paging:paging-compose:3.2.0")
 
-    implementation ("com.fragula2:fragula-compose:2.9")
+    implementation("com.fragula2:fragula-compose:2.9")
 
 }

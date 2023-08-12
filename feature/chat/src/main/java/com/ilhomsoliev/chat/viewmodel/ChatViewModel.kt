@@ -8,7 +8,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ilhomsoliev.chat.ChatsRepository
 import com.ilhomsoliev.chat.messages.MessagesRepository
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -18,28 +20,25 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val chatsRepository: ChatsRepository,
-    val client: TelegramClient,
-    private val messagesRepository: MessagesRepository
-
+    val downloadManager: TgDownloadManager,
+    private val messagesRepository: MessagesRepository,
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
-
-    /*private val _chat = MutableStateFlow<TdApi.Chat?>(null)
-    val chat = _chat.asStateFlow()*/
-
     var chat: Flow<TdApi.Chat?>? = null
         private set
 
     private val _answer = MutableStateFlow("")
     val answer = _answer.asStateFlow()
 
-    var messagesPaged: Flow<PagingData<TdApi.Message>>? = null
+    var messagesPaged: Flow<PagingData<MessageModel>>? = null
         private set
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun loadChat(chatId: Long) {
         this.chat = chatsRepository.getChat(chatId)
 
         this.messagesPaged = Pager(PagingConfig(pageSize = 30)) {
-            messagesRepository.getMessagesPaged(chatId)
+            messagesRepository.getMessagesPaged(chatId, profileRepository)
         }.flow.cachedIn(viewModelScope)
 
     }

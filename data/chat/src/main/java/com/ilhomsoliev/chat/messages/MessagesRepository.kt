@@ -1,7 +1,8 @@
 package com.ilhomsoliev.chat.messages
 
 import androidx.paging.PagingSource
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.profile.ProfileRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.awaitClose
@@ -13,7 +14,7 @@ class MessagesRepository(val client: com.ilhomsoliev.tgcore.TelegramClient) {
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {
-            client.client.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
+            client.baseClient.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
                 when (it.constructor) {
                     TdApi.Messages.CONSTRUCTOR -> {
                         trySend((it as TdApi.Messages).messages.toList()).isSuccess
@@ -31,11 +32,14 @@ class MessagesRepository(val client: com.ilhomsoliev.tgcore.TelegramClient) {
             awaitClose { }
         }
 
-    fun getMessagesPaged(chatId: Long): PagingSource<Long, TdApi.Message> =
-        MessagesPagingSource(chatId, this)
+    fun getMessagesPaged(
+        chatId: Long,
+        profileRepository: ProfileRepository
+    ): PagingSource<Long, MessageModel> =
+        MessagesPagingSource(chatId, this, profileRepository)
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
-        client.client.send(TdApi.GetMessage(chatId, messageId)) {
+        client.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     trySend(it as TdApi.Message).isSuccess
@@ -72,7 +76,7 @@ class MessagesRepository(val client: com.ilhomsoliev.tgcore.TelegramClient) {
 
     fun sendMessage(sendMessage: TdApi.SendMessage): Deferred<TdApi.Message> {
         val result = CompletableDeferred<TdApi.Message>()
-        client.client.send(sendMessage) {
+        client.baseClient.send(sendMessage) {
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     result.complete(it as TdApi.Message)

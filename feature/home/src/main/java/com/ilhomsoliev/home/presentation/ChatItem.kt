@@ -1,7 +1,10 @@
 package com.ilhomsoliev.home.presentation
 
 import android.text.format.DateUtils
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,10 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ilhomsoliev.shared.TelegramImage
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.shared.TgDownloadManager
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -150,14 +154,15 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatItem(client: TelegramClient, chat: TdApi.Chat, modifier: Modifier = Modifier) {
+fun ChatItem(downloadManager: TgDownloadManager, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
-        TelegramImage(
-            client = client,
+        ChatItemImage(
+            downloadManager = downloadManager,
             file = chat.photo?.small,
             modifier = Modifier
                 .clip(shape = CircleShape)
-                .size(55.dp)
+                .size(55.dp),
+            userName = chat.themeName ?: ""
         )
         Column(
             modifier = Modifier.padding(start = 12.dp),
@@ -176,12 +181,26 @@ fun ChatItem(client: TelegramClient, chat: TdApi.Chat, modifier: Modifier = Modi
 
 @Composable
 fun ChatItemImage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     file: TdApi.File?,
     userName: String,
     modifier: Modifier = Modifier,
 ) {
+    if (file != null)
+        TelegramImage(
+            downloadManager = downloadManager,
+            file = file,
+            modifier = Modifier
+                .clip(shape = CircleShape)
+                .size(55.dp)
+        )
+    else {
+        Box(modifier.background(Color.Red), contentAlignment = Alignment.Center) {
+            Log.d("Hello", "$userName")
 
+            Text(text = userName.take(2))
+        }
+    }
 }
 
 private fun Long.toRelativeTimeSpan(): String =

@@ -23,7 +23,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
-import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.shared.TelegramImage
+import com.ilhomsoliev.shared.TgDownloadManager
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.Calendar
 import java.util.Date
@@ -67,19 +68,19 @@ fun VideoMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
 
 @Composable
 fun StickerMessage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
-        StickerMessage(client, message.content as TdApi.MessageSticker)
+        StickerMessage(downloadManager, message.content as TdApi.MessageSticker)
         MessageStatus(message)
     }
 }
 
 @Composable
 private fun StickerMessage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     content: TdApi.MessageSticker,
     modifier: Modifier = Modifier
 ) {
@@ -87,7 +88,7 @@ private fun StickerMessage(
         Text(text = "<Animated Sticker> ${content.sticker.emoji}", modifier = modifier)
     } else {
         Box(contentAlignment = Alignment.BottomEnd) {
-            com.ilhomsoliev.shared.TelegramImage(client = client, file = content.sticker.sticker)
+            TelegramImage(downloadManager = downloadManager, file = content.sticker.sticker)
             content.sticker.emoji.takeIf { it.isNotBlank() }?.let {
                 Text(text = it, modifier = modifier)
             }
@@ -97,13 +98,13 @@ private fun StickerMessage(
 
 @Composable
 fun AnimationMessage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
     val content = message.content as TdApi.MessageAnimation
     val path =
-        client.downloadableFile(content.animation.animation).collectAsState(initial = null)
+        downloadManager.downloadableFile(content.animation.animation).collectAsState(initial = null)
     Column {
         path.value?.let { filePath ->
             /*CoilImage(data = File(filePath), modifier = Modifier.size(56.dp)) {
@@ -160,29 +161,28 @@ private fun CallMessage(content: TdApi.MessageCall, modifier: Modifier = Modifie
 }
 
 @Composable
-fun PhotoMessage(client: TelegramClient, message: TdApi.Message, modifier: Modifier = Modifier) {
+fun PhotoMessage(
+    downloadManager: TgDownloadManager,
+    message: TdApi.Message, modifier: Modifier = Modifier
+) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
-        PhotoMessage(client, message.content as TdApi.MessagePhoto)
+        PhotoMessage(downloadManager, message.content as TdApi.MessagePhoto)
         MessageStatus(message, Modifier.padding(4.dp))
     }
-    /*Box(modifier, contentAlignment = Alignment.BottomEnd) {
-        PhotoMessage(client, message.content as TdApi.MessagePhoto)
-        MessageStatus(message = message, modifier = Modifier.padding(8.dp).background(Color.Magenta))
-    }*/
 }
 
 @Composable
 fun VideoNoteMessage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         Text("<Video note>")
-        com.ilhomsoliev.shared.TelegramImage(
-            client,
-            (message.content as TdApi.MessageVideoNote).videoNote.thumbnail?.file,
-            Modifier.size(150.dp)
+        TelegramImage(
+            downloadManager = downloadManager,
+            file = (message.content as TdApi.MessageVideoNote).videoNote.thumbnail?.file,
+            modifier = Modifier.size(150.dp)
         )
         MessageStatus(message)
     }
@@ -204,7 +204,7 @@ fun VoiceNoteMessage(
 
 @Composable
 private fun PhotoMessage(
-    client: TelegramClient,
+    downloadManager: TgDownloadManager,
     message: TdApi.MessagePhoto,
     modifier: Modifier = Modifier
 ) {
@@ -213,9 +213,9 @@ private fun PhotoMessage(
         photo.width.toDp()
     }
     Column(modifier.width(min(200.dp, width))) {
-        com.ilhomsoliev.shared.TelegramImage(
-            client,
-            message.photo.sizes.last().photo,
+        TelegramImage(
+            downloadManager = downloadManager,
+            file = message.photo.sizes.last().photo,
             modifier = Modifier.fillMaxWidth()
         )
         message.caption.text.takeIf { it.isNotEmpty() }
