@@ -9,6 +9,8 @@ import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.presentation.HomeContainer
 import com.ilhomsoliev.login.presentation.chooseCountry.ChooseCountryScreen
 import com.ilhomsoliev.login.presentation.login.LoginScreen
+import com.ilhomsoliev.login.presentation.onboarding.OnBoardingScreen
+import com.ilhomsoliev.login.presentation.welcome.WelcomeScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -16,7 +18,7 @@ fun Navigation() {
     val navController = rememberNavController()
 
     NavHost(
-        navController,
+        navController = navController,
         startDestination = Screen.Home.route,
     ) {
         composable(Screen.Home.route) {
@@ -32,18 +34,20 @@ fun Navigation() {
             )
         }
 
-        /*composable(Screen.CreateChat.route) {
-            CreateChatScreen(
-                navigateUp = navController::navigateUp,
-                viewModel = hiltNavGraphViewModel(it)
-            )
-        }*/
-
         composable(Screen.Login.route) {
             val countryCode = it.savedStateHandle.get<String>("country_code")
             it.savedStateHandle.remove<Boolean>("country_code")
             LoginScreen(vm = koinViewModel(), navController = navController, countryCode)
         }
+
+        composable(Screen.Welcome.route) {
+            WelcomeScreen(navController = navController)
+        }
+
+        composable(Screen.OnBoarding.route) {
+            OnBoardingScreen(navController = navController)
+        }
+
 
         composable(Screen.ChooseCountry.route) {
             ChooseCountryScreen(vm = koinViewModel(), navController = navController)

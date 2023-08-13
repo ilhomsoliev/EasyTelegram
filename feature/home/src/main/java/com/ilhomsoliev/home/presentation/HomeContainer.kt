@@ -18,6 +18,7 @@ fun HomeContainer(
     navController: NavController,
 ) {
     val uiState by vm.uiState
+
     when (uiState) {
         UiState.Loading -> {
             LoadingScreen(Modifier)
@@ -28,7 +29,7 @@ fun HomeContainer(
         }
 
         UiState.Login -> {
-            navController.navigate(Screen.Login.route) {
+            navController.navigate(Screen.Welcome.route) {
                 popUpTo(Screen.Home.route) { inclusive = true }
                 launchSingleTop = true
             }

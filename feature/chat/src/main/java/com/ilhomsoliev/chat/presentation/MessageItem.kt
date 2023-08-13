@@ -23,6 +23,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import com.ilhomsoliev.chat.model.message.MessageModel
+import com.ilhomsoliev.chat.model.message.MessageSendingStateModel
+import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import org.drinkless.td.libcore.telegram.TdApi
@@ -30,20 +33,21 @@ import java.util.Calendar
 import java.util.Date
 
 @Composable
-fun TextMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
+fun TextMessage(message: MessageModel, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
-        TextMessage(message.content as TdApi.MessageText)
+        TextMessage(message.content as MessageTextModel)
         MessageStatus(message)
     }
 }
 
 @Composable
-private fun TextMessage(content: TdApi.MessageText, modifier: Modifier = Modifier) {
-    Text(text = content.text.text, modifier = modifier)
+private fun TextMessage(content: MessageTextModel, modifier: Modifier = Modifier) {
+    Text(text = content.text, modifier = modifier)
 }
 
+// TODO
 @Composable
-fun AudioMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
+fun AudioMessage(message: MessageModel, modifier: Modifier = Modifier) {
     val content = message.content as TdApi.MessageAudio
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         Text(text = "Audio ${content.audio.duration}", modifier = modifier)
@@ -54,8 +58,9 @@ fun AudioMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
     }
 }
 
+// TODO
 @Composable
-fun VideoMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
+fun VideoMessage(message: MessageModel, modifier: Modifier = Modifier) {
     val content = message.content as TdApi.MessageVideo
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         Text(text = "Video ${content.video.duration}", modifier = modifier)
@@ -66,10 +71,11 @@ fun VideoMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
     }
 }
 
+// TODO
 @Composable
 fun StickerMessage(
     downloadManager: TgDownloadManager,
-    message: TdApi.Message,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
@@ -78,6 +84,7 @@ fun StickerMessage(
     }
 }
 
+// TODO
 @Composable
 private fun StickerMessage(
     downloadManager: TgDownloadManager,
@@ -96,10 +103,11 @@ private fun StickerMessage(
     }
 }
 
+// TODO
 @Composable
 fun AnimationMessage(
     downloadManager: TgDownloadManager,
-    message: TdApi.Message,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     val content = message.content as TdApi.MessageAnimation
@@ -115,8 +123,9 @@ fun AnimationMessage(
     }
 }
 
+// TODO
 @Composable
-fun CallMessage(message: TdApi.Message, modifier: Modifier = Modifier) {
+fun CallMessage(message: MessageModel, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         CallMessage(message.content as TdApi.MessageCall)
         MessageStatus(message)
@@ -160,10 +169,11 @@ private fun CallMessage(content: TdApi.MessageCall, modifier: Modifier = Modifie
     }
 }
 
+// TODO
 @Composable
 fun PhotoMessage(
     downloadManager: TgDownloadManager,
-    message: TdApi.Message, modifier: Modifier = Modifier
+    message: MessageModel, modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         PhotoMessage(downloadManager, message.content as TdApi.MessagePhoto)
@@ -171,10 +181,11 @@ fun PhotoMessage(
     }
 }
 
+// TODO
 @Composable
 fun VideoNoteMessage(
     downloadManager: TgDownloadManager,
-    message: TdApi.Message,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
@@ -188,9 +199,10 @@ fun VideoNoteMessage(
     }
 }
 
+// TODO
 @Composable
 fun VoiceNoteMessage(
-    message: TdApi.Message,
+    message: MessageModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
@@ -229,11 +241,11 @@ fun UnsupportedMessage(modifier: Modifier = Modifier, title: String? = null) {
 }
 
 @Composable
-private fun MessageStatus(message: TdApi.Message, modifier: Modifier = Modifier) {
+private fun MessageStatus(message: MessageModel, modifier: Modifier = Modifier) {
     if (message.isOutgoing) {
         Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
             MessageTime(message = message)
-            MessageSendingState(message.sendingState, modifier.size(16.dp))
+            MessageSendingState(message.sendingStateModel, modifier.size(16.dp))
         }
     } else {
         MessageTime(message = message, modifier = modifier)
@@ -241,7 +253,7 @@ private fun MessageStatus(message: TdApi.Message, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun MessageTime(message: TdApi.Message, modifier: Modifier = Modifier) {
+private fun MessageTime(message: MessageModel, modifier: Modifier = Modifier) {
     val date = Date(message.date.toLong())
     val calendar = Calendar.getInstance().apply { time = date }
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -261,11 +273,11 @@ private fun MessageTime(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun MessageSendingState(
-    sendingState: TdApi.MessageSendingState?,
+    sendingState: MessageSendingStateModel?,
     modifier: Modifier = Modifier
 ) {
     when (sendingState) {
-        is TdApi.MessageSendingStatePending -> {
+        MessageSendingStateModel.PENDING -> {
             Icon(
                 imageVector = Icons.Outlined.Pending,
                 contentDescription = null,
@@ -273,7 +285,7 @@ private fun MessageSendingState(
             )
         }
 
-        is TdApi.MessageSendingStateFailed -> {
+        MessageSendingStateModel.ERROR -> {
             Icon(
                 imageVector = Icons.Outlined.SyncProblem,
                 contentDescription = null,

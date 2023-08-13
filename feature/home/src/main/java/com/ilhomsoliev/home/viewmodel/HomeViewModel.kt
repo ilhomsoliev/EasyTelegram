@@ -1,5 +1,6 @@
 package com.ilhomsoliev.home.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.ilhomsoliev.auth.AuthRepository
-import com.ilhomsoliev.auth.Authentication
+import com.ilhomsoliev.tgcore.Authentication
 import com.ilhomsoliev.chat.ChatsPagingSource
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.flow.launchIn
@@ -18,10 +19,12 @@ class HomeViewModel(
     val downloadManager: TgDownloadManager,
     private val chatsPagingSource: ChatsPagingSource
 ) : ViewModel() {
+
     val uiState = mutableStateOf<UiState>(UiState.Loading)
 
     init {
         authRepository.authState.onEach {
+            Log.d("Hello authState", it.toString())
             when (it) {
                 Authentication.UNAUTHENTICATED -> {
                     authRepository.startAuthentication()
@@ -32,7 +35,7 @@ class HomeViewModel(
 
                 Authentication.AUTHENTICATED -> uiState.value = UiState.Loaded
                 Authentication.UNKNOWN -> {
-
+                    uiState.value = UiState.Login
                 }
             }
         }.launchIn(viewModelScope)

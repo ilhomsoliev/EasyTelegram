@@ -1,4 +1,4 @@
-package com.ilhomsoliev.chat.model
+package com.ilhomsoliev.chat.model.message
 
 import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.MessageSendingStateFailed

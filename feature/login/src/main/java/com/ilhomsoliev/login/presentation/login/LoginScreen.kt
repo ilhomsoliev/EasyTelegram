@@ -23,7 +23,7 @@ fun LoginScreen(
     val uiState by vm.uiState
     val isLoading by vm.isLoading.collectAsState()
     val pickedCountry by vm.pickedCountry.collectAsState()
-    val isAuthenticated = remember{ mutableStateOf(false) }
+    val isAuthenticated = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
         countryCode?.let {
@@ -40,6 +40,11 @@ fun LoginScreen(
             scope.launch { vm.insertPhoneNumber(value) }
         }
 
+        override fun onBack() {
+            // TODO
+            navController.popBackStack()
+        }
+
         override fun insertCode(value: String) {
             scope.launch { vm.insertCode(value) }
         }
@@ -50,7 +55,7 @@ fun LoginScreen(
         }
 
         override fun onSuccessfulAuthenticated() {
-            if(isAuthenticated.value) return
+            if (isAuthenticated.value) return
             isAuthenticated.value = true
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Login.route) { inclusive = true }

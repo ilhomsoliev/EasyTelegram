@@ -3,6 +3,7 @@ package com.ilhomsoliev.easytelegram
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.chat.ChatsPagingSource
 import com.ilhomsoliev.chat.ChatsRepository
 import com.ilhomsoliev.chat.messages.MessagesRepository
@@ -27,9 +28,9 @@ class EasyTelegramApplication : Application() {
         startKoin {
             modules(
                 listOf(
-                    viewModelModule,
-                    repositoryModule,
                     telegramModule(this@EasyTelegramApplication),
+                    repositoryModule,
+                    viewModelModule,
                     managerModule(this@EasyTelegramApplication),
                 )
             )
@@ -43,12 +44,13 @@ val viewModelModule = module {
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
-    viewModel { ChatViewModel(get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get()) }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 val repositoryModule = module {
     single { ChatsRepository(get(), get()) }
+    single { AuthRepository(get()) }
     single { ChatsPagingSource(get()) }
     single { MessagesRepository(get()) }
     single { ProfileRepository(get()) }
@@ -76,7 +78,7 @@ fun telegramModule(context: Context) = module {
             enableStorageOptimizer = true
         }
     }
-    single {
+    single<TelegramClient> {
         TelegramClient(get<TdApi.TdlibParameters>())
     }
     single<CountryManager> { CountryManager(context) }

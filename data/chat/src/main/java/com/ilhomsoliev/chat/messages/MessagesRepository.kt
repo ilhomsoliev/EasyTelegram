@@ -1,7 +1,7 @@
 package com.ilhomsoliev.chat.messages
 
 import androidx.paging.PagingSource
-import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.profile.ProfileRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred

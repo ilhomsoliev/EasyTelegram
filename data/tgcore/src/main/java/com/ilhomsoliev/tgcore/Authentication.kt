@@ -1,4 +1,4 @@
-package com.ilhomsoliev.auth
+package com.ilhomsoliev.tgcore
 
 enum class Authentication {
     UNAUTHENTICATED,

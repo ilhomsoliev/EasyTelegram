@@ -33,7 +33,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.chat.model.message.MessageModel
+import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import org.drinkless.td.libcore.telegram.TdApi
@@ -260,7 +260,7 @@ private fun MessageItem(
             if (!isSameUserFromPreviousMessage) {
                 ChatUserIcon(
                     downloadManager = downloadManager,
-                    userId = (message.senderId as TdApi.MessageSenderUser).userId,
+                    userPhotoFile = message.sender.profilePhoto?.smallFile,
                     modifier = Modifier
                         .padding(8.dp)
                         .clip(shape = CircleShape)
@@ -287,12 +287,12 @@ private fun MessageItem(
 @Composable
 private fun ChatUserIcon(
     downloadManager: TgDownloadManager,
-    userId: Long, modifier: Modifier
+    userPhotoFile: TdApi.File?,
+    modifier: Modifier
 ) {
-    val user = client.send<TdApi.User>(TdApi.GetUser(userId)).collectAsState(initial = null).value
     TelegramImage(
         downloadManager = downloadManager,
-        file = user?.profilePhoto?.small,
+        file = userPhotoFile,
         modifier = modifier
     )
 }
@@ -318,15 +318,15 @@ private fun MessageItemContent(
     modifier: Modifier = Modifier
 ) {
     when (message.content) {
-        is TdApi.MessageText -> TextMessage(message, modifier)
-        is TdApi.MessageVideo -> VideoMessage(message, modifier)
+        is MessageTextModel -> TextMessage(message, modifier)
+      /*  is TdApi.MessageVideo -> VideoMessage(message, modifier)
         is TdApi.MessageCall -> CallMessage(message, modifier)
         is TdApi.MessageAudio -> AudioMessage(message, modifier)
         is TdApi.MessageSticker -> StickerMessage(downloadManager, message, modifier)
         is TdApi.MessageAnimation -> AnimationMessage(downloadManager, message, modifier)
         is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
         is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
-        is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)
+        is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)*/
         else -> UnsupportedMessage()
     }
 }

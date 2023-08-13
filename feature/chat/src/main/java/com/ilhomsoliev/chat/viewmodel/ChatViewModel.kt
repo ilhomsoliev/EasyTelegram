@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ilhomsoliev.chat.ChatsRepository
 import com.ilhomsoliev.chat.messages.MessagesRepository
-import com.ilhomsoliev.chat.model.MessageModel
+import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.Deferred

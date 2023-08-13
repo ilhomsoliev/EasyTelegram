@@ -2,8 +2,8 @@ package com.ilhomsoliev.chat.messages
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.ilhomsoliev.chat.model.MessageModel
-import com.ilhomsoliev.chat.model.map
+import com.ilhomsoliev.chat.model.message.MessageModel
+import com.ilhomsoliev.chat.model.message.map
 import com.ilhomsoliev.profile.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

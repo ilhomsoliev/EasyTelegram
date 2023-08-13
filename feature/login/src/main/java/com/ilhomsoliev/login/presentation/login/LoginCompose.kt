@@ -2,8 +2,13 @@ package com.ilhomsoliev.login.presentation.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +27,7 @@ data class LoginState(
 
 interface LoginCallback {
     fun insertPhoneNumber(value: String)
+    fun onBack()
     fun insertCode(value: String)
     fun insertPassword(value: String)
     fun onSuccessfulAuthenticated()
@@ -33,11 +39,16 @@ fun LoginContent(
     state: LoginState,
     callback: LoginCallback,
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Gray)
     ) {
+        IconButton(onClick = {
+            callback.onBack()
+        }) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+        }
         when (state.uiState) {
             is UiState.InsertNumber -> {
                 WaitForNumberScreen(
@@ -71,6 +82,8 @@ fun LoginContent(
             UiState.Authenticated -> {
                 callback.onSuccessfulAuthenticated()
             }
+
+            else -> {}
         }
     }
 }

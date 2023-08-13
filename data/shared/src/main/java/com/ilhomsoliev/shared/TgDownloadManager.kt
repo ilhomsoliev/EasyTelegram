@@ -10,11 +10,12 @@ import kotlinx.coroutines.flow.map
 import org.drinkless.td.libcore.telegram.TdApi
 
 class TgDownloadManager(
-    private val client: TelegramClient
-) {
+    //private val client: TelegramClient
+    tdLibParameters: TdApi.TdlibParameters
+):TelegramClient(tdLibParameters) {
 
     fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
-        client.baseClient.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
+        baseClient.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {
                     trySend(Unit).isSuccess
