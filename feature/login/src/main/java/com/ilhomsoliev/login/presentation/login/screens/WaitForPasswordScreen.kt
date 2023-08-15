@@ -1,4 +1,4 @@
-package com.ilhomsoliev.login.presentation.login.screen
+package com.ilhomsoliev.login.presentation.login.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

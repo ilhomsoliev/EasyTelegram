@@ -13,9 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.ilhomsoliev.login.presentation.login.screen.WaitForCodeScreen
-import com.ilhomsoliev.login.presentation.login.screen.WaitForNumberScreen
-import com.ilhomsoliev.login.presentation.login.screen.WaitForPasswordScreen
+import com.ilhomsoliev.login.presentation.login.screens.WaitForCodeScreen
+import com.ilhomsoliev.login.presentation.login.screens.WaitForNumberScreen
+import com.ilhomsoliev.login.presentation.login.screens.WaitForPasswordScreen
 import com.ilhomsoliev.login.viewmodel.UiState
 import com.ilhomsoliev.shared.country.Country
 
@@ -42,13 +42,7 @@ fun LoginContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
     ) {
-        IconButton(onClick = {
-            callback.onBack()
-        }) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-        }
         when (state.uiState) {
             is UiState.InsertNumber -> {
                 WaitForNumberScreen(
@@ -59,6 +53,8 @@ fun LoginContent(
                     },
                     onNumberEnter = {
                         callback.insertPhoneNumber(it)
+                    }, onBack = {
+                        callback.onBack()
                     })
             }
 
