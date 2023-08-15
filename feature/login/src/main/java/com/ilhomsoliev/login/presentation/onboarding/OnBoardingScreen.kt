@@ -2,21 +2,22 @@ package com.ilhomsoliev.login.presentation.onboarding
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
+import com.ilhomsoliev.core.Screen
 
 @Composable
 fun OnBoardingScreen(navController: NavController) {
-    OnBoardingContent(0, object : OnBoardingCallback{
-        override fun onNextClick() {
-            TODO("Not yet implemented")
-        }
+    OnBoardingContent(object : OnBoardingCallback {
 
         override fun onBackClick() {
-            TODO("Not yet implemented")
+            navController.popBackStack()
         }
 
-        override fun onPreviousClick() {
-            TODO("Not yet implemented")
+        override fun onDone() {
+            val options = navOptions {
+                popUpTo(Screen.OnBoarding.route) { inclusive = true }
+            }
+            navController.navigate(Screen.Login.route, options)
         }
-
     })
 }

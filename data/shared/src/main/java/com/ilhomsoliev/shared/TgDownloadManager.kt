@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import org.drinkless.td.libcore.telegram.TdApi
 
 class TgDownloadManager(
-    //private val client: TelegramClient
     tdLibParameters: TdApi.TdlibParameters
 ):TelegramClient(tdLibParameters) {
 

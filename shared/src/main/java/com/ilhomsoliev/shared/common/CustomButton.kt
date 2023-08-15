@@ -40,7 +40,7 @@ fun CustomButton(
             }, contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 14.dp),
             text = text,
             style = MaterialTheme.typography.labelMedium.copy(
                 fontSize = 14.sp,
