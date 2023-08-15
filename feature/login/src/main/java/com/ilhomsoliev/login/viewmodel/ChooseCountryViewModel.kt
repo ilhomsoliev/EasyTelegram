@@ -27,6 +27,7 @@ class ChooseCountryViewModel(
 
     private val _countries = MutableStateFlow<List<Country>>(emptyList())
     val countries = _countries
+
         .combine(_country) { list, current -> // Изменение порядка
             val default = countryManager.defaultCountry
             (if (default == current) listOf(default) else listOf(default, current)) +
@@ -43,7 +44,7 @@ class ChooseCountryViewModel(
 
     suspend fun loadCountries() {
         _countries.emit(
-            countryManager.getCountries()
+            countryManager.getCountries().sortedBy { it.name }
         )
     }
 

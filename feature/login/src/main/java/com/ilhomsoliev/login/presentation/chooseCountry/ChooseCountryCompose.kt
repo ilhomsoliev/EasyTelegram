@@ -1,7 +1,9 @@
 package com.ilhomsoliev.login.presentation.chooseCountry
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.ilhomsoliev.shared.country.Country
@@ -53,7 +56,7 @@ fun ChooseCountryContent(
 ) {
     Scaffold(topBar = {
         TopAppBar(title = {
-            Text(text = "Choose a country")
+            Text(text = "Выберите страну")
         }, navigationIcon = {
             IconButton(onClick = {
                 callback.onBack()
@@ -71,12 +74,30 @@ fun ChooseCountryContent(
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(it), content = {
-            itemsIndexed(state.countries) { _, item ->
+            itemsIndexed(state.countries) { index, item ->
+                if (index == 0 || state.countries[index].name[0] != state.countries[index - 1].name[0]) {
+                    LetterIndicator(state.countries[index].name[0])
+                }
                 CountryItem(
+                    modifier = Modifier.background(Color.White),
                     country = item,
                 ) { callback.onCountrySelect(item) }
             }
         })
+    }
+}
+
+@Composable
+private fun LetterIndicator(letter: Char) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFEFEFEF))
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            text = letter.toString().toUpperCase()
+        )
     }
 }
 
@@ -90,7 +111,8 @@ private fun CountryItem(
     Card(
         onClick = onSelect,
         modifier = modifier,
-        shape = RoundedCornerShape(0.dp)
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier
@@ -116,7 +138,8 @@ private fun CountryLabel(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier, horizontalArrangement = Arrangement.Start,
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

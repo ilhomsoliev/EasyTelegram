@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     text: String,
     isSolid: Boolean = true,
+    isActive: Boolean = true,
     onClick: () -> Unit,
 ) {
     val background = if (isSolid) Modifier.background(Color(0xFF007EEC)) else Modifier.border(
@@ -49,5 +51,11 @@ fun CustomButton(
                 color = if (!isSolid) Color(0xFF007EEC) else Color.White
             )
         )
+        if (!isActive)
+            Box(modifier = Modifier
+                .matchParentSize()
+                .background(Color(0x55000000))) {
+
+            }
     }
 }

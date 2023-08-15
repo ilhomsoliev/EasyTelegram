@@ -22,7 +22,15 @@ fun LoginScreen(
 
     val uiState by vm.uiState
     val isLoading by vm.isLoading.collectAsState()
+    // Phone Number
     val pickedCountry by vm.pickedCountry.collectAsState()
+    val phoneNumber by vm.phoneNumber.collectAsState()
+
+    // Code
+    val code by vm.code.collectAsState()
+    val timer by vm.timer.collectAsState()
+    val focuses by vm.focuses.collectAsState()
+
     val isAuthenticated = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
@@ -35,14 +43,24 @@ fun LoginScreen(
         uiState = uiState,
         isLoading = isLoading,
         pickedCountry = pickedCountry,
+        phoneNumber = phoneNumber,
+        code = code,
+        focuses = focuses,
+        sec = timer,
     ), object : LoginCallback {
-        override fun insertPhoneNumber(value: String) {
-            scope.launch { vm.insertPhoneNumber(value) }
-        }
+
 
         override fun onBack() {
             // TODO
             navController.popBackStack()
+        }
+
+        override fun onPhoneNumberChange(value: String) {
+            scope.launch { vm.onPhoneNumberChange(value) }
+        }
+
+        override fun onCodeChange(index: Int, number: String) {
+            scope.launch { vm.onCodeChange(index, number) }
         }
 
         override fun insertCode(value: String) {
@@ -65,6 +83,10 @@ fun LoginScreen(
 
         override fun onChooseCountryClick() {
             navController.navigate(Screen.ChooseCountry.route)
+        }
+
+        override fun onNextPhoneNumber() {
+            scope.launch { vm.onPhoneNumberValidate() }
         }
 
     })

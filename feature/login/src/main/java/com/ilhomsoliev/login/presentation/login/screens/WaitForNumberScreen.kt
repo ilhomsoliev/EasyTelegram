@@ -22,8 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,25 +31,48 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.login.R
+import com.ilhomsoliev.shared.common.CustomButton
 import com.ilhomsoliev.shared.country.Country
+
+data class WaitForNumberState(
+    val phoneNumber: String,
+    val pickedCountry: Country?,
+    val isLoading: Boolean,
+    val isNextActive: Boolean,
+)
+
+interface WaitForNumberCallback {
+    fun onNewNumberEnter(number: String)
+    fun onChooseCountryClick()
+    fun onBack()
+    fun onNext()
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WaitForNumberScreen(
-    pickedCountry: Country? = null,
-    isLoading: Boolean,
-    onNumberEnter: (String) -> Unit,
-    onChooseCountryClick: () -> Unit,
-    onBack: () -> Unit,
+    state: WaitForNumberState,
+    callback: WaitForNumberCallback,
 ) {
-    val phoneNumber = remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            IconButton(modifier = Modifier.padding(start = 16.dp), onClick = {
-                onBack()
+            IconButton(modifier = Modifier.padding(start = 4.dp), onClick = {
+                callback.onBack()
             }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                text = "Продолжить",
+                isActive = state.isNextActive
+            ) {
+                callback.onNext()
             }
         },
         content = {
@@ -63,38 +84,15 @@ fun WaitForNumberScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    modifier = Modifier.size(83.dp, 95.dp),
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null
-                )
 
-                Text(
-                    text = "Ваш телефон", style = MaterialTheme.typography.labelMedium.copy(
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight(600),
-                        textAlign = TextAlign.Center,
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Подтвердите код вашей страны\n" +
-                            "и введите ваш номер телефона",
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight(400)
-                    )
-                )
+                PhoneNumberInfoLabel()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
-                    value = pickedCountry?.name ?: "",
+                    value = state.pickedCountry?.name ?: "",
                     onValueChange = {},
-                    enabled = pickedCountry != null,
+                    enabled = false,
                     readOnly = true,
                     placeholder = {
                         Text(text = "Country")
@@ -102,7 +100,7 @@ fun WaitForNumberScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            onChooseCountryClick()
+                            callback.onChooseCountryClick()
                         },
                     trailingIcon = {
                         Icon(imageVector = Icons.Default.ArrowForwardIos, contentDescription = null)
@@ -114,14 +112,43 @@ fun WaitForNumberScreen(
 
                 PhoneNumberTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    code = pickedCountry?.phoneDial ?: "",
-                    phoneNumber = phoneNumber.value,
+                    code = state.pickedCountry?.phoneDial ?: "",
+                    phoneNumber = state.phoneNumber,
                     onPhoneNumberChange = {
-                        phoneNumber.value = it
+                        callback.onNewNumberEnter(it)
                     }
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun PhoneNumberInfoLabel() {
+    Image(
+        modifier = Modifier.size(83.dp, 95.dp),
+        painter = painterResource(id = R.drawable.phone),
+        contentDescription = null
+    )
+
+    Text(
+        text = "Ваш телефон", style = MaterialTheme.typography.labelMedium.copy(
+            fontSize = 25.sp,
+            fontWeight = FontWeight(600),
+            textAlign = TextAlign.Center,
+        )
+    )
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    Text(
+        text = "Подтвердите код вашей страны\n" +
+                "и введите ваш номер телефона",
+        textAlign = TextAlign.Center,
+        style = TextStyle(
+            fontSize = 15.sp,
+            fontWeight = FontWeight(400)
+        )
     )
 }
 
