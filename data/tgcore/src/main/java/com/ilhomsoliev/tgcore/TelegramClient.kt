@@ -13,7 +13,7 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
 open class TelegramClient(
-    val tdLibParameters: TdApi.TdlibParameters
+    private val tdLibParameters: TdApi.TdlibParameters
 ) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName

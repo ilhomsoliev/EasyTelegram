@@ -14,13 +14,13 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 @ExperimentalCoroutinesApi
 class ChatsRepository(
-    tdLibParameters: TdApi.TdlibParameters,
+    private val tgClient: TelegramClient,
     private val downloadManager: TgDownloadManager
-) : TelegramClient(tdLibParameters) {
+) {
 
     private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
         callbackFlow {
-            baseClient.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
+            tgClient.baseClient.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
                 when (it.constructor) {
                     TdApi.Chats.CONSTRUCTOR -> {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
@@ -48,7 +48,7 @@ class ChatsRepository(
             }
 
     fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
-        baseClient.send(TdApi.GetChat(chatId)) {
+        tgClient.baseClient.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
                     trySend(it as TdApi.Chat).isSuccess

@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
 
 class ProfileRepository(
-    tdLibParameters: TdApi.TdlibParameters
-) : TelegramClient(tdLibParameters) {
+    private val tgClient: TelegramClient,
+) {
 
     suspend fun getUser(userId: Long): UserModel {
-        return send<TdApi.User>(TdApi.GetUser(userId)).first().map()
+        return tgClient.send<TdApi.User>(TdApi.GetUser(userId)).first().map()
     }
 
 }
