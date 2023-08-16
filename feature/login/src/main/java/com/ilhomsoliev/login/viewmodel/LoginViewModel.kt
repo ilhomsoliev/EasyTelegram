@@ -103,15 +103,12 @@ class LoginViewModel(
     }
 
     fun onPhoneNumberValidate() {
-        if (_phoneNumber.value.isEmpty()) return
+        if (_phoneNumber.value.isEmpty() || _pickedCountry.value == null) return
 
         viewModelScope.launch {
             _isLoading.emit(true)
         }
-        authRepository.insertPhoneNumber(
-            "+992927266950"
-            //number TODO
-        )
+        authRepository.insertPhoneNumber("+${pickedCountry.value?.phoneDial}${phoneNumber.value}")
     }
 
     // Code

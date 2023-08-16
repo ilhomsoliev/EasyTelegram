@@ -90,7 +90,6 @@ fun LoginScreen(
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
-
         }
 
         override fun onChooseCountryClick() {

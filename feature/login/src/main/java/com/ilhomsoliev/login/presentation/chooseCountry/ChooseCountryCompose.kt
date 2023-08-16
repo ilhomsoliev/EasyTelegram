@@ -1,5 +1,10 @@
 package com.ilhomsoliev.login.presentation.chooseCountry
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,8 +31,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,27 +62,69 @@ fun ChooseCountryContent(
     state: ChooseCountryState,
     callback: ChooseCountryCallback,
 ) {
+
+    val isSearchBarVisible = remember { mutableStateOf(false) }
+    val searchRequest = remember { mutableStateOf("") }
+
     Scaffold(topBar = {
-        TopAppBar(title = {
-            Text(text = "Выберите страну")
-        }, navigationIcon = {
-            IconButton(onClick = {
-                callback.onBack()
-            }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = {
+                    callback.onBack()
+                }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                }
+                AnimatedVisibility(
+                    visible = !isSearchBarVisible.value,
+                    modifier = Modifier,
+                    enter = fadeIn(), exit = fadeOut()
+                ) {
+                    Text(text = "Выберите страну")
+                }
+                AnimatedVisibility(
+                    modifier = Modifier.weight(1f),
+                    visible = isSearchBarVisible.value,
+                    enter = slideInHorizontally { it / 2 } + fadeIn(),
+                    exit = slideOutHorizontally { it / 2 } + fadeOut()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextField(
+                            modifier = Modifier.weight(1f),
+                            value = searchRequest.value,
+                            onValueChange = {
+                                searchRequest.value = it
+                            })
+                        IconButton(onClick = {
+                            isSearchBarVisible.value = false
+                            searchRequest.value = ""
+                        }) {
+                            Icon(imageVector = Icons.Default.Cancel, contentDescription = null)
+                        }
+                    }
+                }
+
             }
-        }, actions = {
-            IconButton(onClick = {
-                callback.onSearchStateChange()
-            }) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-            }
-        })
+            if (!isSearchBarVisible.value)
+                IconButton(onClick = {
+                    callback.onSearchStateChange()
+                    isSearchBarVisible.value = true
+                }) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                }
+
+        }
     }) {
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(it), content = {
-            itemsIndexed(state.countries) { index, item ->
+            itemsIndexed(if (searchRequest.value.isEmpty()) state.countries else state.countries.filter {
+                it.name.contains(
+                    searchRequest.value
+                )
+            }) { index, item ->
                 if (index == 0 || state.countries[index].name[0] != state.countries[index - 1].name[0]) {
                     LetterIndicator(state.countries[index].name[0])
                 }

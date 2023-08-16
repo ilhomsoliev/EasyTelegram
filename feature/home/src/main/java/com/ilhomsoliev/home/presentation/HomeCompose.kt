@@ -54,7 +54,7 @@ fun HomeContent(
     Log.d("Hello chats", state.chats.itemSnapshotList.items.toString())
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Easy Telegram") }, navigationIcon = {
+            TopAppBar(title = { Text("BlaBlaChat") }, navigationIcon = {
                 IconButton(
                     onClick = {
                         scope.launch {

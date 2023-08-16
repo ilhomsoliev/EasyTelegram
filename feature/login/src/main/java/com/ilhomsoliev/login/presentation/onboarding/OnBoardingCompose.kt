@@ -63,7 +63,7 @@ fun OnBoardingContent(
 
     Scaffold(topBar = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             IconButton(onClick = {
                 callback.onBackClick()
             }) {

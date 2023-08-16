@@ -30,12 +30,15 @@ class HomeViewModel(
                     authRepository.startAuthentication()
                 }
 
-                Authentication.WAIT_FOR_NUMBER, Authentication.WAIT_FOR_CODE, Authentication.WAIT_FOR_PASSWORD, Authentication.INCORRECT_CODE -> uiState.value =
+                Authentication.WAIT_FOR_NUMBER,
+                Authentication.WAIT_FOR_CODE,
+                Authentication.WAIT_FOR_PASSWORD,
+                Authentication.INCORRECT_CODE -> uiState.value =
                     UiState.Login
 
                 Authentication.AUTHENTICATED -> uiState.value = UiState.Loaded
                 Authentication.UNKNOWN -> {
-                    uiState.value = UiState.Login
+                   // uiState.value = UiState.Login
                 }
             }
         }.launchIn(viewModelScope)
