@@ -60,7 +60,18 @@ fun LoginScreen(
         }
 
         override fun onCodeChange(index: Int, number: String) {
-            scope.launch { vm.onCodeChange(index, number) }
+            if (isLoading) return
+            scope.launch {
+                vm.onCodeChange(index, number)
+                if (vm.code.value.length == vm.codeLength.value) try {
+                    vm.insertCode(vm.code.value)
+                    
+                } catch (e: Exception) {
+                    e.stackTraceToString()
+
+                }
+                // vm.onCodeChange(index, number)
+            }
         }
 
         override fun insertCode(value: String) {

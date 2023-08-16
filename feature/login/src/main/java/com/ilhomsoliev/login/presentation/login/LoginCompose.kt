@@ -90,6 +90,8 @@ fun LoginContent(
                     focuses = state.focuses,
                     sec = state.sec,
                     isLoading = state.isLoading,
+                    country = state.pickedCountry,
+                    phoneNumber = state.phoneNumber,
                 ),
                 object : WaitForCodeCallback {
                     override fun onCodeChange(index: Int, number: String) {

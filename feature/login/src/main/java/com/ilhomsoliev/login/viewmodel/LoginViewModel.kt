@@ -144,7 +144,9 @@ class LoginViewModel(
                         focuses.value[index + 1].requestFocus()
                 }
             }
-        } else _code.emit("")
+        } else {
+            _code.emit("")
+        }
     }
 
     fun insertCode(code: String) {

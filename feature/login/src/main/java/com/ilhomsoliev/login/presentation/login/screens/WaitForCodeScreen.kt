@@ -36,8 +36,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.login.R
+import com.ilhomsoliev.shared.country.Country
 
 data class WaitForCodeState(
+    val country: Country?,
+    val phoneNumber: String,
     val code: String,
     val isLoading: Boolean,
     val focuses: List<FocusRequester>,
@@ -72,7 +75,10 @@ fun WaitForCodeScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                CodeInfoLabel()
+                CodeInfoLabel(
+                    state.country,
+                    state.phoneNumber,
+                )
                 DigitCode(
                     modifier = Modifier
                         .padding(5.dp)
@@ -87,7 +93,10 @@ fun WaitForCodeScreen(
 }
 
 @Composable
-private fun CodeInfoLabel() {
+private fun CodeInfoLabel(
+    country: Country?,
+    phoneNumber: String,
+) {
     Image(
         modifier = Modifier.size(83.dp, 95.dp),
         painter = painterResource(id = R.drawable.code_label),
@@ -106,7 +115,7 @@ private fun CodeInfoLabel() {
 
     Text(
         text = "Мы выслали код на номер\n" +
-                "+7 911 999 9999",
+                "+${country?.phoneDial} $phoneNumber",
         textAlign = TextAlign.Center,
         style = TextStyle(
             fontSize = 15.sp,
@@ -141,7 +150,8 @@ private fun DigitCode(
                     Box(
                         modifier = Modifier
                             .size(42.dp, 48.dp)
-                            .border(1.dp, Color.Black, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center
+                            .border(1.dp, Color.Black, RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.Center
                     ) {
                         it()
                     }
