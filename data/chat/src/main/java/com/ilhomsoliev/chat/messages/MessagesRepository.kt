@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.TdApi
 
-class MessagesRepository(val client: com.ilhomsoliev.tgcore.TelegramClient) {
+class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient) {
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {

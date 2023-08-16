@@ -48,11 +48,13 @@ fun LoginScreen(
         focuses = focuses,
         sec = timer,
     ), object : LoginCallback {
-
-
         override fun onBack() {
             // TODO
             navController.popBackStack()
+        }
+
+        override fun firstRequest() {
+            vm.firstFocus()
         }
 
         override fun onPhoneNumberChange(value: String) {
@@ -65,12 +67,11 @@ fun LoginScreen(
                 vm.onCodeChange(index, number)
                 if (vm.code.value.length == vm.codeLength.value) try {
                     vm.insertCode(vm.code.value)
-                    
+
                 } catch (e: Exception) {
                     e.stackTraceToString()
 
                 }
-                // vm.onCodeChange(index, number)
             }
         }
 

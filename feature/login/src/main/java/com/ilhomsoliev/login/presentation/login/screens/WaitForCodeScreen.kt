@@ -22,9 +22,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -50,6 +50,7 @@ data class WaitForCodeState(
 interface WaitForCodeCallback {
     fun onCodeChange(index: Int, number: String)
     fun onBack()
+    fun firstRequest()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +59,9 @@ fun WaitForCodeScreen(
     state: WaitForCodeState,
     callback: WaitForCodeCallback,
 ) {
+    LaunchedEffect(key1 = Unit, block = {
+        callback.firstRequest()
+    })
 
     Scaffold(
         topBar = {
@@ -76,9 +80,12 @@ fun WaitForCodeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CodeInfoLabel(
-                    state.country,
-                    state.phoneNumber,
+                    country = state.country,
+                    phoneNumber = state.phoneNumber,
                 )
+
+                Spacer(modifier = Modifier.height(70.dp))
+
                 DigitCode(
                     modifier = Modifier
                         .padding(5.dp)
@@ -136,13 +143,12 @@ private fun DigitCode(
             BasicTextField(
                 value = if (code.length > index)
                     code[index].toString() else "",
-                onValueChange = { onChange(index, it) }, modifier = modifier
-                    .clip(MaterialTheme.shapes.large)
-                    .size(60.dp)
-                    .focusRequester(focus),
+                onValueChange = { onChange(index, it) },
+                modifier = Modifier.focusRequester(focus),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword
                 ),
+                textStyle = TextStyle(textAlign = TextAlign.Center),
                 //textStyle = ThemeExtra.typography.CodeText,
                 //colors = textFieldColors(),
                 singleLine = true,
