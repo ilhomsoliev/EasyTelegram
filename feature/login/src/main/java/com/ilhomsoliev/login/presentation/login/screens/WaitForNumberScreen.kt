@@ -118,6 +118,7 @@ fun WaitForNumberScreen(
                         callback.onNewNumberEnter(it)
                     }
                 )
+                Text(text = "Регистрируясь, вы соглашаетесь с политикой конфиденциальности ")
             }
         }
     )

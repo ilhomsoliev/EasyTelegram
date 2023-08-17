@@ -117,7 +117,6 @@ fun LoginContent(
             UiState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
-                    Text(text = "Here")
                 }
             }
 
