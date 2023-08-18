@@ -2,18 +2,18 @@ package com.ilhomsoliev.chat
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.ilhomsoliev.chat.model.chat.ChatModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import org.drinkless.td.libcore.telegram.TdApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatsPagingSource(
     private val chats: ChatsRepository
-) : PagingSource<Long, TdApi.Chat>() {
+) : PagingSource<Long, ChatModel>() {
 
     override suspend fun load(
         params: LoadParams<Long>
-    ): LoadResult<Long, TdApi.Chat> {
+    ): LoadResult<Long, ChatModel> {
         try {
             val nextPageNumber = params.key ?: Long.MAX_VALUE
             val response = chats.getChats(
@@ -32,7 +32,7 @@ class ChatsPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Long, TdApi.Chat>): Long? {
+    override fun getRefreshKey(state: PagingState<Long, ChatModel>): Long? {
         return null
     }
 }

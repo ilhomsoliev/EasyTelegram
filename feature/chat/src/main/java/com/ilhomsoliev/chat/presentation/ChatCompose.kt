@@ -216,7 +216,7 @@ fun ChatHistory(
 
         itemsIndexed(messages.itemSnapshotList.items) { i, message ->
             message.let {
-                val userId = message.sender.id
+                val userId = message.sender?.id
                 val previousMessageUserId = if (i > 0) messages[i - 1]?.sender?.id else null
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
@@ -260,7 +260,7 @@ private fun MessageItem(
             if (!isSameUserFromPreviousMessage) {
                 ChatUserIcon(
                     downloadManager = downloadManager,
-                    userPhotoFile = message.sender.profilePhoto?.smallFile,
+                    userPhotoFile = message.sender?.profilePhoto?.smallFile,
                     modifier = Modifier
                         .padding(8.dp)
                         .clip(shape = CircleShape)
@@ -319,14 +319,14 @@ private fun MessageItemContent(
 ) {
     when (message.content) {
         is MessageTextModel -> TextMessage(message, modifier)
-      /*  is TdApi.MessageVideo -> VideoMessage(message, modifier)
-        is TdApi.MessageCall -> CallMessage(message, modifier)
-        is TdApi.MessageAudio -> AudioMessage(message, modifier)
-        is TdApi.MessageSticker -> StickerMessage(downloadManager, message, modifier)
-        is TdApi.MessageAnimation -> AnimationMessage(downloadManager, message, modifier)
-        is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
-        is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
-        is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)*/
+        /*  is TdApi.MessageVideo -> VideoMessage(message, modifier)
+          is TdApi.MessageCall -> CallMessage(message, modifier)
+          is TdApi.MessageAudio -> AudioMessage(message, modifier)
+          is TdApi.MessageSticker -> StickerMessage(downloadManager, message, modifier)
+          is TdApi.MessageAnimation -> AnimationMessage(downloadManager, message, modifier)
+          is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
+          is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
+          is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)*/
         else -> UnsupportedMessage()
     }
 }

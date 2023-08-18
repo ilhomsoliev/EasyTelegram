@@ -15,7 +15,7 @@ import org.drinkless.td.libcore.telegram.TdApi.MessageText
 data class MessageModel(
     val id: Long,
     val chatId: Long,
-    val sender: UserModel,
+    val sender: UserModel?,
     val sendingStateModel: MessageSendingStateModel,
     val schedulingStateModel: MessageSchedulingStateModel,
     val isOutgoing: Boolean,
@@ -44,7 +44,7 @@ data class MessageModel(
 )
 
 suspend fun TdApi.Message.map(
-    userRepository: ProfileRepository,
+    userRepository: ProfileRepository?,
 ) =
     MessageModel(
         id = id,
@@ -67,7 +67,7 @@ suspend fun TdApi.Message.map(
         containsUnreadMention = containsUnreadMention,
         date = date,
         editDate = editDate,
-        sender = userRepository.getUser((senderId as TdApi.MessageSenderUser).userId),
+        sender = userRepository?.getUser((senderId as TdApi.MessageSenderUser).userId),
         replyInChatId = replyInChatId,
         replyToMessageId = replyToMessageId,
         messageThreadId = messageThreadId,

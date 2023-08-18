@@ -26,15 +26,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.ilhomsoliev.chat.model.chat.ChatModel
+import com.ilhomsoliev.home.presentation.chat_item.ChatItem
 import com.ilhomsoliev.shared.TgDownloadManager
-import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.launch
-import org.drinkless.td.libcore.telegram.TdApi
 
 data class HomeState(
     val isLoading: Boolean,
     val downloadManager: TgDownloadManager,
-    val chats: LazyPagingItems<TdApi.Chat>,
+    val chats: LazyPagingItems<ChatModel>,
 )
 
 interface HomeCallback {
