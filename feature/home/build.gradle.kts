@@ -43,9 +43,11 @@ dependencies {
     implementation(project(":data:tgcore"))
     implementation(project(":data:chat"))
     implementation(project(":data:auth"))
+    implementation(project(":data:profile"))
+    implementation(project(":data:shared"))
+
     implementation(project(":core"))
     implementation(project(":shared"))
-    implementation(project(":data:shared"))
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")

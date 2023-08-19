@@ -1,14 +1,19 @@
 package com.ilhomsoliev.home.presentation.chat_item
 
 import android.text.format.DateUtils
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,93 +22,141 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
+import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.shared.PinnedIcon
 import org.drinkless.td.libcore.telegram.TdApi
 
 
 @Composable
 fun ChatSummary(
     chat: ChatModel,
+    currentUser: UserModel,
     modifier: Modifier = Modifier
 ) {
-    chat.lastMessage?.content?.let {
-        when (it) {
-            is MessageTextModel -> BasicChatSummary(
-                text = it.text,
-                modifier = modifier,
-            )
 
-            //MessageVideoModel -> HighlightedChatSummary("Video", modifier = modifier)
-            //TdApi.MessageCall.CONSTRUCTOR -> HighlightedChatSummary("Call", modifier = modifier)
-            /* TdApi.MessageAudio.CONSTRUCTOR -> {
-                 val message = it as TdApi.MessageAudio
-                 Row(modifier = modifier) {
-                     Icon(
-                         imageVector = Icons.Default.Mic,
-                         contentDescription = null
-                     )
-                     Text(
-                         text = message.audio.duration.toTime(),
-                         modifier = Modifier.padding(start = 8.dp)
-                     )
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(36.dp)
+        ) {
+            chat.lastMessage?.content?.let {
+                when (it) {
+                    is MessageTextModel -> BasicChatSummary(
+                        text = it.text,
+                        modifier = modifier,
+                    )
+
+                    //MessageVideoModel -> HighlightedChatSummary("Video", modifier = modifier)
+                    //TdApi.MessageCall.CONSTRUCTOR -> HighlightedChatSummary("Call", modifier = modifier)
+                    /* TdApi.MessageAudio.CONSTRUCTOR -> {
+                     val message = it as TdApi.MessageAudio
+                     Row(modifier = modifier) {
+                         Icon(
+                             imageVector = Icons.Default.Mic,
+                             contentDescription = null
+                         )
+                         Text(
+                             text = message.audio.duration.toTime(),
+                             modifier = Modifier.padding(start = 8.dp)
+                         )
+                     }
                  }
-             }
 
-             TdApi.MessageSticker.CONSTRUCTOR -> BasicChatSummary(
-                 (it as TdApi.MessageSticker).sticker.emoji + " Sticker",
-                 modifier = modifier
-             )
+                 TdApi.MessageSticker.CONSTRUCTOR -> BasicChatSummary(
+                     (it as TdApi.MessageSticker).sticker.emoji + " Sticker",
+                     modifier = modifier
+                 )
 
-             TdApi.MessageAnimation.CONSTRUCTOR -> HighlightedChatSummary("GIF", modifier = modifier)
-             TdApi.MessageLocation.CONSTRUCTOR -> HighlightedChatSummary(
-                 "Location",
-                 modifier = modifier
-             )
+                 TdApi.MessageAnimation.CONSTRUCTOR -> HighlightedChatSummary("GIF", modifier = modifier)
+                 TdApi.MessageLocation.CONSTRUCTOR -> HighlightedChatSummary(
+                     "Location",
+                     modifier = modifier
+                 )
 
-             TdApi.MessageVoiceNote.CONSTRUCTOR -> {
-                 val message = it as TdApi.MessageVoiceNote
-                 Row(modifier = modifier) {
-                     Icon(
-                         imageVector = Icons.Default.Mic,
-                         contentDescription = null
-                     )
-                     Text(
-                         text = message.voiceNote.duration.toTime(),
-                         modifier = Modifier.padding(start = 8.dp)
-                     )
+                 TdApi.MessageVoiceNote.CONSTRUCTOR -> {
+                     val message = it as TdApi.MessageVoiceNote
+                     Row(modifier = modifier) {
+                         Icon(
+                             imageVector = Icons.Default.Mic,
+                             contentDescription = null
+                         )
+                         Text(
+                             text = message.voiceNote.duration.toTime(),
+                             modifier = Modifier.padding(start = 8.dp)
+                         )
+                     }
                  }
-             }
 
-             TdApi.MessageVideoNote.CONSTRUCTOR -> {
-                 val message = it as TdApi.MessageVideoNote
-                 Row(modifier = modifier) {
-                     Icon(
-                         imageVector = Icons.Default.Videocam,
-                         contentDescription = null
-                     )
-                     Text(
-                         text = message.videoNote.duration.toTime(),
-                         modifier = Modifier.padding(start = 8.dp)
-                     )
+                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
+                     val message = it as TdApi.MessageVideoNote
+                     Row(modifier = modifier) {
+                         Icon(
+                             imageVector = Icons.Default.Videocam,
+                             contentDescription = null
+                         )
+                         Text(
+                             text = message.videoNote.duration.toTime(),
+                             modifier = Modifier.padding(start = 8.dp)
+                         )
+                     }
                  }
-             }
 
-             TdApi.MessageContactRegistered.CONSTRUCTOR -> HighlightedChatSummary(
-                 "Joined Telegram!",
-                 modifier = modifier
-             )
+                 TdApi.MessageContactRegistered.CONSTRUCTOR -> HighlightedChatSummary(
+                     "Joined Telegram!",
+                     modifier = modifier
+                 )
 
-             TdApi.MessageChatDeleteMember.CONSTRUCTOR -> HighlightedChatSummary(
-                 "${(it as TdApi.MessageChatDeleteMember).userId} left the chat",
-                 modifier = modifier
-             )
- */
-            else -> Text(it::class.java.simpleName)
+                 TdApi.MessageChatDeleteMember.CONSTRUCTOR -> HighlightedChatSummary(
+                     "${(it as TdApi.MessageChatDeleteMember).userId} left the chat",
+                     modifier = modifier
+                 )
+     */
+                    else -> Text(it::class.java.simpleName)
+                }
+            }
+        }
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            if (chat.unreadCount != 0) {
+                UnreadCount(chat.unreadCount)
+            }
+            if (chat.positions?.get(0)?.isPinned == true) {
+                PinnedIndicator()
+            }
         }
     }
+}
+
+@Composable
+private fun UnreadCount(
+    count: Int,
+) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(0xFF007EEC)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = count.toString(),
+            color = Color.White,
+            modifier = Modifier.padding(horizontal = 5.dp)
+        )
+    }
+}
+
+@Composable
+private fun PinnedIndicator() {
+    Image(imageVector = PinnedIcon, contentDescription = null)
 }
 
 @Composable
@@ -111,9 +164,10 @@ fun BasicChatSummary(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         // TODO style = MaterialTheme.typography.subtitle1,
-        maxLines = 1,
+        maxLines = 2,
         modifier = modifier,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        fontSize = 13.sp,
     )
 }
 
@@ -145,30 +199,49 @@ fun ChatItem(
     modifier: Modifier = Modifier,
     downloadManager: TgDownloadManager,
     chat: ChatModel,
+    currentUser: UserModel,
 ) {
-    Row(modifier = modifier) {
-        ChatItemImage(
-            downloadManager = downloadManager,
-            file = chat.photo?.small,
+    Column(
+        modifier = modifier
+            .then(
+                if (chat.positions?.get(0)?.isPinned == true) Modifier.background(
+                    Color(0xFFEFEFEF)
+                ) else Modifier
+            )
+            .then(
+                Modifier
+                    .padding(top = 4.dp)
+            )
+    ) {
+        Row(
             modifier = Modifier
-                .clip(shape = CircleShape)
-                .size(55.dp),
-            userName = chat.themeName ?: ""
-        )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 8.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
         ) {
-            ChatTitle(modifier = Modifier, chatModel = chat)
-            ChatSummary(chat)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-
+            ChatItemImage(
+                downloadManager = downloadManager,
+                file = chat.photo?.small,
+                modifier = Modifier
+                    .clip(shape = CircleShape)
+                    .size(55.dp),
+                userName = chat.themeName ?: ""
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                ChatTitle(modifier = Modifier, chatModel = chat, currentUser = currentUser)
+                ChatSummary(chat = chat, currentUser = currentUser)
             }
-
         }
+        Divider(
+            modifier = Modifier.padding(start = 71.dp, top = 4.dp),
+            thickness = 0.5.dp,
+        )
     }
+
 }
 
 @Composable

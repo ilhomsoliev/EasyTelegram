@@ -1,5 +1,6 @@
 package com.ilhomsoliev.chat.messages
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.ilhomsoliev.chat.model.message.MessageModel
@@ -22,6 +23,7 @@ class MessagesPagingSource(
                 fromMessageId = params.key ?: 0,
                 limit = params.loadSize
             )
+            Log.d("Hello", "Here come the som")
             val messages = response.first().map { it.map(profileRepository) }
             LoadResult.Page(
                 data = messages,

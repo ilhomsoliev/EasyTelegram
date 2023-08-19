@@ -67,7 +67,15 @@ suspend fun TdApi.Message.map(
         containsUnreadMention = containsUnreadMention,
         date = date,
         editDate = editDate,
-        sender = userRepository?.getUser((senderId as TdApi.MessageSenderUser).userId),
+        sender = userRepository?.run {
+            try {
+                val sender = (senderId as TdApi.MessageSenderUser)
+                this.getUserById(sender.userId)
+            } catch (e: Exception) {
+                null
+            }
+
+        },
         replyInChatId = replyInChatId,
         replyToMessageId = replyToMessageId,
         messageThreadId = messageThreadId,

@@ -11,8 +11,12 @@ class ProfileRepository(
     private val tgClient: TelegramClient,
 ) {
 
-    suspend fun getUser(userId: Long): UserModel {
+    suspend fun getUserById(userId: Long): UserModel {
         return tgClient.send<TdApi.User>(TdApi.GetUser(userId)).first().map()
+    }
+
+    suspend fun getCurrentUser(): UserModel {
+        return tgClient.send<TdApi.User>(TdApi.GetMe()).first().map()
     }
 
 }

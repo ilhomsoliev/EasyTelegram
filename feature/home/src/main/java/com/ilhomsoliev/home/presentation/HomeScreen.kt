@@ -1,6 +1,10 @@
 package com.ilhomsoliev.home.presentation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.ilhomsoliev.core.Screen
@@ -12,9 +16,19 @@ fun HomeScreen(
     navController: NavController,
 ) {
     val chats = vm.chats.collectAsLazyPagingItems()
+    val currentUser by vm.user.collectAsState()
+
+    LaunchedEffect(key1 = chats.itemSnapshotList.items.size, block = {
+        Log.d("Hello items", chats.itemSnapshotList.items.toString() )
+    })
 
     HomeContent(
-        state = HomeState(isLoading = false, downloadManager = vm.downloadManager, chats = chats),
+        state = HomeState(
+            currentUser = currentUser,
+            isLoading = false,
+            downloadManager = vm.downloadManager,
+            chats = chats
+        ),
         callback = object : HomeCallback {
             override fun onChatClick(id: Long) {
                 navController.navigate(Screen.Chat.buildRoute(id))

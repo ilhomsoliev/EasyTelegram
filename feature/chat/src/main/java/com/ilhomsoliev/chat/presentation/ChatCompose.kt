@@ -1,6 +1,7 @@
 package com.ilhomsoliev.chat.presentation
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,23 +16,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Gif
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.AttachFile
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +39,9 @@ import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.shared.PaperclipIcon
+import com.ilhomsoliev.shared.shared.SendMessageIcon
+import com.ilhomsoliev.shared.shared.SmileFaceIcon
 import org.drinkless.td.libcore.telegram.TdApi
 
 data class ChatState(
@@ -109,7 +107,6 @@ fun ChatContent(
         }
     ) {
         state.messages?.run {
-            Log.d("Hello messages", this.itemSnapshotList.items.toString())
             ChatHistory(
                 downloadManager = state.downloadManager,
                 messages = this,
@@ -131,53 +128,81 @@ fun MessageInput(
     attachFile: () -> Unit = {},
     sendMessage: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 6.dp
+    Row(
+        modifier = modifier
+            .background(Color(0xFFD9D9D9))
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextField(
-            value = input,
-            modifier = Modifier.fillMaxWidth(),
-            onValueChange = { onInputChange(it) },
-            // textStyle = MaterialTheme.typography.body1,
-            placeholder = {
-                Text("Message")
-            },
-            leadingIcon = {
-                IconButton(onClick = insertGif) {
-                    Icon(
-                        imageVector = Icons.Default.Gif,
+        Image(
+            modifier = Modifier.padding(6.dp),
+            imageVector = PaperclipIcon,
+            contentDescription = null
+        )
+
+        BasicTextField(
+            modifier = Modifier.weight(1f),
+            value = input, onValueChange = {
+                onInputChange(it)
+            }, maxLines = 5, decorationBox = {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color(0x1F767680))
+                        .padding(vertical = 6.dp, horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        it()
+                    }
+                    Image(
+                        modifier = Modifier.clickable {
+                            //TODO
+                        },
+                        imageVector = SmileFaceIcon,
                         contentDescription = null
                     )
                 }
-            },
-            trailingIcon = {
-                if (input.isEmpty()) {
-                    Row {
-                        IconButton(onClick = attachFile) {
-                            Icon(
-                                imageVector = Icons.Outlined.AttachFile,
-                                contentDescription = null
-                            )
-                        }
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Mic,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                } else {
-                    IconButton(onClick = { sendMessage() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Send,
-                            contentDescription = null
-                        )
-                    }
+
+            })
+        AnimatedVisibility(visible = input.isNotBlank()) {
+            Box(
+                modifier = Modifier.align(Alignment.Bottom),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                IconButton(onClick = { sendMessage() }) {
+                    Image(
+                        imageVector = SendMessageIcon,
+                        contentDescription = null
+                    )
                 }
-            },
-        )
+            }
+        }
+        /* if (input.isEmpty()) {
+                 Row {
+                     IconButton(onClick = attachFile) {
+                         Icon(
+                             imageVector = Icons.Outlined.AttachFile,
+                             contentDescription = null
+                         )
+                     }
+                     IconButton(onClick = { }) {
+                         Icon(
+                             imageVector = Icons.Outlined.Mic,
+                             contentDescription = null
+                         )
+                     }
+                 }
+             } else {
+                 IconButton(onClick = { sendMessage() }) {
+                     Icon(
+                         imageVector = Icons.Outlined.Send,
+                         contentDescription = null
+                     )
+                 }
+             }*/
+
     }
 }
 

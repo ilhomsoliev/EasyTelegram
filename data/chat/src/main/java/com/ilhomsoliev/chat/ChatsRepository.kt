@@ -2,6 +2,7 @@ package com.ilhomsoliev.chat
 
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
+import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +18,8 @@ import org.drinkless.td.libcore.telegram.TdApi
 @ExperimentalCoroutinesApi
 class ChatsRepository(
     private val tgClient: TelegramClient,
-    private val downloadManager: TgDownloadManager
+    private val downloadManager: TgDownloadManager,
+    private val profileRepository: ProfileRepository,
 ) {
     private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
         callbackFlow {
@@ -44,7 +46,7 @@ class ChatsRepository(
             .map { ids -> ids.map { getChat(it) } }
             .flatMapLatest { chatsFlow ->
                 combine(chatsFlow) { chats ->
-                    chats.toList().map { it.map() }
+                    chats.toList().map { it.map(profileRepository) }
                 }
             }
 

@@ -41,7 +41,7 @@ class EasyTelegramApplication : Application() {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 val viewModelModule = module {
-    viewModel { HomeViewModel(get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get()) }
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
     viewModel { ChatViewModel(get(), get(), get(), get()) }
@@ -49,7 +49,7 @@ val viewModelModule = module {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 val repositoryModule = module {
-    single { ChatsRepository(get(), get()) }
+    single { ChatsRepository(get(), get(), get()) }
     single { AuthRepository(get()) }
     single { ChatsPagingSource(get()) }
     single { MessagesRepository(get()) }

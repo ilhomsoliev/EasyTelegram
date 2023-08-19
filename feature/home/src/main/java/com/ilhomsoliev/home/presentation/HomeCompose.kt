@@ -1,12 +1,11 @@
 package com.ilhomsoliev.home.presentation
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
@@ -28,12 +27,14 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.home.presentation.chat_item.ChatItem
+import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.launch
 
 data class HomeState(
     val isLoading: Boolean,
     val downloadManager: TgDownloadManager,
+    val currentUser: UserModel?,
     val chats: LazyPagingItems<ChatModel>,
 )
 
@@ -51,7 +52,6 @@ fun HomeContent(
 ) {
     val scope = rememberCoroutineScope()
 
-    Log.d("Hello chats", state.chats.itemSnapshotList.items.toString())
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("BlaBlaChat") }, navigationIcon = {
@@ -101,24 +101,22 @@ fun HomeContent(
                         //LoadingChats()
                     }
                 }
-                items(state.chats.itemSnapshotList.items, key = { key ->
-                    key.id
-                }) { item ->
-                    item.let { chat ->
-                        ChatItem(
-                            downloadManager = state.downloadManager,
-                            chat = chat,
-                            modifier = Modifier
-                                .clickable(onClick = {
-                                    callback.onChatClick(item.id)
-                                })
-                                .padding(vertical = 4.dp, horizontal = 12.dp)
+                state.currentUser?.let {
+                    itemsIndexed(state.chats.itemSnapshotList.items, key = { index, key ->
+                        key.id
+                    }) { index, item ->
+                        item.let { chat ->
+                            ChatItem(
+                                downloadManager = state.downloadManager,
+                                chat = chat,
+                                currentUser = state.currentUser,
+                                modifier = Modifier
+                                    .clickable(onClick = {
+                                        callback.onChatClick(item.id)
+                                    })
 
-                        )
-                        Divider(
-                            modifier = Modifier.padding(start = 71.dp, end = 16.dp),
-                            thickness = 0.5.dp,
-                        )
+                            )
+                        }
                     }
                 }
             }
