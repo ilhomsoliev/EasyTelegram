@@ -18,10 +18,6 @@ fun HomeScreen(
     val chats = vm.chats.collectAsLazyPagingItems()
     val currentUser by vm.user.collectAsState()
 
-    LaunchedEffect(key1 = chats.itemSnapshotList.items.size, block = {
-        Log.d("Hello items", chats.itemSnapshotList.items.toString() )
-    })
-
     HomeContent(
         state = HomeState(
             currentUser = currentUser,

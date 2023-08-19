@@ -6,11 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,7 +22,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.ilhomsoliev.chat.model.message.MessageModel
-import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
+import com.ilhomsoliev.chat.presentation.message_item.MessageItem
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.shared.PaperclipIcon
@@ -111,8 +112,8 @@ fun ChatContent(
                 downloadManager = state.downloadManager,
                 messages = this,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(it)
+                    .fillMaxWidth(),
+                it,
             )
         }
     }
@@ -130,7 +131,7 @@ fun MessageInput(
 ) {
     Row(
         modifier = modifier
-            .background(Color(0xFFD9D9D9))
+            .background(Color(0xEED9D9D9))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -210,9 +211,13 @@ fun MessageInput(
 fun ChatHistory(
     downloadManager: TgDownloadManager,
     messages: LazyPagingItems<MessageModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
 ) {
     LazyColumn(modifier = modifier, reverseLayout = true) {
+        item {
+            Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
+        }
         when {
             messages.loadState.refresh is LoadState.Loading -> {
                 item {
@@ -249,111 +254,8 @@ fun ChatHistory(
                     message = it
                 )
             }
+
         }
+
     }
 }
-
-@Composable
-private fun MessageItem(
-    isSameUserFromPreviousMessage: Boolean,
-    downloadManager: TgDownloadManager,
-    message: MessageModel,
-    modifier: Modifier = Modifier
-) {
-    if (message.isOutgoing) {
-        Box(
-            Modifier
-                .clickable(onClick = {})
-                .fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            MessageItemCard(modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 4.dp)) {
-                MessageItemContent(
-                    downloadManager = downloadManager,
-                    message = message,
-                    modifier = Modifier
-                        .background(Color.Green.copy(alpha = 0.2f))
-                        .padding(8.dp)
-                )
-            }
-        }
-    } else {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
-        ) {
-            if (!isSameUserFromPreviousMessage) {
-                ChatUserIcon(
-                    downloadManager = downloadManager,
-                    userPhotoFile = message.sender?.profilePhoto?.smallFile,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clip(shape = CircleShape)
-                        .size(42.dp)
-                )
-            } else {
-                Box(
-                    Modifier
-                        .padding(8.dp)
-                        .size(42.dp)
-                )
-            }
-            MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
-                MessageItemContent(
-                    downloadManager = downloadManager,
-                    message = message,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChatUserIcon(
-    downloadManager: TgDownloadManager,
-    userPhotoFile: TdApi.File?,
-    modifier: Modifier
-) {
-    TelegramImage(
-        downloadManager = downloadManager,
-        file = userPhotoFile,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun MessageItemCard(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) = Card(
-    // elevation = CardDefaults.elevatedShape,
-    shape = RoundedCornerShape(8.dp),
-    modifier = modifier,
-    content = {
-        content()
-    }
-)
-
-
-@Composable
-private fun MessageItemContent(
-    downloadManager: TgDownloadManager,
-    message: MessageModel,
-    modifier: Modifier = Modifier
-) {
-    when (message.content) {
-        is MessageTextModel -> TextMessage(message, modifier)
-        /*  is TdApi.MessageVideo -> VideoMessage(message, modifier)
-          is TdApi.MessageCall -> CallMessage(message, modifier)
-          is TdApi.MessageAudio -> AudioMessage(message, modifier)
-          is TdApi.MessageSticker -> StickerMessage(downloadManager, message, modifier)
-          is TdApi.MessageAnimation -> AnimationMessage(downloadManager, message, modifier)
-          is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
-          is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
-          is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)*/
-        else -> UnsupportedMessage()
-    }
-}
-
-

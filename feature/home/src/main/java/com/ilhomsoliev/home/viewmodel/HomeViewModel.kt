@@ -29,9 +29,6 @@ class HomeViewModel(
     val uiState = mutableStateOf<UiState>(UiState.Loading)
 
     init {
-        viewModelScope.launch {
-            getUser()
-        }
         authRepository.authState.onEach {
             Log.d("Hello authState", it.toString())
             when (it) {
@@ -56,6 +53,9 @@ class HomeViewModel(
     val chats = Pager(
         PagingConfig(pageSize = 30)
     ) {
+        viewModelScope.launch {
+            getUser()
+        }
         chatsPagingSource
     }.flow.cachedIn(viewModelScope)
 
