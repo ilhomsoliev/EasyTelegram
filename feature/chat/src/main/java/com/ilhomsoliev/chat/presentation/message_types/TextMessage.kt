@@ -20,13 +20,6 @@ fun TextMessage(message: MessageModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         TextMessage(message.content as MessageTextModel)
         MessageStatus(modifier = Modifier.align(Alignment.BottomEnd), message = message)
-        Image(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(12.dp),
-            imageVector = MessageTailIcon,
-            contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
-        )
     }
 }
 

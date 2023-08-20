@@ -1,5 +1,6 @@
 package com.ilhomsoliev.chat.presentation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,58 +79,7 @@ fun ChatContent(
 ) {
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(chatElementsBackground),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = {
-                        callback.onBack()
-                    }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                    Column(modifier = Modifier.offset((-4).dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = state.chat?.title ?: "", style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight(600),
-                                    color = Color(0xFF232323),
-                                )
-                            )
-                            // TODO if notifcation is enabled
-                        }
-
-                        Text(
-                            text = "last seen", style = TextStyle(
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight(500),
-                                color = Color(0xFF979797),
-                            )
-                        )
-
-                    }
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TelegramImage(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(32.dp),
-                        downloadManager = state.downloadManager,
-                        file = state.chat?.photo?.small
-                    )
-
-                    IconButton(onClick = {
-
-                    }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                    }
-                }
-            }
-
+            ChatTopAppBar(state, callback)
         },
         bottomBar = {
             MessageInput(
@@ -166,7 +116,66 @@ fun ChatContent(
 }
 
 @Composable
-fun MessageInput(
+private fun ChatTopAppBar(
+    state: ChatState,
+    callback: ChatCallback,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(chatElementsBackground),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = {
+                callback.onBack()
+            }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+            }
+            Column(modifier = Modifier.offset((-4).dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = state.chat?.title ?: "", style = TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight(600),
+                            color = Color(0xFF232323),
+                        )
+                    )
+                    // TODO if notifcation is enabled
+                }
+
+                Text(
+                    text = "last seen", style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight(500),
+                        color = Color(0xFF979797),
+                    )
+                )
+
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TelegramImage(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(32.dp),
+                downloadManager = state.downloadManager,
+                file = state.chat?.photo?.small
+            )
+
+            IconButton(onClick = {
+
+            }) {
+                Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun MessageInput(
     modifier: Modifier = Modifier,
     input: String,
     onInputChange: (String) -> Unit,
@@ -275,14 +284,15 @@ fun ChatHistory(
                 val previousMessage = messages.getOrNull(i - 1)?.sender?.id
                 val isLastMessage = messages[i].sender?.id != nextMessage
                 val isFirstMessage = messages[i].sender?.id != previousMessage
+                Log.d("Hello", isLastMessage.toString() + " " + nextMessage.toString())
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
+                    isLastMessage = isLastMessage,
+                    isFirstMessage = isFirstMessage,
                     downloadManager = downloadManager,
                     message = it
                 )
             }
-
         }
-
     }
 }

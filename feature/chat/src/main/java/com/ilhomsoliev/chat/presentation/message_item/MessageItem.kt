@@ -1,5 +1,6 @@
 package com.ilhomsoliev.chat.presentation.message_item
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.MessageSendingStateModel
@@ -28,6 +30,7 @@ import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageText
 import com.ilhomsoliev.chat.presentation.message_types.TextMessage
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.shared.MessageTailIcon
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.Calendar
 import java.util.Date
@@ -35,6 +38,8 @@ import java.util.Date
 @Composable
 fun MessageItem(
     isSameUserFromPreviousMessage: Boolean,
+    isLastMessage: Boolean,
+    isFirstMessage: Boolean,
     downloadManager: TgDownloadManager,
     message: MessageModel,
     modifier: Modifier = Modifier
@@ -50,15 +55,31 @@ fun MessageItem(
                     .fillMaxWidth(0.85f)
                     .padding(8.dp, 4.dp, 8.dp, 4.dp)
             ) {
-                MessageItemContent(
-                    downloadManager = downloadManager,
-                    message = message,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFE3FFCA))
-                        .clickable(onClick = {})
-                        .padding(8.dp),
-                )
+                Row {
+                    MessageItemContent(
+                        downloadManager = downloadManager,
+                        message = message,
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = 12.dp,
+                                    topEnd = 12.dp,
+                                    bottomStart = 12.dp,
+                                    bottomEnd = if (isLastMessage) 4.dp else 12.dp
+                                )
+                            )
+                            .background(Color(0xFFE3FFCA))
+                            .clickable(onClick = {})
+                            .padding(8.dp),
+                    )
+                   // if (isLastMessage)
+                        Image(
+                            modifier = Modifier,
+                            imageVector = MessageTailIcon,
+                            contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
+                        )
+                }
+
             }
         }
     } else {
