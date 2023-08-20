@@ -7,6 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.unit.dp
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageStatus
@@ -17,11 +20,13 @@ fun TextMessage(message: MessageModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         TextMessage(message.content as MessageTextModel)
         MessageStatus(modifier = Modifier.align(Alignment.BottomEnd), message = message)
-        /*Image(
-            modifier = Modifier.align(Alignment.BottomEnd).offset(-16.dp),
+        Image(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(12.dp),
             imageVector = MessageTailIcon,
-            contentDescription = null,
-        )*/
+            contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
+        )
     }
 }
 

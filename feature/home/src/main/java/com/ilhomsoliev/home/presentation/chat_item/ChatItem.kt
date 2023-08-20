@@ -9,17 +9,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,11 +46,10 @@ fun ChatSummary(
     modifier: Modifier = Modifier
 ) {
 
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row(modifier = Modifier.fillMaxWidth().offset(y = (-2).dp)) {
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(36.dp)
         ) {
             chat.lastMessage?.content?.let {
                 when (it) {
@@ -161,13 +167,19 @@ private fun PinnedIndicator() {
 
 @Composable
 fun BasicChatSummary(text: String, modifier: Modifier = Modifier) {
+
+    val lineHeight = 13.sp * 4 / 3
+
     Text(
+        modifier = modifier.sizeIn(minHeight = with(LocalDensity.current) {
+            (lineHeight * 2).toDp()
+        }),
         text = text,
+        lineHeight = 16.sp,
         // TODO style = MaterialTheme.typography.subtitle1,
         maxLines = 2,
-        modifier = modifier,
         overflow = TextOverflow.Ellipsis,
-        fontSize = 13.sp,
+        fontSize = 15.sp,
     )
 }
 
@@ -201,6 +213,11 @@ fun ChatItem(
     chat: ChatModel,
     currentUser: UserModel,
 ) {
+    val localDensity = LocalDensity.current
+
+    var columnHeightDp by remember {
+        mutableStateOf(0.dp)
+    }
     Column(
         modifier = modifier
             .then(
@@ -223,12 +240,15 @@ fun ChatItem(
                 file = chat.photo?.small,
                 modifier = Modifier
                     .clip(shape = CircleShape)
-                    .size(55.dp),
+                    .size(columnHeightDp),
                 userName = chat.themeName ?: ""
             )
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .onGloballyPositioned { coordinates ->
+                        columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+                    }
                     .padding(start = 8.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {

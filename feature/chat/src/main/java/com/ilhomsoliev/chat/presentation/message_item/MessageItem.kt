@@ -55,10 +55,10 @@ fun MessageItem(
                     message = message,
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Green.copy(alpha = 0.2f))
+                        .background(Color(0xFFE3FFCA))
                         .clickable(onClick = {})
                         .padding(8.dp),
-                    )
+                )
             }
         }
     } else {
@@ -86,7 +86,9 @@ fun MessageItem(
                 MessageItemContent(
                     downloadManager = downloadManager,
                     message = message,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(8.dp)
                 )
             }
         }
