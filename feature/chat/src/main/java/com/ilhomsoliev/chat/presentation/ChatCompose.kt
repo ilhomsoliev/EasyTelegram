@@ -30,6 +30,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +51,8 @@ import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageItem
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.common.extensions.LocalDate
+import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
 import com.ilhomsoliev.shared.shared.PaperclipIcon
 import com.ilhomsoliev.shared.shared.SendMessageIcon
 import com.ilhomsoliev.shared.shared.SmileFaceIcon
@@ -276,15 +279,35 @@ fun ChatHistory(
             }
         }
 
-        itemsIndexed(messagesPaging.itemSnapshotList.items) { i, message ->
+        itemsIndexed(messagesPaging.itemSnapshotList.items) { index, message ->
             message.let {
+                // Date Separator
+                var dateSeparator: String? = null
+                if (messages.getOrNull(index + 1) != null &&
+                    LocalDate(message.date.toLong() * 1000).format("YYYY-MM-dd") != LocalDate(
+                        messages[index + 1].date.toLong() * 1000
+                    ).format(
+                        "YYYY-MM-dd"
+                    )
+                ) {
+                    dateSeparator = getChatDateSeparator(message.date.toLong() * 1000)
+                } else if (index + 1 == messages.size) {
+                    dateSeparator = getChatDateSeparator(message.date.toLong() * 1000)
+                }
+
+                dateSeparator?.let {
+                    ChatDateSeparator(text = it)
+                }
+
+                // Message
                 val userId = message.sender?.id
-                val previousMessageUserId = if (i > 0) messages[i - 1].sender?.id else null
-                val nextMessage = messages.getOrNull(i + 1)?.sender?.id
-                val previousMessage = messages.getOrNull(i - 1)?.sender?.id
-                val isLastMessage = messages[i].sender?.id != nextMessage
-                val isFirstMessage = messages[i].sender?.id != previousMessage
-                Log.d("Hello", isLastMessage.toString() + " " + nextMessage.toString())
+                val previousMessageUserId = if (index > 0) messages[index - 1].sender?.id else null
+
+                val nextMessage = messages.getOrNull(index + 1)?.sender?.id
+                val previousMessage = messages.getOrNull(index - 1)?.sender?.id
+                val isLastMessage = userId != nextMessage
+                val isFirstMessage = userId != previousMessage
+
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
                     isLastMessage = isLastMessage,
@@ -293,6 +316,30 @@ fun ChatHistory(
                     message = it
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ChatDateSeparator(
+    text: String,
+) {
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFEFEFEF))
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(vertical = 2.dp, horizontal = 8.dp),
+                text = text,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight(500),
+                    color = Color(0x99000000),
+                )
+            )
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Pending
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.MessageSendingStateModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
@@ -72,12 +75,12 @@ fun MessageItem(
                             .clickable(onClick = {})
                             .padding(8.dp),
                     )
-                   // if (isLastMessage)
-                        Image(
-                            modifier = Modifier,
-                            imageVector = MessageTailIcon,
-                            contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
-                        )
+                    // if (isLastMessage)
+                    Image(
+                        modifier = Modifier.align(Alignment.Bottom),
+                        imageVector = MessageTailIcon,
+                        contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
+                    )
                 }
 
             }
@@ -192,8 +195,12 @@ private fun MessageTime(message: MessageModel, modifier: Modifier = Modifier) {
 @Composable
 private fun MessageTime(text: String, modifier: Modifier = Modifier) {
     Text(
-        text,
-        //style = MaterialTheme.typography.caption,
+        text = text,
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontSize = 11.sp,
+            fontWeight = FontWeight(500),
+            color = Color(0xFF5F934B),
+        ),
         maxLines = 1,
         modifier = modifier
     )
