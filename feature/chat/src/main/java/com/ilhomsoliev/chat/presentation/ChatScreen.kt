@@ -26,14 +26,19 @@ fun ChatScreen(
 
     LaunchedEffect(key1 = Unit, block = {
         vm.loadChat(chatId)
-        while (true){
+        while (true) {
             delay(3000L)
             messages?.refresh()
         }
     })
 
     ChatContent(
-        state = ChatState(chat = chat?.value, answer = answer, downloadManager = vm.downloadManager, messages = messages),
+        state = ChatState(
+            chat = chat?.value,
+            answer = answer,
+            downloadManager = vm.downloadManager,
+            messages = messages
+        ),
         callback = object : ChatCallback {
             override fun onAnswerChange(value: String) {
                 scope.launch {

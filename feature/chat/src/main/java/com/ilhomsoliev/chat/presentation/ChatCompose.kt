@@ -1,6 +1,5 @@
 package com.ilhomsoliev.chat.presentation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -46,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ilhomsoliev.chat.R
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageItem
@@ -278,9 +278,30 @@ fun ChatHistory(
                 }
             }
         }
-
-        itemsIndexed(messagesPaging.itemSnapshotList.items) { index, message ->
+        //val list = messagesPaging
+        items(
+            count = messagesPaging.itemCount,
+            key = messagesPaging.itemKey(),
+            contentType = messagesPaging.itemContentType(),
+        ) { index ->
+            val message = messagesPaging.itemSnapshotList.items[index]
             message.let {
+                // Message
+                val userId = message.sender?.id
+                val previousMessageUserId = if (index > 0) messages[index - 1].sender?.id else null
+
+                val nextMessage = messages.getOrNull(index + 1)?.sender?.id
+                val previousMessage = messages.getOrNull(index - 1)?.sender?.id
+                val isLastMessage = userId != nextMessage
+                val isFirstMessage = userId != previousMessage
+
+                MessageItem(
+                    isSameUserFromPreviousMessage = userId == previousMessageUserId,
+                    isLastMessage = isLastMessage,
+                    isFirstMessage = isFirstMessage,
+                    downloadManager = downloadManager,
+                    message = it
+                )
                 // Date Separator
                 var dateSeparator: String? = null
                 if (messages.getOrNull(index + 1) != null &&
@@ -298,23 +319,6 @@ fun ChatHistory(
                 dateSeparator?.let {
                     ChatDateSeparator(text = it)
                 }
-
-                // Message
-                val userId = message.sender?.id
-                val previousMessageUserId = if (index > 0) messages[index - 1].sender?.id else null
-
-                val nextMessage = messages.getOrNull(index + 1)?.sender?.id
-                val previousMessage = messages.getOrNull(index - 1)?.sender?.id
-                val isLastMessage = userId != nextMessage
-                val isFirstMessage = userId != previousMessage
-
-                MessageItem(
-                    isSameUserFromPreviousMessage = userId == previousMessageUserId,
-                    isLastMessage = isLastMessage,
-                    isFirstMessage = isFirstMessage,
-                    downloadManager = downloadManager,
-                    message = it
-                )
             }
         }
     }

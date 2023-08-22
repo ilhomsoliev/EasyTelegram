@@ -161,14 +161,27 @@ private fun MessageItemContent(
           is TdApi.MessagePhoto -> PhotoMessage(downloadManager, message, Modifier)
           is TdApi.MessageVideoNote -> VideoNoteMessage(downloadManager, message, modifier)
           is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)*/
-        else -> UnsupportedMessage()
+        else -> UnsupportedMessage(modifier, message)
     }
 }
 
 
 @Composable
-fun UnsupportedMessage(modifier: Modifier = Modifier, title: String? = null) {
-    Text(title ?: "<Unsupported message>", modifier = modifier)
+fun UnsupportedMessage(modifier: Modifier = Modifier, message: MessageModel) {
+    Row(modifier = modifier) {
+        Text(
+            "Сообщение не поддерживаемое мессенджером",
+            //   modifier = modifier,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontSize = 11.sp,
+                fontWeight = FontWeight(500),
+                color = Color(0xFF5F934B),
+            )
+        )
+        MessageStatus(modifier = Modifier, message = message)
+    }
+
+
 }
 
 @Composable
