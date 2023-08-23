@@ -38,9 +38,10 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     suspend fun loadChat(chatId: Long) {
         this.chat = chatsRepository.getChat(chatId)
 
-        this.messagesPaged = Pager(PagingConfig(pageSize = 30)) {
-            messagesRepository.getMessagesPaged(chatId, profileRepository)
-        }.flow.cachedIn(viewModelScope)
+        this.messagesPaged =
+            Pager(PagingConfig(pageSize = 15, initialLoadSize = 15, enablePlaceholders = false)) {
+                messagesRepository.getMessagesPaged(chatId, profileRepository)
+            }.flow.cachedIn(viewModelScope)
 
     }
 

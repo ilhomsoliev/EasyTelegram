@@ -18,12 +18,16 @@ class MessagesPagingSource(
 
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, MessageModel> {
         return try {
+            val page: Long = params.key ?: 1L
+            val offset = (page - 1) * params.loadSize
+            Log.d("Hello PAger", "$page ${params.loadSize}")
             val response: Flow<List<TdApi.Message>> = messagesRepository.getMessages(
                 chatId = chatId,
                 fromMessageId = params.key ?: 0,
-                limit = params.loadSize
+                limit = params.loadSize,
+                offset = offset.toInt(),
             )
-            Log.d("Hello", "Here come the som")
+
             val messages = response.first().map { it.map(profileRepository) }
             LoadResult.Page(
                 data = messages,
@@ -35,7 +39,18 @@ class MessagesPagingSource(
         }
     }
 
+    /*override fun getRefreshKey(state: PagingState<Long, MessageModel>): Long? {
+        val anchorPosition = state.anchorPosition ?: return null
+        val page = state.closestPageToPosition(anchorPosition) ?: return null
+
+        return (page.prevKey?.plus(1) ?: page.nextKey?.minus(1))?.toLong()
+    }*/
     override fun getRefreshKey(state: PagingState<Long, MessageModel>): Long? {
-        return null
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
     }
+
+
 }

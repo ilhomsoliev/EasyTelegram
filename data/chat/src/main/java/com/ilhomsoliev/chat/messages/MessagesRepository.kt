@@ -12,9 +12,22 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient) {
 
-    fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
+    fun getMessages(
+        chatId: Long,
+        fromMessageId: Long,
+        limit: Int,
+        offset: Int,
+    ): Flow<List<TdApi.Message>> =
         callbackFlow {
-            client.baseClient.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
+            client.baseClient.send(
+                TdApi.GetChatHistory(
+                    /* chatId = */ chatId,
+                    /* fromMessageId = */ fromMessageId,
+                    /* offset = */ offset,
+                    /* limit = */ limit,
+                    /* onlyLocal = */ false
+                )
+            ) {
                 when (it.constructor) {
                     TdApi.Messages.CONSTRUCTOR -> {
                         trySend((it as TdApi.Messages).messages.toList()).isSuccess
@@ -36,7 +49,9 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
         chatId: Long,
         profileRepository: ProfileRepository
     ): PagingSource<Long, MessageModel> =
-        MessagesPagingSource(chatId, this, profileRepository)
+        MessagesPagingSource(chatId,
+            this,
+            profileRepository)
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
         client.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
@@ -65,12 +80,12 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
         inputMessageContent: TdApi.InputMessageContent
     ): Deferred<TdApi.Message> = sendMessage(
         TdApi.SendMessage(
-            chatId,
-            messageThreadId,
-            replyToMessageId,
-            options,
-            null,
-            inputMessageContent
+            /* chatId = */ chatId,
+            /* messageThreadId = */ messageThreadId,
+            /* replyToMessageId = */ replyToMessageId,
+            /* options = */ options,
+            /* replyMarkup = */ null,
+            /* inputMessageContent = */ inputMessageContent
         )
     )
 

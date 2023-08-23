@@ -249,7 +249,7 @@ fun ChatHistory(
 ) {
     val messages = messagesPaging.itemSnapshotList.items
 
-    LazyColumn(modifier = modifier, reverseLayout = true) {
+    LazyColumn(modifier = modifier, reverseLayout = false) {
         item {
             Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
         }
