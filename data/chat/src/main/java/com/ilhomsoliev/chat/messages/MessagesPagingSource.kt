@@ -14,43 +14,42 @@ class MessagesPagingSource(
     private val chatId: Long,
     private val messagesRepository: MessagesRepository,
     private val profileRepository: ProfileRepository,
-) : PagingSource<Long, MessageModel>() {
+) : PagingSource<Int, MessageModel>() {
 
-    override suspend fun load(params: LoadParams<Long>): LoadResult<Long, MessageModel> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MessageModel> {
         return try {
-            val page: Long = params.key ?: 1L
+            val page: Int = params.key ?: 1
             val offset = (page - 1) * params.loadSize
             Log.d("Hello PAger", "$page ${params.loadSize}")
             val response: Flow<List<TdApi.Message>> = messagesRepository.getMessages(
                 chatId = chatId,
-                fromMessageId = params.key ?: 0,
+                fromMessageId = 0,// params.key ?: 0L,
                 limit = params.loadSize,
                 offset = offset.toInt(),
             )
 
             val messages = response.first().map { it.map(profileRepository) }
+
+            val prevKey = if (page > 1) page.minus(1) else null
+            val nextKey = if (response.first().isNotEmpty()) page.plus(1) else null
+
+
             LoadResult.Page(
                 data = messages,
-                prevKey = null,
-                nextKey = messages.lastOrNull()?.id
+                prevKey = prevKey,
+                nextKey = nextKey,
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
 
-    /*override fun getRefreshKey(state: PagingState<Long, MessageModel>): Long? {
-        val anchorPosition = state.anchorPosition ?: return null
-        val page = state.closestPageToPosition(anchorPosition) ?: return null
-
-        return (page.prevKey?.plus(1) ?: page.nextKey?.minus(1))?.toLong()
-    }*/
-    override fun getRefreshKey(state: PagingState<Long, MessageModel>): Long? {
+    override fun getRefreshKey(state: PagingState<Int, MessageModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+                ?: if (state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1) != 0) state.closestPageToPosition(
+                    anchorPosition
+                )?.nextKey?.minus(1) else null
         }
     }
-
-
 }

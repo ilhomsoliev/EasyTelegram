@@ -99,7 +99,7 @@ fun ChatContent(
         }
     ) {
         state.messages?.run {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize().padding(it)) {
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     painter = painterResource(id = R.drawable.chat_background),
@@ -249,7 +249,7 @@ fun ChatHistory(
 ) {
     val messages = messagesPaging.itemSnapshotList.items
 
-    LazyColumn(modifier = modifier, reverseLayout = false) {
+    LazyColumn(modifier = modifier, reverseLayout = true) {
         item {
             Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
         }

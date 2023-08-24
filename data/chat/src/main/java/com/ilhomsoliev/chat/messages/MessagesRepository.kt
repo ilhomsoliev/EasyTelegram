@@ -22,7 +22,7 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
             client.baseClient.send(
                 TdApi.GetChatHistory(
                     /* chatId = */ chatId,
-                    /* fromMessageId = */ fromMessageId,
+                    /* fromMessageId = */ 0,
                     /* offset = */ offset,
                     /* limit = */ limit,
                     /* onlyLocal = */ false
@@ -48,10 +48,12 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
     fun getMessagesPaged(
         chatId: Long,
         profileRepository: ProfileRepository
-    ): PagingSource<Long, MessageModel> =
-        MessagesPagingSource(chatId,
+    ): PagingSource<Int, MessageModel> =
+        MessagesPagingSource(
+            chatId,
             this,
-            profileRepository)
+            profileRepository
+        )
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
         client.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
