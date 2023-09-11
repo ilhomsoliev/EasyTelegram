@@ -1,4 +1,4 @@
-package com.ilhomsoliev.home.presentation
+package com.ilhomsoliev.home.presentation.chats
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -22,11 +21,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.ilhomsoliev.chat.model.chat.ChatModel
-import com.ilhomsoliev.home.presentation.chat_item.ChatItem
+import com.ilhomsoliev.core.Screen
+import com.ilhomsoliev.home.presentation.chats.chat_item.ChatItem
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.launch
@@ -41,6 +40,7 @@ data class HomeState(
 interface HomeCallback {
     fun onChatClick(id: Long)
     fun onSearchClick()
+    fun onNewMessageClick()
 
 }
 
@@ -80,7 +80,7 @@ fun HomeContent(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                //    navController.navigate(Screen.CreateChat.route)
+                callback.onNewMessageClick()
             }) {
                 Icon(
                     imageVector = Icons.Default.Edit,

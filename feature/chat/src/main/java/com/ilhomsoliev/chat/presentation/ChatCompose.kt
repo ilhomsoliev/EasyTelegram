@@ -53,9 +53,9 @@ import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.extensions.LocalDate
 import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
-import com.ilhomsoliev.shared.shared.PaperclipIcon
-import com.ilhomsoliev.shared.shared.SendMessageIcon
-import com.ilhomsoliev.shared.shared.SmileFaceIcon
+import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
+import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
+import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon
 import org.drinkless.td.libcore.telegram.TdApi
 
 data class ChatState(

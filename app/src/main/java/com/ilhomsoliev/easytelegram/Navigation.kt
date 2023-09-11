@@ -6,7 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ilhomsoliev.chat.presentation.ChatScreen
 import com.ilhomsoliev.core.Screen
-import com.ilhomsoliev.home.presentation.HomeContainer
+import com.ilhomsoliev.home.presentation.chats.HomeContainer
+import com.ilhomsoliev.home.presentation.new_message.NewMessagesScreen
 import com.ilhomsoliev.login.presentation.chooseCountry.ChooseCountryScreen
 import com.ilhomsoliev.login.presentation.login.LoginScreen
 import com.ilhomsoliev.login.presentation.onboarding.OnBoardingScreen
@@ -24,7 +25,9 @@ fun Navigation() {
         composable(Screen.Home.route) {
             HomeContainer(navController = navController, vm = koinViewModel())
         }
-
+        composable(Screen.NewMessage.route) {
+            NewMessagesScreen(vm = koinViewModel(), navController = navController)
+        }
         composable(Screen.Chat.route) {
             val chatId = Screen.Chat.getChatId(it)
             ChatScreen(

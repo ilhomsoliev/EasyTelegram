@@ -9,6 +9,7 @@ import com.ilhomsoliev.chat.ChatsRepository
 import com.ilhomsoliev.chat.messages.MessagesRepository
 import com.ilhomsoliev.chat.viewmodel.ChatViewModel
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
+import com.ilhomsoliev.home.viewmodel.NewMessagesViewModel
 import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
 import com.ilhomsoliev.login.viewmodel.LoginViewModel
 import com.ilhomsoliev.profile.ProfileRepository
@@ -42,6 +43,8 @@ class EasyTelegramApplication : Application() {
 @OptIn(ExperimentalCoroutinesApi::class)
 val viewModelModule = module {
     viewModel { HomeViewModel(get(), get(), get(), get()) }
+    viewModel { NewMessagesViewModel() }
+
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
     viewModel { ChatViewModel(get(), get(), get(), get()) }

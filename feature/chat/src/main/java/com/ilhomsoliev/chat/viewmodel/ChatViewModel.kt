@@ -39,7 +39,13 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         this.chat = chatsRepository.getChat(chatId)
 
         this.messagesPaged =
-            Pager(PagingConfig(pageSize = 15, initialLoadSize = 15, enablePlaceholders = false)) {
+            Pager(
+                PagingConfig(
+                    pageSize = 15,
+                    initialLoadSize = 15,
+                    enablePlaceholders = false
+                )
+            ) {
                 messagesRepository.getMessagesPaged(chatId, profileRepository)
             }.flow.cachedIn(viewModelScope)
 

@@ -4,6 +4,7 @@ import androidx.navigation.NavBackStackEntry
 
 sealed class Screen(val route: String) {
     object Home : Screen("Home")
+    object NewMessage : Screen("NewMessage")
     object Login : Screen("Login")
     object OnBoarding : Screen("OnBoarding")
     object Welcome : Screen("Welcome")

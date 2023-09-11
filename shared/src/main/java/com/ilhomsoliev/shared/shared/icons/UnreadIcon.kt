@@ -1,4 +1,4 @@
-package com.ilhomsoliev.shared.shared
+package com.ilhomsoliev.shared.shared.icons
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable

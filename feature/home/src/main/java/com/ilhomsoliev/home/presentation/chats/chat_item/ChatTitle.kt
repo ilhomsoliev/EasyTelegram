@@ -1,4 +1,4 @@
-package com.ilhomsoliev.home.presentation.chat_item
+package com.ilhomsoliev.home.presentation.chats.chat_item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -11,12 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.profile.model.UserModel
-import com.ilhomsoliev.shared.shared.MutedIcon
-import com.ilhomsoliev.shared.shared.ReadIcon
-import com.ilhomsoliev.shared.shared.UnreadIcon
+import com.ilhomsoliev.shared.shared.icons.MutedIcon
+import com.ilhomsoliev.shared.shared.icons.ReadIcon
+import com.ilhomsoliev.shared.shared.icons.UnreadIcon
 
 @Composable
 fun ChatTitle(
@@ -30,6 +31,7 @@ fun ChatTitle(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
+            modifier = Modifier.weight(1f, false),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -38,7 +40,8 @@ fun ChatTitle(
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = 15.sp,
                     fontWeight = FontWeight(600),
-                )
+                ),
+                overflow = TextOverflow.Ellipsis
             )
             if (chatModel.defaultDisableNotification) { // TODO
                 Image(imageVector = MutedIcon, contentDescription = null)
@@ -56,7 +59,7 @@ fun ChatTitle(
             }
 
             chatModel.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
-                ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.alpha(0.6f))
+                ChatLastTimeIndicator(it.toRelativeTimeSpan(), modifier = Modifier.alpha(0.6f))
             }
         }
     }

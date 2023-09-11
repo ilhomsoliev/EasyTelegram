@@ -1,4 +1,4 @@
-package com.ilhomsoliev.home.presentation.chat_item
+package com.ilhomsoliev.home.presentation.chats.chat_item
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.Image
@@ -33,10 +33,9 @@ import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.profile.model.UserModel
-import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
-import com.ilhomsoliev.shared.shared.PinnedIcon
-import org.drinkless.td.libcore.telegram.TdApi
+import com.ilhomsoliev.shared.shared.icons.PinnedIcon
+import com.ilhomsoliev.shared.shared.utils.getPinnedModifier
 
 
 @Composable
@@ -46,7 +45,11 @@ fun ChatSummary(
     modifier: Modifier = Modifier
 ) {
 
-    Row(modifier = Modifier.fillMaxWidth().offset(y = (-2).dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .offset(y = (-2).dp)
+    ) {
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -196,9 +199,9 @@ fun HighlightedChatSummary(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatTime(text: String, modifier: Modifier = Modifier) {
+fun ChatLastTimeIndicator(text: String, modifier: Modifier = Modifier) {
     Text(
-        text,
+        text = text,
         // TODO style = MaterialTheme.typography.caption,
         maxLines = 1,
         modifier = modifier,
@@ -220,11 +223,7 @@ fun ChatItem(
     }
     Column(
         modifier = modifier
-            .then(
-                if (chat.positions?.get(0)?.isPinned == true) Modifier.background(
-                    Color(0xFFEFEFEF)
-                ) else Modifier
-            )
+            .then(getPinnedModifier(chat))
             .then(
                 Modifier
                     .padding(top = 4.dp)
@@ -241,18 +240,22 @@ fun ChatItem(
                 modifier = Modifier
                     .clip(shape = CircleShape)
                     .size(columnHeightDp),
-                userName = chat.themeName ?: ""
+                userName = chat.title,
             )
             Column(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f, false)
                     .onGloballyPositioned { coordinates ->
                         columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
                     }
                     .padding(start = 8.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                ChatTitle(modifier = Modifier, chatModel = chat, currentUser = currentUser)
+                ChatTitle(
+                    modifier = Modifier,
+                    chatModel = chat,
+                    currentUser = currentUser
+                )
                 ChatSummary(chat = chat, currentUser = currentUser)
             }
         }
@@ -262,28 +265,6 @@ fun ChatItem(
         )
     }
 
-}
-
-@Composable
-fun ChatItemImage(
-    downloadManager: TgDownloadManager,
-    file: TdApi.File?,
-    userName: String,
-    modifier: Modifier = Modifier,
-) {
-    if (file != null)
-        TelegramImage(
-            downloadManager = downloadManager,
-            file = file,
-            modifier = Modifier
-                .clip(shape = CircleShape)
-                .size(55.dp)
-        )
-    else {
-        Box(modifier.background(Color.Red), contentAlignment = Alignment.Center) {
-            Text(text = userName.take(2))
-        }
-    }
 }
 
 fun Long.toRelativeTimeSpan(): String =

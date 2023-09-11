@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
+import com.ilhomsoliev.shared.common.CustomSearchTextField
 import com.ilhomsoliev.shared.country.Country
 
 data class ChooseCountryState(
@@ -91,18 +90,16 @@ fun ChooseCountryContent(
                     enter = slideInHorizontally { it / 2 } + fadeIn(),
                     exit = slideOutHorizontally { it / 2 } + fadeOut()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextField(
+                        CustomSearchTextField(
                             modifier = Modifier.weight(1f),
                             value = searchRequest.value,
-                            onValueChange = {
+                            onValue = {
                                 searchRequest.value = it
+                            },
+                            onCancelClick = {
+                                isSearchBarVisible.value = false
+                                searchRequest.value = ""
                             })
-                        IconButton(onClick = {
-                            isSearchBarVisible.value = false
-                            searchRequest.value = ""
-                        }) {
-                            Icon(imageVector = Icons.Default.Cancel, contentDescription = null)
-                        }
                     }
                 }
 

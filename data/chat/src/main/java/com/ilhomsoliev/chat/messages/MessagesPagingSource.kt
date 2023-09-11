@@ -20,19 +20,18 @@ class MessagesPagingSource(
         return try {
             val page: Int = params.key ?: 1
             val offset = (page - 1) * params.loadSize
-            Log.d("Hello PAger", "$page ${params.loadSize}")
             val response: Flow<List<TdApi.Message>> = messagesRepository.getMessages(
                 chatId = chatId,
-                fromMessageId = 0,// params.key ?: 0L,
+                fromMessageId = 0,
                 limit = params.loadSize,
-                offset = offset.toInt(),
+                offset = offset * -1,
             )
 
             val messages = response.first().map { it.map(profileRepository) }
+            Log.d("Hello Pager", "$page ${params.loadSize} $offset")
 
             val prevKey = if (page > 1) page.minus(1) else null
             val nextKey = if (response.first().isNotEmpty()) page.plus(1) else null
-
 
             LoadResult.Page(
                 data = messages,

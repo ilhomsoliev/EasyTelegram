@@ -1,8 +1,6 @@
-package com.ilhomsoliev.home.presentation
+package com.ilhomsoliev.home.presentation.chats
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -32,6 +30,10 @@ fun HomeScreen(
 
             override fun onSearchClick() {
                 // TODO
+            }
+
+            override fun onNewMessageClick() {
+                navController.navigate(Screen.NewMessage.route)
             }
         })
 

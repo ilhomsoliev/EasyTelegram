@@ -1,5 +1,6 @@
 package com.ilhomsoliev.chat.messages
 
+import android.util.Log
 import androidx.paging.PagingSource
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.profile.ProfileRepository
@@ -30,14 +31,22 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
             ) {
                 when (it.constructor) {
                     TdApi.Messages.CONSTRUCTOR -> {
-                        trySend((it as TdApi.Messages).messages.toList()).isSuccess
+                        Log.d("Hello Pager", "Messages")
+                        val response = (it as TdApi.Messages).messages.toList()
+                        Log.d(
+                            "Hello Pager Response",
+                            "${response.size} "
+                        )//${response.map { it.content }.}
+                        trySend(response).isSuccess
                     }
 
                     TdApi.Error.CONSTRUCTOR -> {
+                        Log.d("Hello Pager", "Error ${it}")
                         error("")
                     }
 
                     else -> {
+                        Log.d("Hello Pager", "Else ${it}")
                         error("")
                     }
                 }

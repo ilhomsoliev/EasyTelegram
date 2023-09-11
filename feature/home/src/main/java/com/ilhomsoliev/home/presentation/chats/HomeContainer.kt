@@ -1,4 +1,4 @@
-package com.ilhomsoliev.home.presentation
+package com.ilhomsoliev.home.presentation.chats
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

@@ -33,7 +33,7 @@ import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageText
 import com.ilhomsoliev.chat.presentation.message_types.TextMessage
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
-import com.ilhomsoliev.shared.shared.MessageTailIcon
+import com.ilhomsoliev.shared.shared.icons.MessageTailIcon
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.Calendar
 import java.util.Date
