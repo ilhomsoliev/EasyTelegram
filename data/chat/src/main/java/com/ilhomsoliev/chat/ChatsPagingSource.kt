@@ -11,6 +11,9 @@ class ChatsPagingSource(
     private val chats: ChatsRepository
 ) : PagingSource<Long, ChatModel>() {
 
+    override fun getRefreshKey(state: PagingState<Long, ChatModel>): Long? {
+        return null
+    }
     override suspend fun load(
         params: LoadParams<Long>
     ): LoadResult<Long, ChatModel> {
@@ -32,7 +35,4 @@ class ChatsPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Long, ChatModel>): Long? {
-        return null
-    }
 }

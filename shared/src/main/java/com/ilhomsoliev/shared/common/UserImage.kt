@@ -1,6 +1,5 @@
-package com.ilhomsoliev.home.presentation.chats.chat_item
+package com.ilhomsoliev.shared.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -16,7 +15,6 @@ import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.shared.utils.getChatEmptyProfileName
 import org.drinkless.td.libcore.telegram.TdApi
-
 @Composable
 fun ChatItemImage(
     downloadManager: TgDownloadManager,

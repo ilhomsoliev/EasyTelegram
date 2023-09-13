@@ -34,6 +34,7 @@ import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.common.ChatItemImage
 import com.ilhomsoliev.shared.shared.icons.PinnedIcon
 import com.ilhomsoliev.shared.shared.utils.getPinnedModifier
 

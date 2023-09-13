@@ -70,11 +70,11 @@ class ChatsRepository(
         awaitClose { }
     }
 
-    fun chatImage(chat: TdApi.Chat): Flow<String?> =
+    /*fun chatImage(chat: TdApi.Chat): Flow<String?> =
         chat.photo?.small?.takeIf {
             it.local?.isDownloadingCompleted == false
         }?.id?.let { fileId ->
             downloadManager.downloadFile(fileId).map { chat.photo?.small?.local?.path }
-        } ?: flowOf(chat.photo?.small?.local?.path)
+        } ?: flowOf(chat.photo?.small?.local?.path)*/
 
 }

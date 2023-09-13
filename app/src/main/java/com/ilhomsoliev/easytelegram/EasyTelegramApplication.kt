@@ -12,6 +12,7 @@ import com.ilhomsoliev.home.viewmodel.HomeViewModel
 import com.ilhomsoliev.home.viewmodel.NewMessagesViewModel
 import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
 import com.ilhomsoliev.login.viewmodel.LoginViewModel
+import com.ilhomsoliev.profile.ContactsPagingSource
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.country.CountryManager
@@ -43,7 +44,7 @@ class EasyTelegramApplication : Application() {
 @OptIn(ExperimentalCoroutinesApi::class)
 val viewModelModule = module {
     viewModel { HomeViewModel(get(), get(), get(), get()) }
-    viewModel { NewMessagesViewModel() }
+    viewModel { NewMessagesViewModel(get(), get(), get(),) }
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
@@ -55,6 +56,7 @@ val repositoryModule = module {
     single { ChatsRepository(get(), get(), get()) }
     single { AuthRepository(get()) }
     single { ChatsPagingSource(get()) }
+    single { ContactsPagingSource(get()) }
     single { MessagesRepository(get()) }
     single { ProfileRepository(get()) }
 }
