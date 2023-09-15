@@ -1,12 +1,16 @@
 package com.ilhomsoliev.chat.chats.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.ilhomsoliev.chat.chats.manager.ChatsManager
+import com.ilhomsoliev.chat.chats.paging.ChatsPagingSource
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
 import com.ilhomsoliev.profile.ProfileRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
@@ -25,5 +29,16 @@ class ChatsRepository(
             }
 
     suspend fun getChat(chatId: Long) = chatsManager.getChat(chatId)
+
+    fun getChatsPaging() = Pager(
+        PagingConfig(pageSize = 30)
+    ) {
+        ChatsPagingSource(this)
+    }.flow
+
+    suspend fun openChat(chatId: Long) = chatsManager.openChat(chatId).first()
+
+
+    // private val chatsPagingSource: ChatsPagingSource,
 
 }

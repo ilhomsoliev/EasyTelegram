@@ -4,26 +4,25 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.ilhomsoliev.auth.AuthRepository
-import com.ilhomsoliev.chat.chats.paging.ChatsPagingSource
+import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.tgcore.Authentication
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val authRepository: AuthRepository,
     val downloadManager: TgDownloadManager,
-    private val chatsPagingSource: ChatsPagingSource,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val chatsRepository: ChatsRepository,
 ) : ViewModel() {
 
     val uiState = mutableStateOf<UiState>(UiState.Loading)
@@ -50,14 +49,13 @@ class HomeViewModel(
         }.launchIn(viewModelScope)
     }
 
-    val chats = Pager(
-        PagingConfig(pageSize = 30)
-    ) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chats by lazy {
         viewModelScope.launch {
             getUser()
         }
-        chatsPagingSource
-    }.flow.cachedIn(viewModelScope)
+        chatsRepository.getChatsPaging().cachedIn(viewModelScope)
+    }
 
     private val _user = MutableStateFlow<UserModel?>(null)
     val user = _user.asStateFlow()
@@ -67,8 +65,11 @@ class HomeViewModel(
         _user.value = (user)
     }
 
-    suspend fun onOpenChat(chatId: Long) {
-
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun onOpenChat(chatId: Long, callback: () -> Unit) {
+        if (chatsRepository.openChat(chatId)) {
+            callback()
+        }
     }
 }
 

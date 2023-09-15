@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,9 +31,12 @@ fun HomeScreen(
         callback = object : HomeCallback {
             override fun onChatClick(id: Long) {
                 scope.launch {
-                    vm.onOpenChat(id)
+                    vm.onOpenChat(id) {
+                        launch(Dispatchers.Main) {
+                            navController.navigate(Screen.Chat.buildRoute(id))
+                        }
+                    }
                 }
-                navController.navigate(Screen.Chat.buildRoute(id))
             }
 
             override fun onSearchClick() {
