@@ -1,8 +1,9 @@
-package com.ilhomsoliev.chat.messages
+package com.ilhomsoliev.chat.messages.paging
 
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.ilhomsoliev.chat.messages.repository.MessagesRepository
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.map
 import com.ilhomsoliev.profile.ProfileRepository

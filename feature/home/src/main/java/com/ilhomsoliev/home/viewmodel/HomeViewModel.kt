@@ -8,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.ilhomsoliev.auth.AuthRepository
-import com.ilhomsoliev.chat.ChatsPagingSource
+import com.ilhomsoliev.chat.chats.paging.ChatsPagingSource
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
@@ -65,6 +65,10 @@ class HomeViewModel(
     private suspend fun getUser() {
         val user = profileRepository.getCurrentUser()
         _user.value = (user)
+    }
+
+    suspend fun onOpenChat(chatId: Long) {
+
     }
 }
 

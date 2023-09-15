@@ -1,28 +1,43 @@
 package com.ilhomsoliev.home.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import com.ilhomsoliev.profile.ContactsPagingSource
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 
 class NewMessagesViewModel(
     val downloadManager: TgDownloadManager,
     private val profileRepository: ProfileRepository,
-    private val contactsPagingSource: ContactsPagingSource
 ) : ViewModel() {
 
-    val contacts = Pager(
-        PagingConfig(pageSize = 30)
-    ){
-        viewModelScope.launch {
+    private val _isSearchVisible = MutableStateFlow<Boolean>(false)
+    val isSearchVisible = _isSearchVisible.asStateFlow()
 
-        }
-        contactsPagingSource
-    }.flow
+
+    private val _searchRequest = MutableStateFlow<String>("")
+    val searchRequest = _searchRequest.asStateFlow()
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val contacts by lazy {
+        _searchRequest.debounce(250)
+            .flatMapLatest { query ->
+                profileRepository.getContactsPaging(query)
+            }
+    }
+
+
+    suspend fun onIsSearchVisibleChange(value: Boolean) {
+        _isSearchVisible.value = value
+    }
+
+    suspend fun onSearchRequestChange(value: String) {
+        _searchRequest.value = value
+    }
 
 }

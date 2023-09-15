@@ -1,7 +1,8 @@
-package com.ilhomsoliev.chat
+package com.ilhomsoliev.chat.chats.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

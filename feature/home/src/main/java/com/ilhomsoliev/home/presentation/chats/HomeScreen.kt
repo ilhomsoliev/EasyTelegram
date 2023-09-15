@@ -3,16 +3,20 @@ package com.ilhomsoliev.home.presentation.chats
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     vm: HomeViewModel,
     navController: NavController,
 ) {
+    val scope = rememberCoroutineScope()
+
     val chats = vm.chats.collectAsLazyPagingItems()
     val currentUser by vm.user.collectAsState()
 
@@ -25,6 +29,9 @@ fun HomeScreen(
         ),
         callback = object : HomeCallback {
             override fun onChatClick(id: Long) {
+                scope.launch {
+                    vm.onOpenChat(id)
+                }
                 navController.navigate(Screen.Chat.buildRoute(id))
             }
 

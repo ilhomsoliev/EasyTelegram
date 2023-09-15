@@ -5,7 +5,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
@@ -35,7 +39,8 @@ import com.ilhomsoliev.shared.common.items.ContactItem
 import com.ilhomsoliev.shared.shared.icons.AddContactIcon
 
 data class NewMessagesState(
-    val isSearchActive: Boolean,
+    val isSearchVisible: Boolean,
+    val searchRequest: String,
     val contacts: LazyPagingItems<UserModel>,
     val downloadManager: TgDownloadManager,
 )
@@ -43,8 +48,8 @@ data class NewMessagesState(
 interface NewMessagesCallback {
     fun onBackClick()
     fun onSearchClick()
+    fun onSearchRequestChange(value: String)
     fun onAddNewContactClick()
-    fun onSearchQueryChange(value: String)
     fun onClearSearchQuery()
 
 }
@@ -59,7 +64,7 @@ fun NewMessagesContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(callback)
+            TopAppBar(state = state, callback = callback)
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -78,7 +83,14 @@ fun NewMessagesContent(
                 .padding(it)
         ) {
             item {
-                Text(text = "Contacts")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFEFEFEF)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Контакты")
+                }
             }
 
             items(
@@ -90,7 +102,6 @@ fun NewMessagesContent(
                 ContactItem(downloadManager = state.downloadManager, user = contact, onClick = {
                     // TODO
                 })
-
             }
         }
     }
@@ -98,10 +109,10 @@ fun NewMessagesContent(
 
 @Composable
 fun TopAppBar(
+    state: NewMessagesState,
     callback: NewMessagesCallback
 ) {
     val isSearchBarVisible = remember { mutableStateOf(false) }
-    val searchRequest = remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -128,43 +139,53 @@ fun TopAppBar(
                 exit = slideOutHorizontally { it / 2 } + fadeOut()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CustomSearchTextField(
-                        modifier = Modifier.weight(1f),
-                        value = searchRequest.value,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 16.dp),
+                        value = state.searchRequest,
                         onValue = {
-                            searchRequest.value = it
+                            callback.onSearchRequestChange(it)
                         },
                         onCancelClick = {
                             isSearchBarVisible.value = false
-                            searchRequest.value = ""
+                            callback.onSearchRequestChange("")
                         })
                 }
             }
 
         }
         if (!isSearchBarVisible.value) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    onClick = {
-                        isSearchBarVisible.value = true
-                        callback.onSearchClick()
-                    }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        callback.onAddNewContactClick()
-                    }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null
-                    )
-                }
-            }
+            TopAppBarActions(onSearchIconClick = {
+                isSearchBarVisible.value = true
+            }, callback = callback)
+        }
+    }
+}
 
-
+@Composable
+fun TopAppBarActions(
+    onSearchIconClick: () -> Unit,
+    callback: NewMessagesCallback,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(
+            onClick = {
+                onSearchIconClick()
+                callback.onSearchClick()
+            }) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null
+            )
+        }
+        IconButton(
+            onClick = {
+                callback.onAddNewContactClick()
+            }) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null
+            )
         }
     }
 }

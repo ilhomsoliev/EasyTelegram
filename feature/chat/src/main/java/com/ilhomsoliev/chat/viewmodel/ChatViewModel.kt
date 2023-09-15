@@ -6,8 +6,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ilhomsoliev.chat.ChatsRepository
-import com.ilhomsoliev.chat.messages.MessagesRepository
+import com.ilhomsoliev.chat.chats.repository.ChatsRepository
+import com.ilhomsoliev.chat.messages.repository.MessagesRepository
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager

@@ -1,9 +1,7 @@
-package com.ilhomsoliev.chat.messages
+package com.ilhomsoliev.chat.messages.manager
 
 import android.util.Log
-import androidx.paging.PagingSource
-import com.ilhomsoliev.chat.model.message.MessageModel
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.awaitClose
@@ -11,8 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.TdApi
 
-class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClient) {
-
+class MessagesManager(
+    private val client: TelegramClient
+) {
     fun getMessages(
         chatId: Long,
         fromMessageId: Long,
@@ -54,16 +53,6 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
             awaitClose { }
         }
 
-    fun getMessagesPaged(
-        chatId: Long,
-        profileRepository: ProfileRepository
-    ): PagingSource<Int, MessageModel> =
-        MessagesPagingSource(
-            chatId,
-            this,
-            profileRepository
-        )
-
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
         client.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
             when (it.constructor) {
@@ -82,23 +71,6 @@ class MessagesRepository(private val client: com.ilhomsoliev.tgcore.TelegramClie
         }
         awaitClose { }
     }
-
-    fun sendMessage(
-        chatId: Long,
-        messageThreadId: Long = 0,
-        replyToMessageId: Long = 0,
-        options: TdApi.MessageSendOptions = TdApi.MessageSendOptions(),
-        inputMessageContent: TdApi.InputMessageContent
-    ): Deferred<TdApi.Message> = sendMessage(
-        TdApi.SendMessage(
-            /* chatId = */ chatId,
-            /* messageThreadId = */ messageThreadId,
-            /* replyToMessageId = */ replyToMessageId,
-            /* options = */ options,
-            /* replyMarkup = */ null,
-            /* inputMessageContent = */ inputMessageContent
-        )
-    )
 
     fun sendMessage(sendMessage: TdApi.SendMessage): Deferred<TdApi.Message> {
         val result = CompletableDeferred<TdApi.Message>()
