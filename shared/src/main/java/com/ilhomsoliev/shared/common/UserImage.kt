@@ -1,5 +1,6 @@
 package com.ilhomsoliev.shared.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -10,17 +11,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.shared.utils.getChatEmptyProfileName
 import org.drinkless.td.libcore.telegram.TdApi
+
 @Composable
 fun ChatItemImage(
+    modifier: Modifier = Modifier,
     downloadManager: TgDownloadManager,
     file: TdApi.File?,
-    userName: String,
-    modifier: Modifier = Modifier,
+    username: String,
+    imageSize: Dp
 ) {
     if (file != null) {
         TelegramImage(
@@ -28,12 +31,14 @@ fun ChatItemImage(
             file = file,
             modifier = Modifier
                 .clip(shape = CircleShape)
-                .size(55.dp)
+                .size(imageSize)
         )
     } else {
         EmptyChatPhoto(
-            modifier = modifier,
-            name = userName,
+            modifier = modifier
+                .clip(shape = CircleShape)
+                .size(imageSize),
+            name = username,
         )
     }
 }
@@ -47,9 +52,10 @@ fun EmptyChatPhoto(
         modifier.background(Color.Red),
         contentAlignment = Alignment.Center
     ) {
-        val namePIdozraz = getChatEmptyProfileName(name)
+        val nameOro = getChatEmptyProfileName(name)
+        Log.d("Hello nameas", nameOro)
         Text(
-            text = namePIdozraz,
+            text = nameOro,
             color = Color.White
         )
     }

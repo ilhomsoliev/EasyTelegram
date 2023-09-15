@@ -9,6 +9,7 @@ fun getChatEmptyProfileName(name: String): String {
     if (name.isEmpty()) return ""
 
     val spaceAmount = name.count { it == ' ' }
+
     return if (spaceAmount == 0) {
         name[0].toUpperCase().toString()
     } else {

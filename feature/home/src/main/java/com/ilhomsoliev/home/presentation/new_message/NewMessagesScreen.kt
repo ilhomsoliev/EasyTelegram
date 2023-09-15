@@ -13,6 +13,7 @@ fun NewMessagesScreen(
 
     val contacts = vm.contacts.collectAsLazyPagingItems()
     val downloadManager = vm.downloadManager
+
     NewMessagesContent(
         state = NewMessagesState(false, contacts, downloadManager),
         callback = object : NewMessagesCallback {
@@ -21,19 +22,19 @@ fun NewMessagesScreen(
             }
 
             override fun onSearchClick() {
-                TODO("Not yet implemented")
+
             }
 
             override fun onAddNewContactClick() {
-                TODO("Not yet implemented")
+
             }
 
             override fun onSearchQueryChange(value: String) {
-                TODO("Not yet implemented")
+
             }
 
             override fun onClearSearchQuery() {
-                TODO("Not yet implemented")
+
             }
 
         })

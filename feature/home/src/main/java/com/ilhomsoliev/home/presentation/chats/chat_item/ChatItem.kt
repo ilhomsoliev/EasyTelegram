@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
@@ -238,10 +237,9 @@ fun ChatItem(
             ChatItemImage(
                 downloadManager = downloadManager,
                 file = chat.photo?.small,
-                modifier = Modifier
-                    .clip(shape = CircleShape)
-                    .size(columnHeightDp),
-                userName = chat.title,
+                modifier = Modifier,
+                username = chat.title,
+                imageSize = columnHeightDp,
             )
             Column(
                 modifier = Modifier
