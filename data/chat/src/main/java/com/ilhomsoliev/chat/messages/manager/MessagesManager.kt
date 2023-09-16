@@ -30,12 +30,11 @@ class MessagesManager(
             ) {
                 when (it.constructor) {
                     TdApi.Messages.CONSTRUCTOR -> {
-                        Log.d("Hello Pager", "Messages")
                         val response = (it as TdApi.Messages).messages.toList()
                         Log.d(
                             "Hello Pager Response",
                             "${response.size} "
-                        )//${response.map { it.content }.}
+                        )
                         trySend(response).isSuccess
                     }
 

@@ -24,8 +24,8 @@ class MessagesPagingSource(
             val response: Flow<List<TdApi.Message>> = messagesRepository.getMessages(
                 chatId = chatId,
                 fromMessageId = 0,
-                limit = params.loadSize,
-                offset = offset * -1,
+                limit = params.loadSize * (page),
+                offset = -1,
             )
 
             val messages = response.first().map { it.map(profileRepository) }

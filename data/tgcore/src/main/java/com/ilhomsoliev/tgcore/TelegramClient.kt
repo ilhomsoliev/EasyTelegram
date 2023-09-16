@@ -1,6 +1,7 @@
 package com.ilhomsoliev.tgcore
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -12,13 +13,15 @@ import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-open class TelegramClient(
+val newTdApiUpdates = mutableStateOf<TdApi.Object?>(null)
+
+class TelegramClient(
     private val tdLibParameters: TdApi.TdlibParameters
 ) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
 
-    val baseClient: Client = Client.create(this, null, null)
+    val baseClient: Client = Client.create(this@TelegramClient, null, null)
 
     val _authState = MutableStateFlow(Authentication.UNKNOWN)
 
@@ -53,6 +56,9 @@ open class TelegramClient(
 
     override fun onResult(data: TdApi.Object) {
         Log.d(TAG, "onResult: ${data::class.java.simpleName}")
+
+        newTdApiUpdates.value = data
+
         when (data.constructor) {
             TdApi.UpdateAuthorizationState.CONSTRUCTOR -> {
                 Log.d(TAG, "UpdateAuthorizationState")

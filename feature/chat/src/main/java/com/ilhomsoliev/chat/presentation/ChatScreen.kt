@@ -26,10 +26,10 @@ fun ChatScreen(
 
     LaunchedEffect(key1 = Unit, block = {
         vm.loadChat(chatId)
-        while (true) {
+        /*while (true) {
             delay(3000L)
             messages?.refresh()
-        }
+        }*/
     })
 
     ChatContent(
