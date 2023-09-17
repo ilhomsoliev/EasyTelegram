@@ -15,8 +15,9 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 val newTdApiUpdates = mutableStateOf<TdApi.Object?>(null)
 
+
 class TelegramClient(
-    private val tdLibParameters: TdApi.TdlibParameters
+    private val tdLibParameters: TdLibParameters
 ) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
@@ -39,7 +40,25 @@ class TelegramClient(
         baseClient.send(TdApi.SetLogVerbosityLevel(1), this)
 
         doAsync {
-            baseClient.send(TdApi.SetTdlibParameters(tdLibParameters)) {
+            baseClient.send(
+                TdApi.SetTdlibParameters(
+                    apiId = tdLibParameters.apiId,
+                    apiHash = tdLibParameters.apiHash,
+                    useMessageDatabase = tdLibParameters.useMessageDatabase,
+                    useSecretChats = tdLibParameters.useSecretChats,
+                    systemLanguageCode = tdLibParameters.systemLanguageCode,
+                    databaseDirectory = tdLibParameters.databaseDirectory,
+                    deviceModel = tdLibParameters.deviceModel,
+                    systemVersion = tdLibParameters.systemVersion,
+                    applicationVersion = tdLibParameters.applicationVersion,
+                    enableStorageOptimizer = tdLibParameters.enableStorageOptimizer,
+                    useTestDc = false,
+                    databaseEncryptionKey = tdLibParameters.databaseEncryptionKey,
+                    useFileDatabase = false,
+                    useChatInfoDatabase = false,
+                    ignoreFileNames = false,
+                )
+            ) {
                 Log.d(TAG, "SetTdlibParameters result: $it")
                 when (it.constructor) {
                     TdApi.Ok.CONSTRUCTOR -> {
@@ -154,3 +173,22 @@ fun TelegramClient.sendAsFlow(query: TdApi.Function): Flow<TdApi.Object> = callb
 
 inline fun <reified T : TdApi.Object> TelegramClient.send(query: TdApi.Function): Flow<T> =
     sendAsFlow(query).map { it as T }
+
+data class TdLibParameters(
+    val useTestDc: Boolean,
+    val databaseDirectory: String,
+    val filesDirectory: String,
+    val databaseEncryptionKey: Array<Byte>,
+    val useFileDatabase: Boolean,
+    val useChatInfoDatabase: Boolean,
+    val useMessageDatabase: Boolean,
+    val useSecretChats: Boolean,
+    val apiId: Int,
+    val apiHash: String,
+    val systemLanguageCode: String,
+    val deviceModel: String,
+    val systemVersion: String,
+    val applicationVersion: String,
+    val enableStorageOptimizer: Boolean,
+    val ignoreFileNames: Boolean,
+)

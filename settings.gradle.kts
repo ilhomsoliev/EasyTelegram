@@ -14,7 +14,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "EasyTelegram"
-include(":app", ":libtd")
+include(":app")
+include(":libtd")
 include(":feature:login")
 include(":feature:chat")
 include(":core")
