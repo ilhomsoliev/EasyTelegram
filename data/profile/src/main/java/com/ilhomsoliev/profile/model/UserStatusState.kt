@@ -1,12 +1,12 @@
 package com.ilhomsoliev.profile.model
 
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusEmpty
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusLastMonth
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusLastWeek
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusOffline
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusOnline
-import org.drinkless.td.libcore.telegram.TdApi.UserStatusRecently
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.UserStatusEmpty
+import org.drinkless.tdlib.TdApi.UserStatusLastMonth
+import org.drinkless.tdlib.TdApi.UserStatusLastWeek
+import org.drinkless.tdlib.TdApi.UserStatusOffline
+import org.drinkless.tdlib.TdApi.UserStatusOnline
+import org.drinkless.tdlib.TdApi.UserStatusRecently
 
 enum class UserStatusState1 {
     Empty,

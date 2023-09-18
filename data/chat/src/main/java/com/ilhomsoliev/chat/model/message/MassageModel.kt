@@ -7,10 +7,10 @@ import com.ilhomsoliev.chat.model.message.messageContent.messageAudio.map
 import com.ilhomsoliev.chat.model.message.messageContent.messageText.map
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.MessageAnimation
-import org.drinkless.td.libcore.telegram.TdApi.MessageAudio
-import org.drinkless.td.libcore.telegram.TdApi.MessageText
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.MessageAnimation
+import org.drinkless.tdlib.TdApi.MessageAudio
+import org.drinkless.tdlib.TdApi.MessageText
 
 data class MessageModel(
     val id: Long,
@@ -34,11 +34,7 @@ data class MessageModel(
     val containsUnreadMention: Boolean,
     val date: Int,
     val editDate: Int,
-    val replyInChatId: Long,
-    val replyToMessageId: Long,
     val messageThreadId: Long,
-    val ttl: Int,
-    val ttlExpiresIn: Double,
     val viaBotUserId: Long,
     val content: MessageContentModel,
 )
@@ -76,11 +72,7 @@ suspend fun TdApi.Message.map(
             }
 
         },
-        replyInChatId = replyInChatId,
-        replyToMessageId = replyToMessageId,
         messageThreadId = messageThreadId,
-        ttl = ttl,
-        ttlExpiresIn = ttlExpiresIn,
         viaBotUserId = viaBotUserId,
         content = content.getMessageTypeModel(),
     )

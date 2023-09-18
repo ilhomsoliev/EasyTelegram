@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.Dp
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.shared.utils.getChatEmptyProfileName
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 @Composable
 fun ChatItemImage(

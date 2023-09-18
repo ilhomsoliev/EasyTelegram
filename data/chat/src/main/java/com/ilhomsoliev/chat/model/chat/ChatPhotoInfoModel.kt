@@ -1,8 +1,8 @@
 package com.ilhomsoliev.chat.model.chat
 
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.File
-import org.drinkless.td.libcore.telegram.TdApi.Minithumbnail
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.File
+import org.drinkless.tdlib.TdApi.Minithumbnail
 
 data class ChatPhotoInfoModel(
     val small: File,

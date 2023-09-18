@@ -8,9 +8,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.ilhomsoliev.chat.viewmodel.ChatViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 @Composable
 fun ChatScreen(
@@ -26,10 +25,6 @@ fun ChatScreen(
 
     LaunchedEffect(key1 = Unit, block = {
         vm.loadChat(chatId)
-        /*while (true) {
-            delay(3000L)
-            messages?.refresh()
-        }*/
     })
 
     ChatContent(
@@ -48,7 +43,6 @@ fun ChatScreen(
 
             override fun onSendMessage() {
                 scope.launch {
-
                     vm.sendMessage(
                         chatId = chatId,
                         inputMessageContent = TdApi.InputMessageText(

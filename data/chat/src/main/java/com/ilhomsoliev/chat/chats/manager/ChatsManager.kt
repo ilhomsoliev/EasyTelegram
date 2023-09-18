@@ -1,10 +1,13 @@
 package com.ilhomsoliev.chat.chats.manager
 
+import android.util.Log
 import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.ChatList
+import org.drinkless.tdlib.TdApi.ChatListMain
 
 class ChatsManager(
     private val tgClient: TelegramClient,
@@ -31,7 +34,11 @@ class ChatsManager(
 
     fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
         callbackFlow {
-            tgClient.baseClient.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
+            tgClient.baseClient.send(
+                TdApi.GetChats(
+                    TdApi.ChatListMain(), limit
+                )
+            ) {
                 when (it.constructor) {
                     TdApi.Chats.CONSTRUCTOR -> {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
@@ -48,6 +55,13 @@ class ChatsManager(
             }
             awaitClose { }
         }
+
+    fun loadChat() {
+        tgClient.baseClient.send(TdApi.LoadChats(null, 10)) {
+            Log.d("OnResult Hello", it.toString())
+        }
+        //awaitClose {}
+    }
 
     fun openChat(chatId: Long) = callbackFlow {
         tgClient.baseClient.send(TdApi.OpenChat(chatId)) {

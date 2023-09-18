@@ -4,19 +4,20 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
+import com.ilhomsoliev.chat.model.chat.ChatModel
+import com.ilhomsoliev.chat.model.chat.map
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.tgcore.AppDataState
 import com.ilhomsoliev.tgcore.Authentication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val authRepository: AuthRepository,
@@ -26,6 +27,12 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
 ) : ViewModel() {
 
     val uiState = mutableStateOf<UiState>(UiState.Loading)
+
+    private val _user = MutableStateFlow<UserModel?>(null)
+    val user = _user.asStateFlow()
+
+    private val _chats = MutableStateFlow<List<ChatModel>>(emptyList())
+    val chats = _chats.asStateFlow()
 
     init {
         authRepository.authState.onEach {
@@ -49,16 +56,13 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         }.launchIn(viewModelScope)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    /*@OptIn(ExperimentalCoroutinesApi::class)
     val chats by lazy {
         viewModelScope.launch {
             getUser()
         }
         chatsRepository.getChatsPaging().cachedIn(viewModelScope)
-    }
-
-    private val _user = MutableStateFlow<UserModel?>(null)
-    val user = _user.asStateFlow()
+    }*/
 
     private suspend fun getUser() {
         val user = profileRepository.getCurrentUser()
@@ -71,6 +75,18 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
             callback()
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun loadChats() {
+        chatsRepository.loadChats()
+    }
+
+    suspend fun updateChats() {
+        val chats = AppDataState.mainChatList.toList()//.values.toList().map { it.map(profileRepository) }
+        //_chats.value = chats
+        Log.d("Hello fucking chats", chats.toString())
+    }
+
 }
 
 sealed class UiState {

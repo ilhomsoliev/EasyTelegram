@@ -11,7 +11,7 @@ import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageStatus
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 
 // TODO

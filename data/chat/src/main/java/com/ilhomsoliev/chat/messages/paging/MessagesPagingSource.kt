@@ -9,7 +9,7 @@ import com.ilhomsoliev.chat.model.message.map
 import com.ilhomsoliev.profile.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 class MessagesPagingSource(
     private val chatId: Long,

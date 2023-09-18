@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.shared.TgDownloadManager
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 // TODO
 @Composable

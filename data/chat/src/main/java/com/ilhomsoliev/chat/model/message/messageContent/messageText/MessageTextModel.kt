@@ -1,7 +1,7 @@
 package com.ilhomsoliev.chat.model.message.messageContent.messageText
 
 import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 // TODO add entities and webPage
 data class MessageTextModel(

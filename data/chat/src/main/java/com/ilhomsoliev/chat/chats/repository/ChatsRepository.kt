@@ -38,6 +38,7 @@ class ChatsRepository(
 
     suspend fun openChat(chatId: Long) = chatsManager.openChat(chatId).first()
 
+    fun loadChats() = chatsManager.loadChat()
 
     // private val chatsPagingSource: ChatsPagingSource,
 

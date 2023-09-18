@@ -6,7 +6,6 @@ import com.ilhomsoliev.easytelegram.R
 import com.ilhomsoliev.shared.country.CountryManager
 import com.ilhomsoliev.tgcore.TdLibParameters
 import com.ilhomsoliev.tgcore.TelegramClient
-import org.drinkless.td.libcore.telegram.TdApi
 import org.koin.dsl.module
 import java.util.Locale
 
@@ -22,11 +21,8 @@ fun telegramModule(context: Context) = module {
             systemLanguageCode = Locale.getDefault().language,
             databaseDirectory = context.filesDir.absolutePath,
             deviceModel = Build.MODEL,
-            systemVersion = Build.VERSION.RELEASE,
             applicationVersion = "0.1",
             enableStorageOptimizer = true,
-            databaseEncryptionKey = emptyArray(),
-            useTestDc = true,
         )
     }
     single<TelegramClient> {

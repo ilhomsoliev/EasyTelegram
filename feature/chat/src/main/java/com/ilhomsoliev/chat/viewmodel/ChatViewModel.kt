@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.messages.repository.MessagesRepository
+import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
@@ -16,7 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val chatsRepository: ChatsRepository,
@@ -59,7 +60,14 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         inputMessageContent: TdApi.InputMessageContent
     ): Deferred<TdApi.Message> {
         return messagesRepository.sendMessage(
-            chatId, messageThreadId, replyToMessageId, options, inputMessageContent
+            SendMessageRequest(
+                chatId = chatId,
+                messageThreadId = messageThreadId,
+                replyTo = null, // TODO
+                options = options,
+                replyMarkup = null,// TODO
+                inputMessageContent = inputMessageContent,
+            )
         )
     }
 

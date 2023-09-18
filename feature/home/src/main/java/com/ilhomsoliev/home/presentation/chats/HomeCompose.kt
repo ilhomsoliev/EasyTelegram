@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,10 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
 import com.ilhomsoliev.chat.model.chat.ChatModel
-import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.presentation.chats.chat_item.ChatItem
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
@@ -34,7 +30,7 @@ data class HomeState(
     val isLoading: Boolean,
     val downloadManager: TgDownloadManager,
     val currentUser: UserModel?,
-    val chats: LazyPagingItems<ChatModel>,
+    val chats: List<ChatModel>,
 )
 
 interface HomeCallback {
@@ -95,14 +91,15 @@ fun HomeContent(
                 .padding(it)
         ) {
             LazyColumn(modifier = Modifier) {
-                if (state.chats.loadState.refresh is LoadState.Loading) {
+                /*if (state.chats.loadState.refresh is LoadState.Loading) {
                     item {
                         CircularProgressIndicator() // TODO
                         //LoadingChats()
                     }
-                }
+                }*/
                 state.currentUser?.let {
-                    itemsIndexed(state.chats.itemSnapshotList.items, key = { index, key ->
+                    itemsIndexed(state.chats,
+                        key = { index, key ->
                         key.id
                     }) { index, item ->
                         item.let { chat ->

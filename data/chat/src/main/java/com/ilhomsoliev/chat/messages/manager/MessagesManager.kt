@@ -1,13 +1,14 @@
 package com.ilhomsoliev.chat.messages.manager
 
 import android.util.Log
+import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
 import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 class MessagesManager(
     private val client: TelegramClient
@@ -71,9 +72,12 @@ class MessagesManager(
         awaitClose { }
     }
 
-    fun sendMessage(sendMessage: TdApi.SendMessage): Deferred<TdApi.Message> {
+    fun sendMessage(
+        sendMessageRequest: SendMessageRequest,
+    ): Deferred<TdApi.Message> {
         val result = CompletableDeferred<TdApi.Message>()
-        client.baseClient.send(sendMessage) {
+        val request = sendMessageRequest.map()
+        client.baseClient.send(request) {
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     result.complete(it as TdApi.Message)

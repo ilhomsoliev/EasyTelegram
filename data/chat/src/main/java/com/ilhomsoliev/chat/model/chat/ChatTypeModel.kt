@@ -1,6 +1,6 @@
 package com.ilhomsoliev.chat.model.chat
 
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 enum class ChatTypeModel {
     ChatTypePrivate,

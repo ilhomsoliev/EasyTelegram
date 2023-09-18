@@ -56,7 +56,7 @@ import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
 import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
 import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
 import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon
-import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.tdlib.TdApi
 
 data class ChatState(
     val chat: TdApi.Chat? = null,

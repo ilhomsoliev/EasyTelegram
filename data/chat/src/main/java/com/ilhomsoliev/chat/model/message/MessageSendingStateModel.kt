@@ -1,8 +1,8 @@
 package com.ilhomsoliev.chat.model.message
 
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.MessageSendingStateFailed
-import org.drinkless.td.libcore.telegram.TdApi.MessageSendingStatePending
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.MessageSendingStateFailed
+import org.drinkless.tdlib.TdApi.MessageSendingStatePending
 
 enum class MessageSendingStateModel {
     PENDING, ERROR, SUCCESS
