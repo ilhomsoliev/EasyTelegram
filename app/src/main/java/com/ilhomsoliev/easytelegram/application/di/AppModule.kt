@@ -25,6 +25,8 @@ fun telegramModule(context: Context) = module {
             systemVersion = Build.VERSION.RELEASE,
             applicationVersion = "0.1",
             enableStorageOptimizer = true,
+            databaseEncryptionKey = emptyArray(),
+            useTestDc = true,
         )
     }
     single<TelegramClient> {

@@ -40,23 +40,41 @@ class TelegramClient(
         baseClient.send(TdApi.SetLogVerbosityLevel(1), this)
 
         doAsync {
+            TdApi.SetTdlibParameters()
             baseClient.send(
                 TdApi.SetTdlibParameters(
-                    apiId = tdLibParameters.apiId,
-                    apiHash = tdLibParameters.apiHash,
+                    useTestDc = tdLibParameters.useTestDc,
+                    databaseDirectory = tdLibParameters.databaseDirectory,
+                    filesDirectory = tdLibParameters.filesDirectory,
+                    databaseEncryptionKey = tdLibParameters.databaseEncryptionKey,
+                    useFileDatabase = tdLibParameters.useFileDatabase,
+                    useChatInfoDatabase = tdLibParameters.useChatInfoDatabase,
                     useMessageDatabase = tdLibParameters.useMessageDatabase,
                     useSecretChats = tdLibParameters.useSecretChats,
+                    apiId = tdLibParameters.apiId,
+                    apiHash = tdLibParameters.apiHash,
                     systemLanguageCode = tdLibParameters.systemLanguageCode,
-                    databaseDirectory = tdLibParameters.databaseDirectory,
                     deviceModel = tdLibParameters.deviceModel,
                     systemVersion = tdLibParameters.systemVersion,
                     applicationVersion = tdLibParameters.applicationVersion,
                     enableStorageOptimizer = tdLibParameters.enableStorageOptimizer,
-                    useTestDc = false,
-                    databaseEncryptionKey = tdLibParameters.databaseEncryptionKey,
-                    useFileDatabase = false,
-                    useChatInfoDatabase = false,
-                    ignoreFileNames = false,
+                    ignoreFileNames = tdLibParameters.ignoreFileNames,
+                    /*
+            apiId = tdLibParameters.apiId,
+            apiHash = tdLibParameters.apiHash,
+            useMessageDatabase = tdLibParameters.useMessageDatabase,
+            useSecretChats = tdLibParameters.useSecretChats,
+            systemLanguageCode = tdLibParameters.systemLanguageCode,
+            databaseDirectory = tdLibParameters.databaseDirectory,
+            deviceModel = tdLibParameters.deviceModel,
+            systemVersion = tdLibParameters.systemVersion,
+            applicationVersion = tdLibParameters.applicationVersion,
+            enableStorageOptimizer = tdLibParameters.enableStorageOptimizer,
+            useTestDc = false,
+            databaseEncryptionKey = tdLibParameters.databaseEncryptionKey,
+            useFileDatabase = false,
+            useChatInfoDatabase = false,
+            ignoreFileNames = false,*/
                 )
             ) {
                 Log.d(TAG, "SetTdlibParameters result: $it")
