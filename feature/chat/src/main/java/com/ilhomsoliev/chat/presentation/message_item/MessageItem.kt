@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.MessageSendingStateModel
-import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
+import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
 import com.ilhomsoliev.chat.presentation.message_types.TextMessage
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
@@ -152,7 +152,7 @@ private fun MessageItemContent(
     modifier: Modifier = Modifier
 ) {
     when (message.content) {
-        is MessageTextModel -> TextMessage(message, modifier)
+        is MessageContentModel.MessageTextModel -> TextMessage(message, modifier)
         /*  is TdApi.MessageVideo -> VideoMessage(message, modifier)
           is TdApi.MessageCall -> CallMessage(message, modifier)
           is TdApi.MessageAudio -> AudioMessage(message, modifier)

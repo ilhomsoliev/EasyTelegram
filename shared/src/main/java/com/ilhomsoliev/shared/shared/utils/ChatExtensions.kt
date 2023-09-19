@@ -20,6 +20,6 @@ fun getChatEmptyProfileName(name: String): String {
 }
 
 fun getPinnedModifier(chat: ChatModel) =
-    if (chat.positions?.get(0)?.isPinned == true) Modifier.background(
+    if (chat.positions?.getOrNull(0)?.isPinned == true) Modifier.background(
         Color(0xFFEFEFEF)
     ) else Modifier

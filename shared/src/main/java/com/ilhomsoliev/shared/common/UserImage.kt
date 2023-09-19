@@ -53,7 +53,6 @@ fun EmptyChatPhoto(
         contentAlignment = Alignment.Center
     ) {
         val nameOro = getChatEmptyProfileName(name)
-        Log.d("Hello nameas", nameOro)
         Text(
             text = nameOro,
             color = Color.White

@@ -1,10 +1,7 @@
 package com.ilhomsoliev.chat.model.message
 
 import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
-import com.ilhomsoliev.chat.model.message.messageContent.NotDefined
-import com.ilhomsoliev.chat.model.message.messageContent.messageAnimation.map
-import com.ilhomsoliev.chat.model.message.messageContent.messageAudio.map
-import com.ilhomsoliev.chat.model.message.messageContent.messageText.map
+import com.ilhomsoliev.chat.model.message.messageContent.map
 import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import org.drinkless.tdlib.TdApi
@@ -84,6 +81,6 @@ fun TdApi.MessageContent.getMessageTypeModel(): MessageContentModel =
         MessageAnimation.CONSTRUCTOR -> (this as MessageAnimation).map()
         MessageAudio.CONSTRUCTOR -> (this as MessageAudio).map()
         else -> {
-            NotDefined()
+            MessageContentModel.NotDefined
         }
     }

@@ -14,40 +14,66 @@ import java.util.TreeSet
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
-val newUpdateFromTdApi = mutableStateOf<Boolean?>(null)
+
 
 object AppDataState {
-    val users: ConcurrentMap<Long, TdApi.User> = ConcurrentHashMap()
-    val basicGroups: ConcurrentMap<Long, BasicGroup> = ConcurrentHashMap()
-    val supergroups: ConcurrentMap<Long, Supergroup> = ConcurrentHashMap()
-    val secretChats: ConcurrentMap<Int, SecretChat> = ConcurrentHashMap()
-    val chats: ConcurrentMap<Long, TdApi.Chat> = ConcurrentHashMap()
-    val usersFullInfo: ConcurrentMap<Long, UserFullInfo> = ConcurrentHashMap()
-    val basicGroupsFullInfo: ConcurrentMap<Long, BasicGroupFullInfo> = ConcurrentHashMap()
-    val supergroupsFullInfo: ConcurrentMap<Long, SupergroupFullInfo> = ConcurrentHashMap()
-    val mainChatList: NavigableSet<OrderedChat> = TreeSet<OrderedChat>()
+    private val users: ConcurrentMap<Long, TdApi.User> = ConcurrentHashMap()
+    private val basicGroups: ConcurrentMap<Long, BasicGroup> = ConcurrentHashMap()
+    private val supergroups: ConcurrentMap<Long, Supergroup> = ConcurrentHashMap()
+    private val secretChats: ConcurrentMap<Int, SecretChat> = ConcurrentHashMap()
+    private val chats: ConcurrentMap<Long, TdApi.Chat> = ConcurrentHashMap()
+    private val usersFullInfo: ConcurrentMap<Long, UserFullInfo> = ConcurrentHashMap()
+    private val basicGroupsFullInfo: ConcurrentMap<Long, BasicGroupFullInfo> = ConcurrentHashMap()
+    private val supergroupsFullInfo: ConcurrentMap<Long, SupergroupFullInfo> = ConcurrentHashMap()
+    val mainChatList: NavigableSet<OrderedChat> = TreeSet<OrderedChat>() // TODO
+
+    /**
+     * Returns chats matching with positions
+     */
+    fun getChats(): List<TdApi.Chat> {
+        val iter: Iterator<OrderedChat> = mainChatList.iterator()
+        var i = 0
+        val chatsToReturn = mutableListOf<TdApi.Chat>()
+        while (i < mainChatList.size) {
+            val chatId = iter.next().chatId
+            val chat: TdApi.Chat? = chats[chatId]
+            synchronized(chat!!) {
+                chatsToReturn.add(chat)
+            }
+            i++
+        }
+        return chatsToReturn
+    }
 
     fun putUser(key: Long, value: TdApi.User) {
         users[key] = value
     }
 
+    fun getUser(key: Long) = users[key]
+
+    fun putChat(key: Long, value: TdApi.Chat) {
+        chats[key] = value
+    }
+
+    fun getChat(key: Long) = chats[key]
+
     class OrderedChat internal constructor(
-        private val chatId: Long,
+        internal val chatId: Long,
         val position: ChatPosition
     ) : Comparable<OrderedChat?> {
 
-        override operator fun compareTo(o: OrderedChat?): Int {
-            if (o == null) return 0; // TODO
-            if (position.order != o.position.order) {
-                return if (o.position.order < position.order) -1 else 1
+        override operator fun compareTo(other: OrderedChat?): Int {
+            if (other == null) return 0; // TODO
+            if (position.order != other.position.order) {
+                return if (other.position.order < position.order) -1 else 1
             }
-            return if (chatId != o.chatId) {
-                if (o.chatId < chatId) -1 else 1
+            return if (chatId != other.chatId) {
+                if (other.chatId < chatId) -1 else 1
             } else 0
         }
 
-        override fun equals(obj: Any?): Boolean {
-            val o = obj as OrderedChat?
+        override fun equals(other: Any?): Boolean {
+            val o = other as OrderedChat?
             return chatId == o!!.chatId && position.order == o.position.order
         }
     }

@@ -64,7 +64,7 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         chatsRepository.getChatsPaging().cachedIn(viewModelScope)
     }*/
 
-    private suspend fun getUser() {
+    suspend fun getUser() {
         val user = profileRepository.getCurrentUser()
         _user.value = (user)
     }
@@ -77,14 +77,13 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun loadChats() {
+    fun loadChats() {
         chatsRepository.loadChats()
     }
 
     suspend fun updateChats() {
-        val chats = AppDataState.mainChatList.toList()//.values.toList().map { it.map(profileRepository) }
-        //_chats.value = chats
-        Log.d("Hello fucking chats", chats.toString())
+        val chats = AppDataState.getChats().map { it.map(profileRepository) }
+        _chats.emit(chats)
     }
 
 }

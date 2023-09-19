@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.model.chat.ChatModel
-import com.ilhomsoliev.chat.model.message.messageContent.messageText.MessageTextModel
+import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.ChatItemImage
@@ -56,7 +56,7 @@ fun ChatSummary(
         ) {
             chat.lastMessage?.content?.let {
                 when (it) {
-                    is MessageTextModel -> BasicChatSummary(
+                    is MessageContentModel.MessageTextModel -> BasicChatSummary(
                         text = it.text,
                         modifier = modifier,
                     )
@@ -138,7 +138,7 @@ fun ChatSummary(
             if (chat.unreadCount != 0) {
                 UnreadCount(chat.unreadCount)
             }
-            if (chat.positions?.get(0)?.isPinned == true) {
+            if (chat.positions?.getOrNull(0)?.isPinned == true) {
                 PinnedIndicator()
             }
         }
