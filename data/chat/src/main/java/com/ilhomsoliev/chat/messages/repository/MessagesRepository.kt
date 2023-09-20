@@ -23,7 +23,8 @@ class MessagesRepository(
             profileRepository = profileRepository
         )
 
-    fun loadMessages(chatId: Long) = messagesManager.loadMessages(chatId)
+    fun loadMessages(chatId: Long, fromMessageId: Long) =
+        messagesManager.loadMessages(chatId, fromMessageId)
 
     fun sendMessage(
         sendMessageRequest: SendMessageRequest,

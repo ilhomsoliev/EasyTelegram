@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":libtd"))
+    implementation(project(":core"))
     implementation(project(":data:tgcore"))
     implementation(project(":data:shared"))
     implementation(project(":data:profile"))

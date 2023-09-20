@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.R
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageItem
-import com.ilhomsoliev.core.Constants
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.extensions.LocalDate
@@ -64,7 +63,7 @@ interface ChatCallback {
     fun onAnswerChange(value: String)
     fun onSendMessage()
     fun onBack()
-    fun onItemPass()
+    fun onItemPass(index: Int)
 
 }
 
@@ -113,7 +112,7 @@ fun ChatContent(
                         .fillMaxWidth(),
                     paddingValues = it,
                     onItemPass = {
-                        callback.onItemPass()
+                        callback.onItemPass(it)
                     },
                 )
             }
@@ -247,7 +246,7 @@ private fun MessageInput(
 fun ChatHistory(
     downloadManager: TgDownloadManager,
     messages: List<MessageModel>,
-    onItemPass: () -> Unit,
+    onItemPass: (Int) -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
 ) {
@@ -281,13 +280,15 @@ fun ChatHistory(
         //val list = messagesPaging
         itemsIndexed(
             items = messages,
-            key = { index, item -> item.id },
+            key = { index, item ->
+                index//item.id
+            },
         ) { index, message ->
+
             LaunchedEffect(key1 = Unit, block = {
-                if (index + Constants.MESSAGES_LIST_THRESHOLD == messages.size) {
-                    onItemPass()
-                }
+                onItemPass(index)
             })
+
             message.let {
                 // Message
                 val userId = message.sender?.id

@@ -78,4 +78,22 @@ class ChatsManager(
         }
         awaitClose { }
     }
+    fun closeChat(chatId: Long) = callbackFlow {
+        tgClient.baseClient.send(TdApi.CloseChat(chatId)) {
+            when (it.constructor) {
+                TdApi.Ok.CONSTRUCTOR -> {
+                    trySend(true)
+                }
+
+                TdApi.Error.CONSTRUCTOR -> {
+                    error("")
+                }
+
+                else -> {
+                    error("")
+                }
+            }
+        }
+        awaitClose { }
+    }
 }

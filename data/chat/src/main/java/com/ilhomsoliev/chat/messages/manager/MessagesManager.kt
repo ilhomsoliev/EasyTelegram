@@ -2,6 +2,7 @@ package com.ilhomsoliev.chat.messages.manager
 
 import android.util.Log
 import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
+import com.ilhomsoliev.core.Constants.MESSAGES_LIST_THRESHOLD
 import com.ilhomsoliev.tgcore.TelegramClient
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -91,17 +92,31 @@ class MessagesManager(
         return result
     }
 
-    fun loadMessages(chatId: Long) {
+    fun loadMessages(chatId: Long, fromMessageId: Long) = callbackFlow {
         tgClient.baseClient.send(
             TdApi.GetChatHistory(
                 /* chatId = */ chatId,
-                /* fromMessageId = */ 0,
+                /* fromMessageId = */ fromMessageId,
                 /* offset = */ 0,
-                /* limit = */ 10,
+                /* limit = */ MESSAGES_LIST_THRESHOLD,
                 /* onlyLocal = */ false,
             )
         ) {
             Log.d("OnResult LoadMessages", it.toString())
+            when (it.constructor) {
+                TdApi.Messages.CONSTRUCTOR -> {
+                    trySend(it as TdApi.Messages).isSuccess
+                }
+
+                TdApi.Error.CONSTRUCTOR -> {
+
+                }
+
+                else -> {
+
+                }
+            }
         }
+        awaitClose { }
     }
 }

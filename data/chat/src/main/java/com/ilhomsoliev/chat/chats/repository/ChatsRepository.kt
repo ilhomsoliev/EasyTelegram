@@ -31,6 +31,7 @@ class ChatsRepository(
     fun getChat(chatId: Long) = chatsManager.getChat(chatId)
 
     suspend fun openChat(chatId: Long) = chatsManager.openChat(chatId).first()
+    suspend fun closeChat(chatId: Long) = chatsManager.closeChat(chatId).first()
 
     fun loadChats() = chatsManager.loadChat()
 

@@ -28,7 +28,7 @@ fun ChatScreen(
 
     LaunchedEffect(key1 = chat.value?.id, block = {
         if (chat.value?.id != null)
-            vm.loadMessages()
+            vm.onMessageItemPass(-1)
     })
 
     ChatContent(
@@ -64,8 +64,10 @@ fun ChatScreen(
                 navController.popBackStack()
             }
 
-            override fun onItemPass() {
-                vm.loadMessages()
+            override fun onItemPass(index: Int) {
+                scope.launch {
+                    vm.onMessageItemPass(index)
+                }
             }
         })
 }
