@@ -2,6 +2,7 @@ package com.ilhomsoliev.chat.chats.manager
 
 import android.util.Log
 import com.ilhomsoliev.tgcore.TelegramClient
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -78,6 +79,7 @@ class ChatsManager(
         }
         awaitClose { }
     }
+
     fun closeChat(chatId: Long) = callbackFlow {
         tgClient.baseClient.send(TdApi.CloseChat(chatId)) {
             when (it.constructor) {
@@ -95,5 +97,51 @@ class ChatsManager(
             }
         }
         awaitClose { }
+    }
+
+    fun clearChatHistory(
+        chatId: Long,
+        removeFromChatList: Boolean,
+        alsoForOthers: Boolean
+    ): CompletableDeferred<TdApi.Ok> {
+        val result = CompletableDeferred<TdApi.Ok>()
+        val request = TdApi.DeleteChatHistory()
+        request.chatId = chatId
+        request.removeFromChatList = removeFromChatList
+        request.revoke = alsoForOthers
+        tgClient.baseClient.send(request) {
+            when (it.constructor) {
+                TdApi.Ok.CONSTRUCTOR -> {
+                    result.complete(it as TdApi.Ok)
+                }
+
+                else -> {
+                    result.completeExceptionally(error("Something went wrong"))
+                }
+            }
+        }
+        return result
+    }
+
+    // TODO use delete alsoForOthers field
+    fun deleteChat(chatId: Long, alsoForOthers: Boolean): CompletableDeferred<TdApi.Ok> {
+        val result = CompletableDeferred<TdApi.Ok>()
+        val request = TdApi.DeleteChat()
+        request.chatId = chatId
+
+        // request.revoke = alsoForOthers
+
+        tgClient.baseClient.send(request) {
+            when (it.constructor) {
+                TdApi.Ok.CONSTRUCTOR -> {
+                    result.complete(it as TdApi.Ok)
+                }
+
+                else -> {
+                    result.completeExceptionally(error("Something went wrong"))
+                }
+            }
+        }
+        return result
     }
 }

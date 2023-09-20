@@ -52,6 +52,7 @@ import com.ilhomsoliev.shared.common.dropdown_menu.Chat3DotsDropdownMenu
 import com.ilhomsoliev.shared.common.extensions.LocalDate
 import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
 import com.ilhomsoliev.shared.shared.dialogs.CleanChatHistoryDialog
+import com.ilhomsoliev.shared.shared.dialogs.DeleteChatDialog
 import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
 import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
 import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon
@@ -76,6 +77,8 @@ interface ChatCallback {
     fun onIsCleanChatHistoryDialogActiveChange(value: Boolean)
     fun onIsDeleteChatHistoryDialogActiveChange(value: Boolean)
     fun onIsPinMessageDialogActiveChange(value: Boolean)
+    fun onClearHistoryClick(alsoForOtherUser: Boolean)
+    fun onDeleteChatClick(alsoForOtherUser: Boolean)
 }
 
 val chatElementsBackground = Color(0xFED9D9D9)
@@ -143,10 +146,18 @@ private fun Dialogs(
             callback.onIsCleanChatHistoryDialogActiveChange(false)
         },
         onPositiveButtonClick = {
-
+            callback.onClearHistoryClick(it)
         }
     )
-
+    DeleteChatDialog(
+        isDialogShown = state.isDeleteChatHistoryDialogActive,
+        onDismissRequest = {
+            callback.onIsDeleteChatHistoryDialogActiveChange(false)
+        },
+        onPositiveButtonClick = {
+            callback.onDeleteChatClick(it)
+        }
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -223,12 +234,15 @@ private fun ChatTopAppBar(
                 },
                 onCleanHistoryClick = {
                     callback.onIsCleanChatHistoryDialogActiveChange(true)
+                    isMenuOpen.value = false
                 },
                 onSearchClick = {
                     callback.onSearchIconClick()
+                    isMenuOpen.value = false
                 },
                 onDeleteChatClick = {
                     callback.onIsDeleteChatHistoryDialogActiveChange(true)
+                    isMenuOpen.value = false
                 },
             )
         }

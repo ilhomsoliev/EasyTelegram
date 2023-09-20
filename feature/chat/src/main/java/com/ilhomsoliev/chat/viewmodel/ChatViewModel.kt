@@ -11,7 +11,6 @@ import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.map
-import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +19,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.drinkless.tdlib.TdApi
 
-class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
+class ChatViewModel constructor(
     private val chatsRepository: ChatsRepository,
     val downloadManager: TgDownloadManager,
     private val messagesRepository: MessagesRepository,
-    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     private val _chat = MutableStateFlow<ChatModel?>(null)
@@ -110,13 +108,10 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
             }
         }
 
-        suspend fun markMessageAsRead(index: Int) {
+        fun markMessageAsRead(index: Int) {
             if (chat.value == null) return
             val message = messages.value.getOrNull(index)
-            /*Log.d(
-                "Hello mark message method",
-                "${message?.id} ${chat.value?.lastMessage?.id} ${(message?.id ?: 0) <= (chat.value?.lastMessage?.id ?: 0)}"
-            )*/
+
             message?.let {
                 if (message.id <= (chat.value?.lastMessage?.id ?: 0)) {
                     messagesRepository.markMessagesAsViewed(
@@ -132,14 +127,6 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         markMessageAsRead(index)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            val response = chat.value?.id?.let { chatsRepository.closeChat(it) }
-            Log.d("Hello Chat Screen On Cleared", response.toString())
-        }
-    }
 
     suspend fun onMessageArrived(newMessage: MessageModel) {
         if (newMessage.chatId != chat.value?.id) return
@@ -149,5 +136,41 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
             _messages.value = newList
         }
         addNewMessageToList(newMessage)
+    }
+
+    suspend fun clearHistory(alsoForOtherUser: Boolean) {
+        chat.value?.id?.let { chatId ->
+            val response = chatsRepository.clearChatHistory(
+                chatId = chatId,
+                removeFromChatList = true,
+                alsoForOthers = alsoForOtherUser
+            ).await() // TODO change constant true here
+
+            if (response.constructor == TdApi.Ok().constructor) {
+                _messages.value = emptyList()
+            }
+        }
+    }
+
+    suspend fun deleteChat(alsoForOtherUser: Boolean, onSuccess: () -> Unit) {
+        chat.value?.id?.let { chatId ->
+            val response = chatsRepository.deleteChat(chatId, alsoForOtherUser).await()
+            if (response.constructor == TdApi.Ok().constructor) {
+                _messages.value = emptyList()
+                onSuccess()
+            }
+        }
+    }
+
+    suspend fun closeChat() {
+        val response = chat.value?.id?.let { chatsRepository.closeChat(it) }
+        Log.d("Hello Chat Screen On Cleared", response.toString())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            closeChat()
+        }
     }
 }

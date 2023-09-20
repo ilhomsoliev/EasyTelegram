@@ -11,17 +11,6 @@ import com.ilhomsoliev.profile.repository.ProfileRepository
 class MessagesRepository(
     private val messagesManager: MessagesManager,
 ) {
-
-    fun getMessagesPaged(
-        chatId: Long,
-        profileRepository: ProfileRepository
-    ): PagingSource<Int, MessageModel> =
-        MessagesPagingSource(
-            chatId = chatId,
-            messagesRepository = this,
-            profileRepository = profileRepository
-        )
-
     fun loadMessages(chatId: Long, fromMessageId: Long) =
         messagesManager.loadMessages(chatId, fromMessageId)
 

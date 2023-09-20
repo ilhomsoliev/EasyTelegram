@@ -16,5 +16,5 @@ val viewModelModule = module {
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ChooseCountryViewModel(get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get()) }
 }

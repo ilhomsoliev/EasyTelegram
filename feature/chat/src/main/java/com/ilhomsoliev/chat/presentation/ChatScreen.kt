@@ -1,6 +1,7 @@
 package com.ilhomsoliev.chat.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +45,14 @@ fun ChatScreen(
         }
     })
 
+    DisposableEffect(Unit) {
+        onDispose {
+            scope.launch {
+                vm.closeChat()
+            }
+        }
+    }
+
     ChatContent(
         state = ChatState(
             chat = chat.value,
@@ -77,6 +86,9 @@ fun ChatScreen(
             }
 
             override fun onBack() {
+                scope.launch {
+                    vm.closeChat()
+                }
                 navController.popBackStack()
             }
 
@@ -100,6 +112,21 @@ fun ChatScreen(
 
             override fun onIsPinMessageDialogActiveChange(value: Boolean) {
                 isPinMessageDialogActive = value
+            }
+
+            override fun onClearHistoryClick(alsoForOtherUser: Boolean) {
+                scope.launch {
+                    vm.clearHistory(alsoForOtherUser)
+                    onIsCleanChatHistoryDialogActiveChange(false)
+                }
+            }
+
+            override fun onDeleteChatClick(alsoForOtherUser: Boolean) {
+                scope.launch {
+                    vm.deleteChat(alsoForOtherUser) {
+                        onBack()
+                    }
+                }
             }
         })
 }
