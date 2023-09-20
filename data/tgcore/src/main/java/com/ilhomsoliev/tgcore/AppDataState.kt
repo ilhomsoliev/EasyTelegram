@@ -1,6 +1,5 @@
 package com.ilhomsoliev.tgcore
 
-import androidx.compose.runtime.mutableStateOf
 import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.BasicGroup
 import org.drinkless.tdlib.TdApi.BasicGroupFullInfo
@@ -15,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 
-
 object AppDataState {
     private val users: ConcurrentMap<Long, TdApi.User> = ConcurrentHashMap()
     private val basicGroups: ConcurrentMap<Long, BasicGroup> = ConcurrentHashMap()
     private val supergroups: ConcurrentMap<Long, Supergroup> = ConcurrentHashMap()
     private val secretChats: ConcurrentMap<Int, SecretChat> = ConcurrentHashMap()
     private val chats: ConcurrentMap<Long, TdApi.Chat> = ConcurrentHashMap()
+    private val messages: ConcurrentMap<Long, TdApi.Message> = ConcurrentHashMap()
     private val usersFullInfo: ConcurrentMap<Long, UserFullInfo> = ConcurrentHashMap()
     private val basicGroupsFullInfo: ConcurrentMap<Long, BasicGroupFullInfo> = ConcurrentHashMap()
     private val supergroupsFullInfo: ConcurrentMap<Long, SupergroupFullInfo> = ConcurrentHashMap()
@@ -45,6 +44,18 @@ object AppDataState {
         return chatsToReturn
     }
 
+    /**
+     * Returns messages of the given chat
+     */
+    fun getMessages(): List<TdApi.Message> {
+        val messagesToReturn = messages.values.toList().sortedBy { it.date }
+        return messagesToReturn
+    }
+
+    fun clearMessages() {
+        messages.clear()
+    }
+
     fun putUser(key: Long, value: TdApi.User) {
         users[key] = value
     }
@@ -56,6 +67,12 @@ object AppDataState {
     }
 
     fun getChat(key: Long) = chats[key]
+
+    fun putMessage(key: Long, value: TdApi.Message) {
+        messages[key] = value
+    }
+
+    fun getMessage(key: Long) = messages[key]
 
     class OrderedChat internal constructor(
         internal val chatId: Long,

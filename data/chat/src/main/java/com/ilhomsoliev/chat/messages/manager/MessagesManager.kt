@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.tdlib.TdApi
 
 class MessagesManager(
-    private val client: TelegramClient
+    private val tgClient: TelegramClient
 ) {
     fun getMessages(
         chatId: Long,
@@ -20,7 +20,7 @@ class MessagesManager(
         offset: Int,
     ): Flow<List<TdApi.Message>> =
         callbackFlow {
-            client.baseClient.send(
+            tgClient.baseClient.send(
                 TdApi.GetChatHistory(
                     /* chatId = */ chatId,
                     /* fromMessageId = */ 0,
@@ -54,7 +54,7 @@ class MessagesManager(
         }
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
-        client.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
+        tgClient.baseClient.send(TdApi.GetMessage(chatId, messageId)) {
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     trySend(it as TdApi.Message).isSuccess
@@ -77,7 +77,7 @@ class MessagesManager(
     ): Deferred<TdApi.Message> {
         val result = CompletableDeferred<TdApi.Message>()
         val request = sendMessageRequest.map()
-        client.baseClient.send(request) {
+        tgClient.baseClient.send(request) {
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     result.complete(it as TdApi.Message)
@@ -89,5 +89,19 @@ class MessagesManager(
             }
         }
         return result
+    }
+
+    fun loadMessages(chatId: Long) {
+        tgClient.baseClient.send(
+            TdApi.GetChatHistory(
+                /* chatId = */ chatId,
+                /* fromMessageId = */ 0,
+                /* offset = */ 0,
+                /* limit = */ 10,
+                /* onlyLocal = */ false,
+            )
+        ) {
+            Log.d("OnResult LoadMessages", it.toString())
+        }
     }
 }

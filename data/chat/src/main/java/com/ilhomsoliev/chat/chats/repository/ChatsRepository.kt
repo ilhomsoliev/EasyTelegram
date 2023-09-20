@@ -28,13 +28,7 @@ class ChatsRepository(
                 }
             }
 
-    suspend fun getChat(chatId: Long) = chatsManager.getChat(chatId)
-
-    fun getChatsPaging() = Pager(
-        PagingConfig(pageSize = 30)
-    ) {
-        ChatsPagingSource(this)
-    }.flow
+    fun getChat(chatId: Long) = chatsManager.getChat(chatId)
 
     suspend fun openChat(chatId: Long) = chatsManager.openChat(chatId).first()
 

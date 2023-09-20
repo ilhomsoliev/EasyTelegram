@@ -30,7 +30,6 @@ fun HomeScreen(
     }
 
     LaunchedEffect(key1 = newUpdateFromTdApi.value, block = {
-        Log.d("OnResult Hello", "Here we go bitch")
         vm.updateChats()
 
     })
@@ -62,9 +61,7 @@ fun HomeScreen(
             }
 
             override fun onItemPass(index: Int) {
-                scope.launch {
-                    vm.loadChats()
-                }
+                vm.loadChats()
             }
         })
 

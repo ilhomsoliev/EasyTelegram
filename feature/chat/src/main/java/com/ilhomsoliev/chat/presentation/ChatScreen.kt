@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.ilhomsoliev.chat.viewmodel.ChatViewModel
 import kotlinx.coroutines.launch
 import org.drinkless.tdlib.TdApi
@@ -19,20 +18,25 @@ fun ChatScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val chat = vm.chat?.collectAsState(null)
+    val chat = vm.chat.collectAsState()
     val answer by vm.answer.collectAsState()
-    val messages = vm.messagesPaged?.collectAsLazyPagingItems()
+    val messages by vm.messages.collectAsState()
 
     LaunchedEffect(key1 = Unit, block = {
         vm.loadChat(chatId)
     })
 
+    LaunchedEffect(key1 = chat.value?.id, block = {
+        if (chat.value?.id != null)
+            vm.loadMessages()
+    })
+
     ChatContent(
         state = ChatState(
-            chat = chat?.value,
+            chat = chat.value,
             answer = answer,
             downloadManager = vm.downloadManager,
-            messages = messages
+            messages = messages,
         ),
         callback = object : ChatCallback {
             override fun onAnswerChange(value: String) {
@@ -53,12 +57,15 @@ fun ChatScreen(
                         )
                     ).await()
                     vm.clearAnswer()
-                    messages?.refresh()
                 }
             }
 
             override fun onBack() {
                 navController.popBackStack()
+            }
+
+            override fun onItemPass() {
+                vm.loadMessages()
             }
         })
 }

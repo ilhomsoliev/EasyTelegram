@@ -17,7 +17,7 @@ object UpdateHandler {
      */
     fun onUpdateChatLastMessage(update: TdApi.UpdateChatLastMessage) {
         val chat = AppDataState.getChat(update.chatId)
-        Log.d("Hello onUpdateChatLastMessage", update.lastMessage?.content.toString())
+        // Log.d("Hello onUpdateChatLastMessage", update.lastMessage?.content.toString())
         chat?.lastMessage = update.lastMessage
         chat?.let { AppDataState.putChat(update.chatId, it) }
         onNewUpdateFromTdApi()

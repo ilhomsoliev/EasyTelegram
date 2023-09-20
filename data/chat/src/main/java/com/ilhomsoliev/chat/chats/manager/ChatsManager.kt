@@ -6,8 +6,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.tdlib.TdApi
-import org.drinkless.tdlib.TdApi.ChatList
-import org.drinkless.tdlib.TdApi.ChatListMain
 
 class ChatsManager(
     private val tgClient: TelegramClient,
@@ -57,10 +55,9 @@ class ChatsManager(
         }
 
     fun loadChat() {
-        tgClient.baseClient.send(TdApi.LoadChats(null, 10)) {
+        tgClient.baseClient.send(TdApi.LoadChats(null, 20)) {
             Log.d("OnResult Hello", it.toString())
         }
-        //awaitClose {}
     }
 
     fun openChat(chatId: Long) = callbackFlow {

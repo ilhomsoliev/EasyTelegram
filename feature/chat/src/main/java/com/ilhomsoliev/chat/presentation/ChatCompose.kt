@@ -9,22 +9,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,13 +40,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.itemContentType
-import androidx.paging.compose.itemKey
 import com.ilhomsoliev.chat.R
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageItem
+import com.ilhomsoliev.core.Constants
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.extensions.LocalDate
@@ -62,13 +57,14 @@ data class ChatState(
     val chat: TdApi.Chat? = null,
     val answer: String,
     val downloadManager: TgDownloadManager,
-    val messages: LazyPagingItems<MessageModel>?,
+    val messages: List<MessageModel>,
 )
 
 interface ChatCallback {
     fun onAnswerChange(value: String)
     fun onSendMessage()
     fun onBack()
+    fun onItemPass()
 
 }
 
@@ -99,7 +95,11 @@ fun ChatContent(
         }
     ) {
         state.messages?.run {
-            Box(modifier = Modifier.fillMaxSize().padding(it)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     painter = painterResource(id = R.drawable.chat_background),
@@ -108,10 +108,13 @@ fun ChatContent(
                 )
                 ChatHistory(
                     downloadManager = state.downloadManager,
-                    messagesPaging = this@run,
+                    messages = this@run,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    it,
+                    paddingValues = it,
+                    onItemPass = {
+                        callback.onItemPass()
+                    },
                 )
             }
         }
@@ -243,17 +246,14 @@ private fun MessageInput(
 @Composable
 fun ChatHistory(
     downloadManager: TgDownloadManager,
-    messagesPaging: LazyPagingItems<MessageModel>,
+    messages: List<MessageModel>,
+    onItemPass: () -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
 ) {
-    val messages = messagesPaging.itemSnapshotList.items
 
     LazyColumn(modifier = modifier, reverseLayout = true) {
-        item {
-            Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
-        }
-        when {
+        /*when {
             messagesPaging.loadState.refresh is LoadState.Loading -> {
                 item {
                     CircularProgressIndicator()
@@ -277,14 +277,17 @@ fun ChatHistory(
                     Text("Empty")
                 }
             }
-        }
+        }*/
         //val list = messagesPaging
-        items(
-            count = messagesPaging.itemCount,
-            key = messagesPaging.itemKey(),
-            contentType = messagesPaging.itemContentType(),
-        ) { index ->
-            val message = messagesPaging.itemSnapshotList.items[index]
+        itemsIndexed(
+            items = messages,
+            key = { index, item -> item.id },
+        ) { index, message ->
+            LaunchedEffect(key1 = Unit, block = {
+                if (index + Constants.MESSAGES_LIST_THRESHOLD == messages.size) {
+                    onItemPass()
+                }
+            })
             message.let {
                 // Message
                 val userId = message.sender?.id

@@ -1,11 +1,6 @@
 package com.ilhomsoliev.chat.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.messages.repository.MessagesRepository
 import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
@@ -14,9 +9,9 @@ import com.ilhomsoliev.profile.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import org.drinkless.tdlib.TdApi
 
 class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
@@ -25,31 +20,19 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val messagesRepository: MessagesRepository,
     private val profileRepository: ProfileRepository,
 ) : ViewModel() {
-    var chat: Flow<TdApi.Chat?>? = null
-        private set
-    // Some comment
+
+    private val _chat = MutableStateFlow<TdApi.Chat?>(null)
+    val chat = _chat.asStateFlow()
 
     private val _answer = MutableStateFlow("")
     val answer = _answer.asStateFlow()
 
-    var messagesPaged: Flow<PagingData<MessageModel>>? = null
-        private set
+    private val _messages = MutableStateFlow<List<MessageModel>>(emptyList())
+    val messages = _messages.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun loadChat(chatId: Long) {
-        this.chat = chatsRepository.getChat(chatId)
-
-        this.messagesPaged =
-            Pager(
-                PagingConfig(
-                    pageSize = 15,
-                    initialLoadSize = 15,
-                    enablePlaceholders = false
-                )
-            ) {
-                messagesRepository.getMessagesPaged(chatId, profileRepository)
-            }.flow.cachedIn(viewModelScope)
-
+        _chat.value = chatsRepository.getChat(chatId).first()
     }
 
     fun sendMessage(
@@ -77,5 +60,9 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
 
     suspend fun changeAnswer(value: String) {
         _answer.emit(value)
+    }
+
+    fun loadMessages() {
+        chat.value?.id?.let { messagesRepository.loadMessages(it) }
     }
 }

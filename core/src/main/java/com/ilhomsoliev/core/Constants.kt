@@ -1,5 +1,6 @@
 package com.ilhomsoliev.core
 
 object Constants {
-    final const val CHAT_LIST_THRESHOLD = 15
+    const val CHATS_LIST_THRESHOLD = 15
+    const val MESSAGES_LIST_THRESHOLD = 15
 }

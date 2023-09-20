@@ -121,8 +121,6 @@ class TelegramClient(
 
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
                 UpdateHandler.onUpdateChatLastMessage(data as TdApi.UpdateChatLastMessage)
-                // val el = (data as TdApi.UpdateChatLastMessage).lastMessage
-                // Log.d("Hello update chat last message", el.toString())
             }
 
             TdApi.UpdateChatPosition.CONSTRUCTOR -> run {
@@ -132,7 +130,7 @@ class TelegramClient(
                 }
 
                 val chat: TdApi.Chat? = AppDataState.getChat(updateChat.chatId)
-                Log.d("Hello new chat arrived", chat.toString())
+                // Log.d("Hello new chat arrived", chat.toString())
                 chat?.let {
                     synchronized(chat) {
                         var i = 0
@@ -238,8 +236,15 @@ class TelegramClient(
             TdApi.UpdateBasicGroupFullInfo.CONSTRUCTOR -> {}
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {}
 
-            TdApi.UpdateOption.CONSTRUCTOR -> {
-
+            TdApi.UpdateOption.CONSTRUCTOR -> {}
+            TdApi.UpdateNewMessage.CONSTRUCTOR -> {
+                val updateNewMessage = (data as TdApi.UpdateNewMessage)
+                val message = updateNewMessage.message
+                Log.d("Hello update new message", message.toString())
+                synchronized(message) {
+                    AppDataState.putMessage(message.id, message)
+                    newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                }
             }
 
             else -> Log.d(TAG, "Unhandled onResult call with data: $data.")

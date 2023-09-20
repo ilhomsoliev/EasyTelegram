@@ -23,6 +23,7 @@ class MessagesRepository(
             profileRepository = profileRepository
         )
 
+    fun loadMessages(chatId: Long) = messagesManager.loadMessages(chatId)
 
     fun sendMessage(
         sendMessageRequest: SendMessageRequest,
@@ -39,4 +40,5 @@ class MessagesRepository(
         limit = limit,
         offset = offset,
     )
+
 }

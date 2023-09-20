@@ -13,8 +13,6 @@ import org.koin.dsl.module
 val repositoryModule = module {
     single { ChatsRepository(get(), get(),) }
     single { AuthRepository(get()) }
-    single { ChatsPagingSource(get()) }
-    //single { ContactsPagingSource(get()) }
     single { MessagesRepository(get()) }
     single { ProfileRepository(get()) }
 }

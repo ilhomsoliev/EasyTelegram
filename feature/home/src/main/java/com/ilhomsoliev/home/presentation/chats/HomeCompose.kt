@@ -83,7 +83,7 @@ fun HomeContent(
                         }) { index, item ->
 
                         LaunchedEffect(key1 = Unit, block = {
-                            if (index + Constants.CHAT_LIST_THRESHOLD == state.chats.size) {
+                            if (index + Constants.CHATS_LIST_THRESHOLD == state.chats.size) {
                                 callback.onItemPass(index)
                             }
                         })

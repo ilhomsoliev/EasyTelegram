@@ -7,6 +7,7 @@ import com.ilhomsoliev.chat.model.chat.ChatModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 
+@SuppressWarnings("unused")
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatsPagingSource(
     private val chats: ChatsRepository
