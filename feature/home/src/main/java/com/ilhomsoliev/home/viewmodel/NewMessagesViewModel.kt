@@ -1,8 +1,7 @@
 package com.ilhomsoliev.home.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.ilhomsoliev.profile.ContactsPagingSource
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

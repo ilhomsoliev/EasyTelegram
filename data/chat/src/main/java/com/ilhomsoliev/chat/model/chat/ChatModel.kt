@@ -2,7 +2,6 @@ package com.ilhomsoliev.chat.model.chat
 
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.map
-import com.ilhomsoliev.profile.ProfileRepository
 import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.ChatPosition
 
@@ -50,15 +49,13 @@ fun TdApi.BlockList.map(): BlockListModel {
     }
 }
 
-suspend fun TdApi.Chat.map(
-    profileRepository: ProfileRepository,
-) = ChatModel(
+suspend fun TdApi.Chat.map() = ChatModel(
     id = id,
     type = type.map(),
     title = title,
     photo = photo?.map(),
     permissions = permissions.map(),
-    lastMessage = lastMessage?.map(profileRepository),
+    lastMessage = lastMessage?.map(),
     positions = positions.toList(),
     hasProtectedContent = hasProtectedContent,
     isMarkedAsUnread = isMarkedAsUnread,

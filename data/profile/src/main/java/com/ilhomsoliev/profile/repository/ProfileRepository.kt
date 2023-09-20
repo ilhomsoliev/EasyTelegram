@@ -1,7 +1,9 @@
-package com.ilhomsoliev.profile
+package com.ilhomsoliev.profile.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.ilhomsoliev.profile.ContactsPagingSource
+import com.ilhomsoliev.profile.manager.ProfileManager
 import com.ilhomsoliev.profile.model.UserModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +13,6 @@ import kotlinx.coroutines.flow.map
 
 class ProfileRepository(
     private val profileManager: ProfileManager,
-    //private val tgClient: TelegramClient,
 ) {
     suspend fun getCurrentUser() = profileManager.getCurrentUser()
     suspend fun getUserById(userId: Long) = profileManager.getUserById(userId)

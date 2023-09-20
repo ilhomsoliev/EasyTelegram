@@ -3,7 +3,7 @@ package com.ilhomsoliev.easytelegram.application.di
 import android.content.Context
 import com.ilhomsoliev.chat.chats.manager.ChatsManager
 import com.ilhomsoliev.chat.messages.manager.MessagesManager
-import com.ilhomsoliev.profile.ProfileManager
+import com.ilhomsoliev.profile.manager.ProfileManager
 import com.ilhomsoliev.shared.TgDownloadManager
 import org.koin.dsl.module
 

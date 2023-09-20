@@ -242,8 +242,9 @@ class TelegramClient(
                 val message = updateNewMessage.message
                 Log.d("Hello update new message", message.toString())
                 synchronized(message) {
-                    AppDataState.putMessage(message.id, message)
+                    // AppDataState.putMessage(message.id, message)
                     newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                    newMessageArrivedFromTdApi.value = message
                 }
             }
 

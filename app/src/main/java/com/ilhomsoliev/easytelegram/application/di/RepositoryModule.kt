@@ -1,10 +1,9 @@
 package com.ilhomsoliev.easytelegram.application.di
 
 import com.ilhomsoliev.auth.AuthRepository
-import com.ilhomsoliev.chat.chats.paging.ChatsPagingSource
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.messages.repository.MessagesRepository
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 

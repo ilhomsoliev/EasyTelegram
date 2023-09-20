@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.messages.repository.MessagesRepository
+import com.ilhomsoliev.chat.messages.requests.MarkMessagesAsViewedRequest
 import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
+import com.ilhomsoliev.chat.model.chat.ChatModel
+import com.ilhomsoliev.chat.model.chat.map
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.map
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +27,7 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
-    private val _chat = MutableStateFlow<TdApi.Chat?>(null)
+    private val _chat = MutableStateFlow<ChatModel?>(null)
     val chat = _chat.asStateFlow()
 
     private val _answer = MutableStateFlow("")
@@ -38,20 +40,21 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     val lastMessageVisible = _lastMessageVisible.asStateFlow()
 
     private var _messagesFetchingRunning = MutableStateFlow<Boolean?>(null)
+    var messagesFetchingRunning = _messagesFetchingRunning.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun loadChat(chatId: Long) {
-        _chat.value = chatsRepository.getChat(chatId).first()
+        _chat.value = chatsRepository.getChat(chatId).first().map()
     }
 
-    fun sendMessage(
+    suspend fun sendMessage(
         chatId: Long,
         messageThreadId: Long = 0,
         replyToMessageId: Long = 0,
         options: TdApi.MessageSendOptions = TdApi.MessageSendOptions(),
         inputMessageContent: TdApi.InputMessageContent
-    ): Deferred<TdApi.Message> {
-        return messagesRepository.sendMessage(
+    ) {
+        val response = messagesRepository.sendMessage(
             SendMessageRequest(
                 chatId = chatId,
                 messageThreadId = messageThreadId,
@@ -61,9 +64,11 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
                 inputMessageContent = inputMessageContent,
             )
         )
+        response.await()
+        clearAnswer()
     }
 
-    suspend fun clearAnswer() {
+    private suspend fun clearAnswer() {
         _answer.emit("")
     }
 
@@ -84,7 +89,7 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
                 val response = messagesRepository.loadMessages(
                     chatId = it,
                     fromMessageId = _lastMessageVisible.value?.id ?: 0L
-                ).first().messages.map { it.map(profileRepository) }
+                ).first().messages.map { it.map() }
                 Log.d("Hello Chat Screen response", response.size.toString())
                 addNewMessagesToList(response)
             }
@@ -95,14 +100,36 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     }
 
     suspend fun onMessageItemPass(index: Int) {
-        val isTaskRunning = _messagesFetchingRunning.value == true
-        if (index != messages.value.size - 1) return // TODO
-        if (isTaskRunning) return
-        val message = messages.value.getOrNull(index)
-        if (message?.id == _lastMessageVisible.value?.id || index == -1) {
-            loadMessages()
+        suspend fun onLoadOldMessaged(index: Int) {
+            val isTaskRunning = _messagesFetchingRunning.value == true
+            if (index != messages.value.size - 1) return // TODO
+            if (isTaskRunning) return
+            val message = messages.value.getOrNull(index)
+            if (message?.id == _lastMessageVisible.value?.id || index == -1) {
+                this.loadMessages()
+            }
         }
 
+        suspend fun markMessageAsRead(index: Int) {
+            if (chat.value == null) return
+            val message = messages.value.getOrNull(index)
+            /*Log.d(
+                "Hello mark message method",
+                "${message?.id} ${chat.value?.lastMessage?.id} ${(message?.id ?: 0) <= (chat.value?.lastMessage?.id ?: 0)}"
+            )*/
+            message?.let {
+                if (message.id <= (chat.value?.lastMessage?.id ?: 0)) {
+                    messagesRepository.markMessagesAsViewed(
+                        MarkMessagesAsViewedRequest(
+                            chat.value?.id!!,
+                            listOf(message.id),
+                        )
+                    )
+                }
+            }
+        }
+        onLoadOldMessaged(index)
+        markMessageAsRead(index)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,5 +139,15 @@ class ChatViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
             val response = chat.value?.id?.let { chatsRepository.closeChat(it) }
             Log.d("Hello Chat Screen On Cleared", response.toString())
         }
+    }
+
+    suspend fun onMessageArrived(newMessage: MessageModel) {
+        if (newMessage.chatId != chat.value?.id) return
+        fun addNewMessageToList(newMessage: MessageModel) {
+            val newList = messages.value.toMutableList()
+            newList.add(0, newMessage)
+            _messages.value = newList
+        }
+        addNewMessageToList(newMessage)
     }
 }

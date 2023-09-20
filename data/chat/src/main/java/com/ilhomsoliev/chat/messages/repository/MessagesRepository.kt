@@ -3,11 +3,10 @@ package com.ilhomsoliev.chat.messages.repository
 import androidx.paging.PagingSource
 import com.ilhomsoliev.chat.messages.manager.MessagesManager
 import com.ilhomsoliev.chat.messages.paging.MessagesPagingSource
+import com.ilhomsoliev.chat.messages.requests.MarkMessagesAsViewedRequest
 import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
 import com.ilhomsoliev.chat.model.message.MessageModel
-import com.ilhomsoliev.profile.ProfileRepository
-import kotlinx.coroutines.Deferred
-import org.drinkless.tdlib.TdApi
+import com.ilhomsoliev.profile.repository.ProfileRepository
 
 class MessagesRepository(
     private val messagesManager: MessagesManager,
@@ -28,7 +27,11 @@ class MessagesRepository(
 
     fun sendMessage(
         sendMessageRequest: SendMessageRequest,
-    ): Deferred<TdApi.Message> = messagesManager.sendMessage(sendMessageRequest)
+    ) = messagesManager.sendMessage(sendMessageRequest)
+
+    fun markMessagesAsViewed(
+        markMessagesAsViewedRequest: MarkMessagesAsViewedRequest,
+    ) = messagesManager.markMessageAsViewed(markMessagesAsViewedRequest)
 
     fun getMessages(
         chatId: Long,

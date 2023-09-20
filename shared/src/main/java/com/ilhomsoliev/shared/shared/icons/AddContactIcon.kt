@@ -1,5 +1,7 @@
 package com.ilhomsoliev.shared.shared.icons
 
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
@@ -8,8 +10,15 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+
+@Composable
+@Preview
+private fun ImagePreview() {
+    Image(imageVector = AddContactIcon, contentDescription = null)
+}
 
 private var _vector: ImageVector? = null
 

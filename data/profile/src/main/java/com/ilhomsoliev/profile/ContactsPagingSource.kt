@@ -3,6 +3,7 @@ package com.ilhomsoliev.profile
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.ilhomsoliev.profile.model.UserModel
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import kotlinx.coroutines.flow.first
 
 class ContactsPagingSource(

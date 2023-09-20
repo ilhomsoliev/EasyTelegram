@@ -8,7 +8,7 @@ import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.tgcore.AppDataState
@@ -82,7 +82,7 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
     }
 
     suspend fun updateChats() {
-        val chats = AppDataState.getChats().map { it.map(profileRepository) }
+        val chats = AppDataState.getChats().map { it.map() }
         _chats.emit(chats)
     }
 

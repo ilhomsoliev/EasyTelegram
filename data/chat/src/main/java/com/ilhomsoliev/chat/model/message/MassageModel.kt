@@ -2,7 +2,8 @@ package com.ilhomsoliev.chat.model.message
 
 import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
 import com.ilhomsoliev.chat.model.message.messageContent.map
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.core.getKoinInstance
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
 import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.MessageAnimation
@@ -36,10 +37,10 @@ data class MessageModel(
     val content: MessageContentModel,
 )
 
-suspend fun TdApi.Message.map(
-    userRepository: ProfileRepository?,
-) =
-    MessageModel(
+suspend fun TdApi.Message.map(): MessageModel {
+    val userRepository: ProfileRepository = getKoinInstance()
+
+    return MessageModel(
         id = id,
         chatId = chatId,
         sendingStateModel = sendingState.map(),
@@ -73,6 +74,7 @@ suspend fun TdApi.Message.map(
         viaBotUserId = viaBotUserId,
         content = content.getMessageTypeModel(),
     )
+}
 
 // TODO add all types
 fun TdApi.MessageContent.getMessageTypeModel(): MessageContentModel =

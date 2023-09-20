@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import com.ilhomsoliev.chat.messages.repository.MessagesRepository
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.map
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import org.drinkless.tdlib.TdApi
@@ -28,7 +28,7 @@ class MessagesPagingSource(
                 offset = -1,
             )
 
-            val messages = response.first().map { it.map(profileRepository) }
+            val messages = response.first().map { it.map() }
             Log.d("Hello Pager", "$page ${params.loadSize} $offset")
 
             val prevKey = if (page > 1) page.minus(1) else null

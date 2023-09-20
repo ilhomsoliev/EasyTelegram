@@ -34,7 +34,6 @@ sealed class MessageReplyToModel {
     fun map(): TdApi.MessageReplyTo {
         return if (this is MessageReplyToMessageModel) {
             val reply: MessageReplyToMessageModel = (this)
-
             TdApi.MessageReplyToMessage().apply {
                 this.chatId = reply.chatId
                 this.messageId = reply.messageId

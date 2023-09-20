@@ -1,6 +1,7 @@
 package com.ilhomsoliev.chat.messages.manager
 
 import android.util.Log
+import com.ilhomsoliev.chat.messages.requests.MarkMessagesAsViewedRequest
 import com.ilhomsoliev.chat.messages.requests.SendMessageRequest
 import com.ilhomsoliev.core.Constants.MESSAGES_LIST_THRESHOLD
 import com.ilhomsoliev.tgcore.TelegramClient
@@ -82,6 +83,25 @@ class MessagesManager(
             when (it.constructor) {
                 TdApi.Message.CONSTRUCTOR -> {
                     result.complete(it as TdApi.Message)
+                }
+
+                else -> {
+                    result.completeExceptionally(error("Something went wrong"))
+                }
+            }
+        }
+        return result
+    }
+
+    fun markMessageAsViewed(
+        markMessagesAsViewedRequest: MarkMessagesAsViewedRequest,
+    ): Deferred<Boolean> {
+        val result = CompletableDeferred<Boolean>()
+        val request = markMessagesAsViewedRequest.map()
+        tgClient.baseClient.send(request) {
+            when (it.constructor) {
+                TdApi.Ok.CONSTRUCTOR -> {
+                    result.complete(true)
                 }
 
                 else -> {

@@ -1,12 +1,9 @@
 package com.ilhomsoliev.chat.chats.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import com.ilhomsoliev.chat.chats.manager.ChatsManager
-import com.ilhomsoliev.chat.chats.paging.ChatsPagingSource
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
-import com.ilhomsoliev.profile.ProfileRepository
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -24,7 +21,7 @@ class ChatsRepository(
             .map { ids -> ids.map { chatsManager.getChat(it) } }
             .flatMapLatest { chatsFlow ->
                 combine(chatsFlow) { chats ->
-                    chats.toList().map { it.map(profileRepository) }
+                    chats.toList().map { it.map() }
                 }
             }
 

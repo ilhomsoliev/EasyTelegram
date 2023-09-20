@@ -1,4 +1,4 @@
-package com.ilhomsoliev.profile
+package com.ilhomsoliev.profile.manager
 
 import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.profile.model.map

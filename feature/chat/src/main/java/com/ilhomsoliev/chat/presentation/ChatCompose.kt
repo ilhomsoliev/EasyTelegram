@@ -1,27 +1,27 @@
 package com.ilhomsoliev.chat.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +30,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,22 +43,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.chat.R
+import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.presentation.message_item.MessageItem
-import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
+import com.ilhomsoliev.shared.common.ChatItemImage
+import com.ilhomsoliev.shared.common.dropdown_menu.Chat3DotsDropdownMenu
 import com.ilhomsoliev.shared.common.extensions.LocalDate
 import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
+import com.ilhomsoliev.shared.shared.dialogs.CleanChatHistoryDialog
 import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
 import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
 import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon
-import org.drinkless.tdlib.TdApi
 
 data class ChatState(
-    val chat: TdApi.Chat? = null,
+    val chat: ChatModel? = null,
     val answer: String,
     val downloadManager: TgDownloadManager,
     val messages: List<MessageModel>,
+    val isLoadingNewMessages: Boolean,
+    val isCleanChatHistoryDialogActive: Boolean,
+    val isDeleteChatHistoryDialogActive: Boolean,
+    val isPinMessageDialogActive: Boolean,
 )
 
 interface ChatCallback {
@@ -64,7 +72,10 @@ interface ChatCallback {
     fun onSendMessage()
     fun onBack()
     fun onItemPass(index: Int)
-
+    fun onSearchIconClick()
+    fun onIsCleanChatHistoryDialogActiveChange(value: Boolean)
+    fun onIsDeleteChatHistoryDialogActiveChange(value: Boolean)
+    fun onIsPinMessageDialogActiveChange(value: Boolean)
 }
 
 val chatElementsBackground = Color(0xFED9D9D9)
@@ -77,7 +88,10 @@ fun ChatContent(
 ) {
     Scaffold(
         topBar = {
-            ChatTopAppBar(state, callback)
+            ChatTopAppBar(
+                state = state,
+                callback = callback
+            )
         },
         bottomBar = {
             MessageInput(
@@ -93,38 +107,57 @@ fun ChatContent(
                 })
         }
     ) {
-        state.messages?.run {
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = painterResource(id = R.drawable.chat_background),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+            )
+            ChatHistory(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(id = R.drawable.chat_background),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds
-                )
-                ChatHistory(
-                    downloadManager = state.downloadManager,
-                    messages = this@run,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    paddingValues = it,
-                    onItemPass = {
-                        callback.onItemPass(it)
-                    },
-                )
-            }
+                    .fillMaxWidth(),
+                state = state,
+                callback = callback,
+            )
         }
     }
+    Dialogs(
+        state = state,
+        callback = callback
+    )
 }
 
+@Composable
+private fun Dialogs(
+    state: ChatState,
+    callback: ChatCallback,
+) {
+    CleanChatHistoryDialog(
+        isDialogShown = state.isCleanChatHistoryDialogActive,
+        onDismissRequest = {
+            callback.onIsCleanChatHistoryDialogActiveChange(false)
+        },
+        onPositiveButtonClick = {
+
+        }
+    )
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ChatTopAppBar(
     state: ChatState,
     callback: ChatCallback,
 ) {
+    val title = state.chat?.title ?: ""
+    val isMenuOpen = remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -132,7 +165,12 @@ private fun ChatTopAppBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .weight(1f, false)
+                .padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             IconButton(onClick = {
                 callback.onBack()
             }) {
@@ -141,15 +179,20 @@ private fun ChatTopAppBar(
             Column(modifier = Modifier.offset((-4).dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = state.chat?.title ?: "", style = TextStyle(
+                        modifier = Modifier.basicMarquee(),
+                        text = title,
+                        style = TextStyle(
                             fontSize = 15.sp,
                             fontWeight = FontWeight(600),
                             color = Color(0xFF232323),
+                        ),
+                        maxLines = 1,
+
                         )
-                    )
                     // TODO if notifcation is enabled
                 }
 
+                // TODO
                 Text(
                     text = "last seen", style = TextStyle(
                         fontSize = 11.sp,
@@ -157,26 +200,39 @@ private fun ChatTopAppBar(
                         color = Color(0xFF979797),
                     )
                 )
-
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TelegramImage(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(32.dp),
+            ChatItemImage(
+                modifier = Modifier,
                 downloadManager = state.downloadManager,
-                file = state.chat?.photo?.small
+                file = state.chat?.photo?.small,
+                username = title,
+                imageSize = 32.dp,
             )
 
             IconButton(onClick = {
-
+                isMenuOpen.value = true
             }) {
                 Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
             }
+            Chat3DotsDropdownMenu(
+                isMenuOpen = isMenuOpen.value,
+                onIsMenuOpenChange = {
+                    isMenuOpen.value = false
+                },
+                onCleanHistoryClick = {
+                    callback.onIsCleanChatHistoryDialogActiveChange(true)
+                },
+                onSearchClick = {
+                    callback.onSearchIconClick()
+                },
+                onDeleteChatClick = {
+                    callback.onIsDeleteChatHistoryDialogActiveChange(true)
+                },
+            )
         }
     }
-
 }
 
 @Composable
@@ -244,40 +300,13 @@ private fun MessageInput(
 
 @Composable
 fun ChatHistory(
-    downloadManager: TgDownloadManager,
-    messages: List<MessageModel>,
-    onItemPass: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
+    state: ChatState,
+    callback: ChatCallback,
 ) {
+    val messages = state.messages
 
     LazyColumn(modifier = modifier, reverseLayout = true) {
-        /*when {
-            messagesPaging.loadState.refresh is LoadState.Loading -> {
-                item {
-                    CircularProgressIndicator()
-                }
-            }
-
-            messagesPaging.loadState.refresh is LoadState.Error -> {
-                item {
-                    Text(
-                        text = "Cannot load messages",
-                        // style = MaterialTheme.typography.h5,
-                        modifier = modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center)
-                    )
-                }
-            }
-
-            messagesPaging.loadState.refresh is LoadState.NotLoading && messagesPaging.itemCount == 0 -> {
-                item {
-                    Text("Empty")
-                }
-            }
-        }*/
-        //val list = messagesPaging
         itemsIndexed(
             items = messages,
             key = { index, item ->
@@ -286,7 +315,7 @@ fun ChatHistory(
         ) { index, message ->
 
             LaunchedEffect(key1 = Unit, block = {
-                onItemPass(index)
+                callback.onItemPass(index)
             })
 
             message.let {
@@ -303,7 +332,7 @@ fun ChatHistory(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
                     isLastMessage = isLastMessage,
                     isFirstMessage = isFirstMessage,
-                    downloadManager = downloadManager,
+                    downloadManager = state.downloadManager,
                     message = it
                 )
                 // Date Separator
@@ -322,6 +351,13 @@ fun ChatHistory(
 
                 dateSeparator?.let {
                     ChatDateSeparator(text = it)
+                }
+            }
+        }
+        if (state.isLoadingNewMessages) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier)
                 }
             }
         }

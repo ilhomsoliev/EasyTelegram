@@ -1,10 +1,11 @@
 package com.ilhomsoliev.tgcore
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.Message
 
 val newUpdateFromTdApi = mutableStateOf<Boolean>(false)
+val newMessageArrivedFromTdApi = mutableStateOf<Message?>(null)
 
 private fun onNewUpdateFromTdApi() {
     newUpdateFromTdApi.value = !newUpdateFromTdApi.value

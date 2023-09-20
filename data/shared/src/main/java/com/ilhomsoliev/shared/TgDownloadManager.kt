@@ -13,7 +13,7 @@ class TgDownloadManager(
     private val tgClient: TelegramClient,
 ) {
 
-    fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
+    private fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
         tgClient.baseClient.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {
