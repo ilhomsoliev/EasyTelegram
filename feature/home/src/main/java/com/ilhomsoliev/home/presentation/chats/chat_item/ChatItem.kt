@@ -126,7 +126,9 @@ fun ChatSummary(
                      modifier = modifier
                  )
      */
-                    else -> Text(it::class.java.simpleName)
+                    else -> {
+                        NotDefined(it::class.java.simpleName)
+                    }
                 }
             }
         }
@@ -175,6 +177,24 @@ fun BasicChatSummary(text: String, modifier: Modifier = Modifier) {
 
     Text(
         modifier = modifier.sizeIn(minHeight = with(LocalDensity.current) {
+            (lineHeight * 2).toDp()
+        }),
+        text = text,
+        lineHeight = 16.sp,
+        // TODO style = MaterialTheme.typography.subtitle1,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        fontSize = 15.sp,
+    )
+}
+
+@Composable
+private fun NotDefined(text: String) {
+
+    val lineHeight = 13.sp * 4 / 3
+
+    Text(
+        modifier = Modifier.sizeIn(minHeight = with(LocalDensity.current) {
             (lineHeight * 2).toDp()
         }),
         text = text,
@@ -272,6 +292,8 @@ fun Long.toRelativeTimeSpan(): String =
         System.currentTimeMillis(),
         DateUtils.SECOND_IN_MILLIS
     ).toString()
+
+
 
 private fun Int.toTime(): String {
     val duration = this.toLong()

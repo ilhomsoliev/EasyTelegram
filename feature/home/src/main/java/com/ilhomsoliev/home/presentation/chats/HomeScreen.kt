@@ -31,7 +31,6 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = newUpdateFromTdApi.value, block = {
         vm.updateChats()
-
     })
 
     HomeContent(

@@ -29,7 +29,8 @@ fun ContactItem(
     user: UserModel,
     onClick: () -> Unit,
 ) {
-    val name = user.firstName + " " + user.lastName
+    val name = user.getFullName()
+
     Column(modifier = modifier
         .fillMaxWidth()
         .clickable {

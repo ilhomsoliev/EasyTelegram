@@ -29,7 +29,7 @@ fun ChatItemImage(
         TelegramImage(
             downloadManager = downloadManager,
             file = file,
-            modifier = Modifier
+            modifier = modifier
                 .clip(shape = CircleShape)
                 .size(imageSize)
         )

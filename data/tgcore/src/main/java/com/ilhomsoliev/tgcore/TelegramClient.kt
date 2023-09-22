@@ -7,12 +7,14 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.drinkless.tdlib.Client
 import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.ChatPosition
 import org.drinkless.tdlib.TdApi.Function
+import org.drinkless.tdlib.TdApi.GetChat
 import org.drinkless.tdlib.TdApi.UpdateChatPosition
 import org.drinkless.tdlib.TdApi.UpdateNewChat
 import org.drinkless.tdlib.TdApi.UpdateUserStatus
@@ -42,7 +44,7 @@ class TelegramClient(
         baseClient.send(TdApi.SetLogVerbosityLevel(1), this)
 
         doAsync {
-            val request = TdApi.SetTdlibParameters();
+            val request = TdApi.SetTdlibParameters()
             request.databaseDirectory = tdLibParameters.databaseDirectory
             request.useMessageDatabase = tdLibParameters.useMessageDatabase
             request.useSecretChats = tdLibParameters.useSecretChats
@@ -52,32 +54,52 @@ class TelegramClient(
             request.deviceModel = tdLibParameters.deviceModel
             request.applicationVersion = tdLibParameters.applicationVersion
             request.enableStorageOptimizer = tdLibParameters.enableStorageOptimizer
-
-            baseClient.send(
-                request
-            ) {
-                Log.d(TAG, "SetTdlibParameters result: $it")
+            baseClient.send(request) {
                 when (it.constructor) {
-                    TdApi.Ok.CONSTRUCTOR -> {
-                        //result.postValue(true)
-                    }
-
-                    TdApi.Error.CONSTRUCTOR -> {
-                        //result.postValue(false)
-                    }
+                    TdApi.Ok.CONSTRUCTOR -> {}
+                    TdApi.Error.CONSTRUCTOR -> {}
                 }
             }
         }
     }
 
     override fun onResult(data: TdApi.Object) {
-        Log.d(TAG, "onResult: ${data::class.java.simpleName}")
+        fun updateChatPosition(position: ChatPosition, chatId: Long) {
+            if (position.list.constructor != TdApi.ChatListMain.CONSTRUCTOR) {
+                return
+            }
 
-        // newTdApiUpdates.value = data
+            val chat: TdApi.Chat? = AppDataState.getChat(chatId)
 
+            chat?.let {
+                synchronized(chat) {
+                    var i = 0
+                    while (i < chat.positions.size) {
+                        if (chat.positions[i].list.constructor == TdApi.ChatListMain.CONSTRUCTOR) {
+                            break
+                        }
+                        i++
+                    }
+                    val new_positions =
+                        arrayOfNulls<ChatPosition>(chat.positions.size + (if (position.order == 0L) 0 else 1) - if (i < chat.positions.size) 1 else 0)
+                    var pos = 0
+                    if (position.order != 0L) {
+                        new_positions[pos++] = position
+                    }
+                    for (j in chat.positions.indices) {
+                        if (j != i) {
+                            new_positions[pos++] = chat.positions[j]
+                        }
+                    }
+                    assert(pos == new_positions.size)
+                    setChatPositions(chat, new_positions)
+                    newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                }
+            }
+        }
+        Log.d("Hello onResult Updates", data.javaClass.name.toString())
         when (data.constructor) {
             TdApi.UpdateAuthorizationState.CONSTRUCTOR -> {
-                Log.d(TAG, "UpdateAuthorizationState")
                 onAuthorizationStateUpdated((data as TdApi.UpdateAuthorizationState).authorizationState)
             }
 
@@ -95,137 +117,50 @@ class TelegramClient(
             TdApi.UpdateSupergroup.CONSTRUCTOR -> {}
             TdApi.UpdateSecretChat.CONSTRUCTOR -> {}
 
-            TdApi.UpdateNewChat.CONSTRUCTOR -> {
+            UpdateNewChat.CONSTRUCTOR -> {
                 val updateNewChat = data as UpdateNewChat
-                // UpdateHandler.onUpdateNewChat(updateNewChat)
                 val chat = updateNewChat.chat
                 synchronized(chat) {
                     AppDataState.putChat(chat.id, chat)
                     val positions = chat.positions
-                    chat.positions = arrayOfNulls(0)
+                    // chat.positions = arrayOfNulls(0) //  TODO
                     setChatPositions(chat, positions)
+                    newUpdateFromTdApi.value = !newUpdateFromTdApi.value
                 }
             }
 
-            TdApi.UpdateChatTitle.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatPhoto.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatPermissions.CONSTRUCTOR -> {
-
-            }
-
+            TdApi.UpdateChatTitle.CONSTRUCTOR -> {}
+            TdApi.UpdateChatPhoto.CONSTRUCTOR -> {}
+            TdApi.UpdateChatPermissions.CONSTRUCTOR -> {}
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
-                UpdateHandler.onUpdateChatLastMessage(data as TdApi.UpdateChatLastMessage)
+                val newMessage = data as TdApi.UpdateChatLastMessage
+                UpdateHandler.onUpdateChatLastMessage(newMessage)
+                /*val
+                updateChatPosition()*/
             }
 
-            TdApi.UpdateChatPosition.CONSTRUCTOR -> run {
-                val updateChat = data as UpdateChatPosition
-                if (updateChat.position.list.constructor != TdApi.ChatListMain.CONSTRUCTOR) {
-                    return@run
-                }
-
-                val chat: TdApi.Chat? = AppDataState.getChat(updateChat.chatId)
-                // Log.d("Hello new chat arrived", chat.toString())
-                chat?.let {
-                    synchronized(chat) {
-                        var i = 0
-                        while (i < chat.positions.size) {
-                            if (chat.positions[i].list.constructor == TdApi.ChatListMain.CONSTRUCTOR) {
-                                break
-                            }
-                            i++
-                        }
-                        val new_positions =
-                            arrayOfNulls<ChatPosition>(chat.positions.size + (if (updateChat.position.order == 0L) 0 else 1) - if (i < chat.positions.size) 1 else 0)
-                        var pos = 0
-                        if (updateChat.position.order != 0L) {
-                            new_positions[pos++] = updateChat.position
-                        }
-                        for (j in chat.positions.indices) {
-                            if (j != i) {
-                                new_positions[pos++] = chat.positions[j]
-                            }
-                        }
-                        assert(pos == new_positions.size)
-                        setChatPositions(chat, new_positions)
-                        newUpdateFromTdApi.value = !newUpdateFromTdApi.value
-                    }
-                }
+            UpdateChatPosition.CONSTRUCTOR -> run {
+                val updateChatPosition = (data as UpdateChatPosition)
+                updateChatPosition(updateChatPosition.position, chatId = updateChatPosition.chatId)
             }
 
-            TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatReadOutbox.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatActionBar.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatAvailableReactions.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatDraftMessage.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatMessageSender.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatMessageAutoDeleteTime.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatNotificationSettings.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatPendingJoinRequests.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatReplyMarkup.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatBackground.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatTheme.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatUnreadMentionCount.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatUnreadReactionCount.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatVideoChat.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatDefaultDisableNotification.CONSTRUCTOR -> {
-
-            }
-
-            TdApi.UpdateChatHasProtectedContent.CONSTRUCTOR -> {
-
-            }
-
+            TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {}
+            TdApi.UpdateChatReadOutbox.CONSTRUCTOR -> {}
+            TdApi.UpdateChatActionBar.CONSTRUCTOR -> {}
+            TdApi.UpdateChatAvailableReactions.CONSTRUCTOR -> {}
+            TdApi.UpdateChatDraftMessage.CONSTRUCTOR -> {}
+            TdApi.UpdateChatMessageSender.CONSTRUCTOR -> {}
+            TdApi.UpdateChatMessageAutoDeleteTime.CONSTRUCTOR -> {}
+            TdApi.UpdateChatNotificationSettings.CONSTRUCTOR -> {}
+            TdApi.UpdateChatPendingJoinRequests.CONSTRUCTOR -> {}
+            TdApi.UpdateChatReplyMarkup.CONSTRUCTOR -> {}
+            TdApi.UpdateChatBackground.CONSTRUCTOR -> {}
+            TdApi.UpdateChatTheme.CONSTRUCTOR -> {}
+            TdApi.UpdateChatUnreadMentionCount.CONSTRUCTOR -> {}
+            TdApi.UpdateChatUnreadReactionCount.CONSTRUCTOR -> {}
+            TdApi.UpdateChatVideoChat.CONSTRUCTOR -> {}
+            TdApi.UpdateChatDefaultDisableNotification.CONSTRUCTOR -> {}
+            TdApi.UpdateChatHasProtectedContent.CONSTRUCTOR -> {}
             TdApi.UpdateChatIsTranslatable.CONSTRUCTOR -> {}
             TdApi.UpdateChatIsMarkedAsUnread.CONSTRUCTOR -> {}
             TdApi.UpdateChatBlockList.CONSTRUCTOR -> {}
@@ -235,16 +170,31 @@ class TelegramClient(
             TdApi.UpdateUserFullInfo.CONSTRUCTOR -> {}
             TdApi.UpdateBasicGroupFullInfo.CONSTRUCTOR -> {}
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {}
-
             TdApi.UpdateOption.CONSTRUCTOR -> {}
             TdApi.UpdateNewMessage.CONSTRUCTOR -> {
                 val updateNewMessage = (data as TdApi.UpdateNewMessage)
                 val message = updateNewMessage.message
-                Log.d("Hello update new message", message.toString())
-                synchronized(message) {
-                    // AppDataState.putMessage(message.id, message)
-                    newUpdateFromTdApi.value = !newUpdateFromTdApi.value
-                    newMessageArrivedFromTdApi.value = message
+                requestScope.launch {
+                    val chat = baseClient.send(GetChat(message.chatId)).first()
+                    Log.d("Hello client chat", chat.toString())
+                    synchronized(chat) {
+                        AppDataState.putChat(chat.id, chat)
+                        for (position in chat.positions) {
+                            updateChatPosition(
+                                chatId = chat.id,
+                                position = position
+                            )
+                        }
+                        val positions = chat.positions
+                        // chat.positions = arrayOfNulls(0) // TODO wtf
+                        setChatPositions(chat, positions)
+                        newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                    }
+                    Log.d("Hello update new message", message.toString())
+                    synchronized(message) {
+                        newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                        newMessageArrivedFromTdApi.value = message
+                    }
                 }
             }
 
@@ -279,6 +229,7 @@ class TelegramClient(
                         assert(isAdded)
                     }
                 }
+                newUpdateFromTdApi.value = !newUpdateFromTdApi.value
             }
         }
     }
@@ -350,6 +301,26 @@ fun <T : TdApi.Object> TelegramClient.sendAsFlow(query: Function<T>): Flow<TdApi
     }
 
 inline fun <reified T : TdApi.Object> TelegramClient.send(query: Function<T>): Flow<T> =
+    sendAsFlow(query).map { it as T }
+
+fun <T : TdApi.Object> Client.sendAsFlow(query: Function<T>): Flow<TdApi.Object> =
+    callbackFlow {
+        this@sendAsFlow.send(query) {
+            when (it.constructor) {
+                TdApi.Error.CONSTRUCTOR -> {
+                    error("")
+                }
+
+                else -> {
+                    trySend(it).isSuccess
+                }
+            }
+            //close()
+        }
+        awaitClose { }
+    }
+
+inline fun <reified T : TdApi.Object> Client.send(query: Function<T>): Flow<T> =
     sendAsFlow(query).map { it as T }
 
 data class TdLibParameters(

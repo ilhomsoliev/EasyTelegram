@@ -1,14 +1,9 @@
 package com.ilhomsoliev.chat.presentation.message_item
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
@@ -23,17 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ilhomsoliev.chat.model.chat.ChatTypeModel
 import com.ilhomsoliev.chat.model.message.MessageModel
 import com.ilhomsoliev.chat.model.message.MessageSendingStateModel
 import com.ilhomsoliev.chat.model.message.messageContent.MessageContentModel
 import com.ilhomsoliev.chat.presentation.message_types.TextMessage
 import com.ilhomsoliev.shared.TelegramImage
 import com.ilhomsoliev.shared.TgDownloadManager
-import com.ilhomsoliev.shared.shared.icons.MessageTailIcon
 import org.drinkless.tdlib.TdApi
 import java.util.Calendar
 import java.util.Date
@@ -45,82 +39,31 @@ fun MessageItem(
     isFirstMessage: Boolean,
     downloadManager: TgDownloadManager,
     message: MessageModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chatType: ChatTypeModel,
 ) {
     if (message.isOutgoing) {
-        Box(
-            Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            MessageItemCard(
-                modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .padding(8.dp, 4.dp, 8.dp, 4.dp)
-            ) {
-                Row {
-                    MessageItemContent(
-                        downloadManager = downloadManager,
-                        message = message,
-                        modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 12.dp,
-                                    topEnd = 12.dp,
-                                    bottomStart = 12.dp,
-                                    bottomEnd = if (isLastMessage) 4.dp else 12.dp
-                                )
-                            )
-                            .background(Color(0xFFE3FFCA))
-                            .clickable(onClick = {})
-                            .padding(8.dp),
-                    )
-                    // if (isLastMessage)
-                    Image(
-                        modifier = Modifier.align(Alignment.Bottom),
-                        imageVector = MessageTailIcon,
-                        contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
-                    )
-                }
-
-            }
-        }
+        OutgoingMessage(
+            isSameUserFromPreviousMessage = isSameUserFromPreviousMessage,
+            isLastMessage = isLastMessage,
+            isFirstMessage = isFirstMessage,
+            downloadManager = downloadManager,
+            message = message
+        )
     } else {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
-        ) {
-            if (!isSameUserFromPreviousMessage) {
-                ChatUserIcon(
-                    downloadManager = downloadManager,
-                    userPhotoFile = message.sender?.profilePhoto?.smallFile,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clip(shape = CircleShape)
-                        .size(42.dp)
-                )
-            } else {
-                Box(
-                    Modifier
-                        .padding(8.dp)
-                        .size(42.dp)
-                )
-            }
-            MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
-                MessageItemContent(
-                    downloadManager = downloadManager,
-                    message = message,
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(8.dp)
-                )
-            }
-        }
+        IngoingMessage(
+            isSameUserFromPreviousMessage = isSameUserFromPreviousMessage,
+            isLastMessage = isLastMessage,
+            isFirstMessage = isFirstMessage,
+            downloadManager = downloadManager,
+            message = message,
+            chatType = chatType,
+        )
     }
 }
 
 @Composable
-private fun ChatUserIcon(
+internal fun ChatUserIcon(
     downloadManager: TgDownloadManager,
     userPhotoFile: TdApi.File?,
     modifier: Modifier
@@ -133,7 +76,7 @@ private fun ChatUserIcon(
 }
 
 @Composable
-private fun MessageItemCard(
+internal fun MessageItemCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) = Box(
@@ -146,7 +89,7 @@ private fun MessageItemCard(
 }
 
 @Composable
-private fun MessageItemContent(
+internal fun MessageItemContent(
     downloadManager: TgDownloadManager,
     message: MessageModel,
     modifier: Modifier = Modifier

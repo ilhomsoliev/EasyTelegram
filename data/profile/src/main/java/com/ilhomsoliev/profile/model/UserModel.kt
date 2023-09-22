@@ -28,7 +28,9 @@ data class UserModel(
     // type
     val languageCode: String,
     val addedToAttachmentMenu: Boolean,
-)
+){
+    fun getFullName() = "$firstName $lastName"
+}
 
 data class UsernamesModel(
     val activeUsernames: List<String>,

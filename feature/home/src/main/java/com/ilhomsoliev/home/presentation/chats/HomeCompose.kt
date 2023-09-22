@@ -79,7 +79,7 @@ fun HomeContent(
                 state.currentUser?.let {
                     itemsIndexed(state.chats,
                         key = { index, key ->
-                            key.id
+                            index // key.id TODO
                         }) { index, item ->
 
                         LaunchedEffect(key1 = Unit, block = {
@@ -88,18 +88,16 @@ fun HomeContent(
                             }
                         })
 
-                        item.let { chat ->
-                            ChatItem(
-                                downloadManager = state.downloadManager,
-                                chat = chat,
-                                currentUser = state.currentUser,
-                                modifier = Modifier
-                                    .clickable(onClick = {
-                                        callback.onChatClick(item.id)
-                                    })
+                        ChatItem(
+                            downloadManager = state.downloadManager,
+                            chat = item,
+                            currentUser = state.currentUser,
+                            modifier = Modifier
+                                .clickable(onClick = {
+                                    callback.onChatClick(item.id)
+                                })
 
-                            )
-                        }
+                        )
                     }
                 }
             }

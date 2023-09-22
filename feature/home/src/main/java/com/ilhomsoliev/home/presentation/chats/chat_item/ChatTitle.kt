@@ -18,6 +18,7 @@ import com.ilhomsoliev.profile.model.UserModel
 import com.ilhomsoliev.shared.shared.icons.MutedIcon
 import com.ilhomsoliev.shared.shared.icons.ReadIcon
 import com.ilhomsoliev.shared.shared.icons.UnreadIcon
+import com.ilhomsoliev.shared.shared.utils.timeAgoOrFormattedDate
 
 @Composable
 fun ChatTitle(
@@ -58,8 +59,8 @@ fun ChatTitle(
                 }
             }
 
-            chatModel.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
-                ChatLastTimeIndicator(it.toRelativeTimeSpan(), modifier = Modifier.alpha(0.6f))
+            chatModel.lastMessage?.date?.let {
+                ChatLastTimeIndicator(timeAgoOrFormattedDate(it), modifier = Modifier.alpha(0.6f))
             }
         }
     }

@@ -49,13 +49,12 @@ import com.ilhomsoliev.chat.presentation.message_item.MessageItem
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.ChatItemImage
 import com.ilhomsoliev.shared.common.dropdown_menu.Chat3DotsDropdownMenu
-import com.ilhomsoliev.shared.common.extensions.LocalDate
-import com.ilhomsoliev.shared.common.extensions.getChatDateSeparator
 import com.ilhomsoliev.shared.shared.dialogs.CleanChatHistoryDialog
 import com.ilhomsoliev.shared.shared.dialogs.DeleteChatDialog
 import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
 import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
 import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon
+import com.ilhomsoliev.shared.shared.utils.getDateSeparatorForMessages
 
 data class ChatState(
     val chat: ChatModel? = null,
@@ -324,7 +323,7 @@ fun ChatHistory(
         itemsIndexed(
             items = messages,
             key = { index, item ->
-                index//item.id
+                item.id
             },
         ) { index, message ->
 
@@ -332,40 +331,35 @@ fun ChatHistory(
                 callback.onItemPass(index)
             })
 
-            message.let {
-                // Message
-                val userId = message.sender?.id
-                val previousMessageUserId = if (index > 0) messages[index - 1].sender?.id else null
+            // Message
+            val userId = message.sender?.id
+            val previousMessageUserId = if (index > 0) messages[index - 1].sender?.id else null
 
-                val nextMessage = messages.getOrNull(index + 1)?.sender?.id
-                val previousMessage = messages.getOrNull(index - 1)?.sender?.id
-                val isLastMessage = userId != nextMessage
-                val isFirstMessage = userId != previousMessage
+            val nextMessage = messages.getOrNull(index + 1)?.sender?.id
+            val previousMessage = messages.getOrNull(index - 1)?.sender?.id
+            val isLastMessage = userId != nextMessage
+            val isFirstMessage = userId != previousMessage
 
+            state.chat?.type?.let {
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
                     isLastMessage = isLastMessage,
                     isFirstMessage = isFirstMessage,
                     downloadManager = state.downloadManager,
-                    message = it
+                    message = message,
+                    chatType = it
                 )
-                // Date Separator
-                var dateSeparator: String? = null
-                if (messages.getOrNull(index + 1) != null &&
-                    LocalDate(message.date.toLong() * 1000).format("YYYY-MM-dd") != LocalDate(
-                        messages[index + 1].date.toLong() * 1000
-                    ).format(
-                        "YYYY-MM-dd"
-                    )
-                ) {
-                    dateSeparator = getChatDateSeparator(message.date.toLong() * 1000)
-                } else if (index + 1 == messages.size) {
-                    dateSeparator = getChatDateSeparator(message.date.toLong() * 1000)
-                }
+            }
+            // Date Separator
+            val dateSeparator: String? = getDateSeparatorForMessages(
+                message = message,
+                nextMessage = messages.getOrNull(index + 1),
+                index = index,
+                sizeOfList = messages.size
+            )
 
-                dateSeparator?.let {
-                    ChatDateSeparator(text = it)
-                }
+            dateSeparator?.let {
+                ChatDateSeparator(text = it)
             }
         }
         if (state.isLoadingNewMessages) {

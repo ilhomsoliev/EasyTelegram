@@ -56,27 +56,17 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
         }.launchIn(viewModelScope)
     }
 
-    /*@OptIn(ExperimentalCoroutinesApi::class)
-    val chats by lazy {
-        viewModelScope.launch {
-            getUser()
-        }
-        chatsRepository.getChatsPaging().cachedIn(viewModelScope)
-    }*/
-
     suspend fun getUser() {
         val user = profileRepository.getCurrentUser()
         _user.value = (user)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun onOpenChat(chatId: Long, callback: () -> Unit) {
         if (chatsRepository.openChat(chatId)) {
             callback()
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun loadChats() {
         chatsRepository.loadChats()
     }

@@ -44,14 +44,6 @@ object AppDataState {
         return chatsToReturn
     }
 
-    /**
-     * Returns messages of the given chat
-     */
-    fun getMessages(): List<TdApi.Message> {
-        val messagesToReturn = messages.values.toList().sortedBy { it.date }
-        return messagesToReturn
-    }
-
     fun clearMessages() {
         messages.clear()
     }
