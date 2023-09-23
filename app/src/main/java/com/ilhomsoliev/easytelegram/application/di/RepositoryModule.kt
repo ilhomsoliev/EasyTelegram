@@ -8,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 val repositoryModule = module {
     single { ChatsRepository(get(), get(),) }
     single { AuthRepository(get()) }

@@ -7,6 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import com.ilhomsoliev.tgcore.TelegramClient
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import org.drinkless.tdlib.TdApi
 import org.json.JSONObject
 import org.koin.androidx.compose.get
 import java.security.InvalidParameterException
@@ -29,20 +33,27 @@ data class Country(
 
     val flag: ImageBitmap
         @Composable get() {
-            val manager = get<CountryManager>()
-            return manager.flagForCountry(code)
+            return getFlagByCountryCode(code = code)
         }
     val clearPhoneDial by lazy {
         phoneDial.replace(Regex("\\D"), "")
     }
 }
 
+
 val DemoCountry = Country(
     "Россия", "RU", "+7", "+7 (###) ###-##-##"
 )
 
+@Composable
+fun getFlagByCountryCode(code: String): ImageBitmap {
+    val manager = get<CountryManager>()
+    return manager.flagForCountry(code)
+}
+
 class CountryManager(
-    private val context: Context
+    private val context: Context,
+    private val tgClient: TelegramClient
 ) {
 
     val defaultCountry: Country by lazy {
@@ -85,6 +96,21 @@ class CountryManager(
         return masks.map {
             countryFrom(it.key, it.value)
         }
+    }
+
+    fun getCountriesFromTdLib() = callbackFlow {
+        tgClient.baseClient.send(TdApi.GetCountries()) {
+            when (it.constructor) {
+                TdApi.Countries.CONSTRUCTOR -> {
+                    trySend(it as TdApi.Countries).isSuccess
+                }
+
+                else -> {
+                    error("")
+                }
+            }
+        }
+        awaitClose { }
     }
 
     fun getCountryFromCountryCode(countryCode: String) =

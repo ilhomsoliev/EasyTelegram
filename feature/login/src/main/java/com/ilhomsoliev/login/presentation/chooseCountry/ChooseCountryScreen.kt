@@ -10,8 +10,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
-import com.ilhomsoliev.shared.country.Country
 import kotlinx.coroutines.launch
+import org.drinkless.tdlib.TdApi
 
 @Composable
 fun ChooseCountryScreen(
@@ -28,15 +28,19 @@ fun ChooseCountryScreen(
     LaunchedEffect(Unit) { vm.loadCountries() }
 
     ChooseCountryContent(
-        state = ChooseCountryState(searchText, searchState, countries),
+        state = ChooseCountryState(
+            query = searchText,
+            searchState = searchState,
+            countries = countries
+        ),
         callback = object : ChooseCountryCallback {
 
-            override fun onCountrySelect(country: Country) {
+            override fun onCountrySelect(country: TdApi.CountryInfo) {
                 scope.launch {
                     vm.select(country)
                     navController.previousBackStackEntry?.savedStateHandle?.set(
                         "country_code",
-                        country.code
+                        country.countryCode
                     )
                     navController.popBackStack()
                 }

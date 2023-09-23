@@ -43,6 +43,7 @@ class ChatViewModel constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun loadChat(chatId: Long) {
         _chat.value = chatsRepository.getChat(chatId).first().map()
+
     }
 
     suspend fun sendMessage(

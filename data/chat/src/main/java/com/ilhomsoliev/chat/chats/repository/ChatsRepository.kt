@@ -15,16 +15,6 @@ class ChatsRepository(
     private val chatsManager: ChatsManager,
     private val profileRepository: ProfileRepository,
 ) {
-    @SuppressWarnings("unused")
-    suspend fun getChats(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<List<ChatModel>> =
-        chatsManager.getChatIds(offsetOrder, limit)
-            .map { ids -> ids.map { chatsManager.getChat(it) } }
-            .flatMapLatest { chatsFlow ->
-                combine(chatsFlow) { chats ->
-                    chats.toList().map { it.map() }
-                }
-            }
-
     fun getChat(chatId: Long) = chatsManager.getChat(chatId)
 
     suspend fun openChat(chatId: Long) = chatsManager.openChat(chatId).first()
@@ -44,7 +34,5 @@ class ChatsRepository(
 
     fun deleteChat(chatId: Long, alsoForOthers: Boolean) =
         chatsManager.deleteChat(chatId, alsoForOthers)
-
-    // private val chatsPagingSource: ChatsPagingSource,
 
 }

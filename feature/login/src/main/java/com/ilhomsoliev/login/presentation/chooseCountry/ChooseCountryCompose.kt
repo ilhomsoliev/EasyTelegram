@@ -40,19 +40,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.ilhomsoliev.shared.common.CustomSearchTextField
-import com.ilhomsoliev.shared.country.Country
+import com.ilhomsoliev.shared.country.getFlagByCountryCode
+import org.drinkless.tdlib.TdApi
 
 data class ChooseCountryState(
-    val text: String,
+    val query: String,
     val searchState: Boolean,
-    val countries: List<Country>,
+    val countries: List<TdApi.CountryInfo>,
 )
 
 interface ChooseCountryCallback {
     fun onSearchTextChange(text: String)
     fun onSearchStateChange()
     fun onBack()
-    fun onCountrySelect(country: Country)
+    fun onCountrySelect(country: TdApi.CountryInfo)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +64,6 @@ fun ChooseCountryContent(
 ) {
 
     val isSearchBarVisible = remember { mutableStateOf(false) }
-    val searchRequest = remember { mutableStateOf("") }
 
     Scaffold(topBar = {
         Row(
@@ -92,13 +92,13 @@ fun ChooseCountryContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CustomSearchTextField(
                             modifier = Modifier.weight(1f),
-                            value = searchRequest.value,
+                            value = state.query,
                             onValue = {
-                                searchRequest.value = it
+                                callback.onSearchTextChange(it)
                             },
                             onCancelClick = {
                                 isSearchBarVisible.value = false
-                                searchRequest.value = ""
+                                callback.onSearchTextChange("")
                             })
                     }
                 }
@@ -117,11 +117,9 @@ fun ChooseCountryContent(
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(it), content = {
-            itemsIndexed(if (searchRequest.value.isEmpty()) state.countries else state.countries.filter {
-                it.name.contains(
-                    searchRequest.value
-                )
-            }) { index, item ->
+            itemsIndexed(
+                state.countries
+            ) { index, item ->
                 if (index == 0 || state.countries[index].name[0] != state.countries[index - 1].name[0]) {
                     LetterIndicator(state.countries[index].name[0])
                 }
@@ -151,7 +149,7 @@ private fun LetterIndicator(letter: Char) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CountryItem(
-    country: Country,
+    country: TdApi.CountryInfo,
     modifier: Modifier = Modifier,
     onSelect: () -> Unit,
 ) {
@@ -169,11 +167,11 @@ private fun CountryItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CountryLabel(
-                flag = country.flag,
+                flag = getFlagByCountryCode(country.countryCode ?: ""),
                 name = country.name,
                 modifier = Modifier.weight(1f)
             )
-            CountryDial(country.phoneDial)
+            CountryDial(country.callingCodes.getOrNull(0) ?: "None")
         }
     }
 }

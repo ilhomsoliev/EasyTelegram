@@ -3,12 +3,14 @@ package com.ilhomsoliev.shared.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,11 +48,24 @@ fun CustomSearchTextField(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.padding(1.dp),
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .padding(start = 4.dp, end = 4.dp),
                     imageVector = SearchIcon,
-                    contentDescription = ""
+                    contentDescription = "",
+                    tint = Color(0xFF979797)
                 )
-                it()
+                Box() {
+                    it()
+                    if (value.isEmpty()) {
+                        Text(
+                            modifier = Modifier.padding(start = 4.dp),
+                            text = "Поиск",
+                            color = Color(0xFF979797)
+                        )
+                    }
+                }
+
             }
             if (value.isNotEmpty()) {
                 Icon(
@@ -58,7 +73,8 @@ fun CustomSearchTextField(
                         .padding(horizontal = 8.dp)
                         .clickable { onCancelClick() },
                     imageVector = CancelIcon,
-                    contentDescription = "null"
+                    contentDescription = "null",
+                    tint = Color(0xFF979797),
                 )
             }
         }

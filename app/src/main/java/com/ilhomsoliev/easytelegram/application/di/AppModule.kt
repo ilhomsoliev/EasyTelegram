@@ -28,5 +28,4 @@ fun telegramModule(context: Context) = module {
     single<TelegramClient> {
         TelegramClient(get<TdLibParameters>())
     }
-    single<CountryManager> { CountryManager(context) }
 }

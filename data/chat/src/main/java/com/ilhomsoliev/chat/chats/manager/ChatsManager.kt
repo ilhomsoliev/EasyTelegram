@@ -2,11 +2,16 @@ package com.ilhomsoliev.chat.chats.manager
 
 import android.util.Log
 import com.ilhomsoliev.tgcore.TelegramClient
+import com.ilhomsoliev.tgcore.send
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.MessageSenderUser
 
 class ChatsManager(
     private val tgClient: TelegramClient,
@@ -16,7 +21,8 @@ class ChatsManager(
         tgClient.baseClient.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
-                    trySend(it as TdApi.Chat).isSuccess
+                    val chat = it as TdApi.Chat
+                    trySend(chat).isSuccess
                 }
 
                 TdApi.Error.CONSTRUCTOR -> {

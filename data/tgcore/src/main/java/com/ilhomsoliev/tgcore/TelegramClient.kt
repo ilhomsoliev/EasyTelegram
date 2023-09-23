@@ -93,7 +93,7 @@ class TelegramClient(
                     }
                     assert(pos == new_positions.size)
                     setChatPositions(chat, new_positions)
-                    newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                    // newUpdateFromTdApi.value = !newUpdateFromTdApi.value
                 }
             }
         }
@@ -123,7 +123,7 @@ class TelegramClient(
                 synchronized(chat) {
                     AppDataState.putChat(chat.id, chat)
                     val positions = chat.positions
-                    // chat.positions = arrayOfNulls(0) //  TODO
+                    chat.positions = arrayOfNulls(0) //  TODO
                     setChatPositions(chat, positions)
                     newUpdateFromTdApi.value = !newUpdateFromTdApi.value
                 }
@@ -172,6 +172,7 @@ class TelegramClient(
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {}
             TdApi.UpdateOption.CONSTRUCTOR -> {}
             TdApi.UpdateNewMessage.CONSTRUCTOR -> {
+
                 val updateNewMessage = (data as TdApi.UpdateNewMessage)
                 val message = updateNewMessage.message
                 requestScope.launch {
@@ -179,22 +180,22 @@ class TelegramClient(
                     Log.d("Hello client chat", chat.toString())
                     synchronized(chat) {
                         AppDataState.putChat(chat.id, chat)
-                        for (position in chat.positions) {
+                        /*for (position in chat.positions) {
                             updateChatPosition(
                                 chatId = chat.id,
                                 position = position
                             )
-                        }
+                        }*/
                         val positions = chat.positions
                         // chat.positions = arrayOfNulls(0) // TODO wtf
-                        setChatPositions(chat, positions)
-                        newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+
+                         setChatPositions(chat, positions)
                     }
                     Log.d("Hello update new message", message.toString())
-                    synchronized(message) {
+                 /*   synchronized(message) {
                         newUpdateFromTdApi.value = !newUpdateFromTdApi.value
                         newMessageArrivedFromTdApi.value = message
-                    }
+                    }*/
                 }
             }
 
@@ -214,7 +215,8 @@ class TelegramClient(
                                     position
                                 )
                             )
-                        assert(isRemoved)
+                        Log.d("Hello isRemoved", isRemoved.toString())
+                   //     assert(isRemoved) // TODO Here we have a problem
                     }
                 }
                 chat.positions = positions
