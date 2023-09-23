@@ -58,7 +58,11 @@ class AuthRepository(
                     }
 
                     TdApi.Error.CONSTRUCTOR -> {
-                        tgClient.setAuth(Authentication.INCORRECT_CODE)
+                        tgClient.setAuth(
+                            (authState.value as Authentication.WAIT_FOR_CODE).copy(
+                                incorrectAttempt = true
+                            )
+                        )
                         Log.d("TelegramClient", "Incorrect Code for Number")
                     }
                 }

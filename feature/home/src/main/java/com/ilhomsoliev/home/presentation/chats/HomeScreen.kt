@@ -1,13 +1,10 @@
 package com.ilhomsoliev.home.presentation.chats
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavController
-import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
 import com.ilhomsoliev.tgcore.newUpdateFromTdApi
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +13,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     vm: HomeViewModel,
-    navController: NavController,
+    openChat: (id: Long) -> Unit,
+    openNewMessage: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -45,7 +43,7 @@ fun HomeScreen(
                 scope.launch {
                     vm.onOpenChat(id) {
                         launch(Dispatchers.Main) {
-                            navController.navigate(Screen.Chat.buildRoute(id))
+                            openChat(id)
                         }
                     }
                 }
@@ -56,7 +54,7 @@ fun HomeScreen(
             }
 
             override fun onNewMessageClick() {
-                navController.navigate(Screen.NewMessage.route)
+                openNewMessage()
             }
 
             override fun onItemPass(index: Int) {

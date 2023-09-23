@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,11 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.login.R
@@ -80,7 +87,6 @@ fun WaitForCodeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CodeInfoLabel(
-                    country = state.country,
                     phoneNumber = state.phoneNumber,
                 )
 
@@ -94,14 +100,68 @@ fun WaitForCodeScreen(
                 ) { index, it ->
                     callback.onCodeChange(index, it)
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                DidNotReceivedCodeMessage()
             }
         }
     )
 }
 
 @Composable
+private fun DidNotReceivedCodeMessage() {
+
+    val uriTag = "URI"
+    val uriHandler = LocalUriHandler.current
+    val annotatedString = buildAnnotatedString {
+        val text = "Не получили код?"
+        append(
+            AnnotatedString(
+                text,
+            )
+        )
+        addStyle(
+            style = SpanStyle(fontSize = 12.sp),
+            start = 0,
+            end = text.length
+        )
+        addStyle(
+            style = SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = Color(0xFF007EEC),
+            ),
+            start = 0,
+            end = text.length
+        )
+        addStringAnnotation(
+            tag = uriTag,
+            annotation = "https://developer.android.com/jetpack/compose", // TODO change url
+            start = 0,
+            end = text.length,
+        )
+    }
+
+
+    ClickableText(
+        text = annotatedString,
+        onClick = { position ->
+            // find annotations by tag and current position
+            val annotations = annotatedString.getStringAnnotations(
+                uriTag,
+                start = position,
+                end = position
+            )
+            annotations.firstOrNull()?.let {
+                uriHandler.openUri(it.item)
+            }
+        },
+    )
+
+}
+
+@Composable
 private fun CodeInfoLabel(
-    country: Country?,
     phoneNumber: String,
 ) {
     Image(
@@ -121,8 +181,7 @@ private fun CodeInfoLabel(
     Spacer(modifier = Modifier.height(12.dp))
 
     Text(
-        text = "Мы выслали код на номер\n" +
-                "+${country?.phoneDial} $phoneNumber",
+        text = "Мы выслали код на номер\n+${phoneNumber.trimStart('+')}",
         textAlign = TextAlign.Center,
         style = TextStyle(
             fontSize = 15.sp,
@@ -138,31 +197,41 @@ private fun DigitCode(
     focuses: List<FocusRequester>,
     onChange: (Int, String) -> Unit,
 ) {
-    Row {
+    Row(modifier = modifier) {
         focuses.forEachIndexed { index, focus ->
+            val number = if (code.length > index)
+                code[index].toString() else "";
+
             BasicTextField(
-                value = if (code.length > index)
-                    code[index].toString() else "",
+                value = number,
                 onValueChange = { onChange(index, it) },
                 modifier = Modifier.focusRequester(focus),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword
                 ),
-                textStyle = TextStyle(textAlign = TextAlign.Center),
-                //textStyle = ThemeExtra.typography.CodeText,
-                //colors = textFieldColors(),
+                textStyle = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF232323),
+                    textAlign = TextAlign.Center,
+                ),
                 singleLine = true,
                 decorationBox = {
                     Box(
                         modifier = Modifier
                             .size(42.dp, 48.dp)
-                            .border(1.dp, Color.Black, RoundedCornerShape(12.dp)),
+                            .border(
+                                (0.5).dp,
+                                if (number.isEmpty()) Color(0xFF979797)
+                                else Color(0xFF007EEC), RoundedCornerShape(12.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         it()
                     }
                 }
             )
+            Spacer(modifier = Modifier.width(12.dp))
         }
     }
 }

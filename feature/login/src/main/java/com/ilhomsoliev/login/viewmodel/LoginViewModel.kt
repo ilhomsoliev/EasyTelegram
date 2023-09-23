@@ -9,7 +9,6 @@ import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.shared.country.Country
 import com.ilhomsoliev.shared.country.CountryManager
 import com.ilhomsoliev.tgcore.Authentication.AUTHENTICATED
-import com.ilhomsoliev.tgcore.Authentication.INCORRECT_CODE
 import com.ilhomsoliev.tgcore.Authentication.UNAUTHENTICATED
 import com.ilhomsoliev.tgcore.Authentication.UNKNOWN
 import com.ilhomsoliev.tgcore.Authentication.WAIT_FOR_CODE
@@ -68,15 +67,11 @@ class LoginViewModel(
                     _uiState.value = UiState.InsertNumber()
                 }
 
-                WAIT_FOR_CODE -> {
-                    _uiState.value = UiState.InsertCode()
+                is WAIT_FOR_CODE -> {
+                    _uiState.value = UiState.InsertCode(it)
                 }
 
-                INCORRECT_CODE -> {
-                    _uiState.value = UiState.InsertCode("Incorrect code")
-                }
-
-                WAIT_FOR_PASSWORD -> {
+                is WAIT_FOR_PASSWORD -> {
                     _uiState.value = UiState.InsertPassword()
                 }
 
@@ -165,7 +160,10 @@ class LoginViewModel(
 sealed class UiState {
     object Loading : UiState()
     data class InsertNumber(val previousError: Throwable? = null) : UiState()
-    data class InsertCode(val error: String? = null) : UiState()
+    data class InsertCode(
+        val data: WAIT_FOR_CODE
+    ) : UiState()
+
     data class InsertPassword(val previousError: Throwable? = null) : UiState()
     object Authenticated : UiState()
 }

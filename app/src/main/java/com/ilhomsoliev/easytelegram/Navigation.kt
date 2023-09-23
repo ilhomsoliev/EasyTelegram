@@ -23,10 +23,27 @@ fun Navigation() {
         startDestination = Screen.Home.route,
     ) {
         composable(Screen.Home.route) {
-            HomeContainer(navController = navController, vm = koinViewModel())
+            HomeContainer(
+                vm = koinViewModel(),
+                openWelcome = {
+                    navController.navigate(Screen.Welcome.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                openChat = {
+                    navController.navigate(Screen.Chat.buildRoute(it))
+                },
+                openNewMessage = {
+                    navController.navigate(Screen.NewMessage.route)
+                }
+            )
         }
         composable(Screen.NewMessage.route) {
-            NewMessagesScreen(vm = koinViewModel(), navController = navController)
+            NewMessagesScreen(
+                vm = koinViewModel(),
+                navController = navController
+            )
         }
         composable(Screen.Chat.route) {
             val chatId = Screen.Chat.getChatId(it)
@@ -44,7 +61,15 @@ fun Navigation() {
         }
 
         composable(Screen.Welcome.route) {
-            WelcomeScreen(navController = navController)
+            WelcomeScreen(vm = koinViewModel(),
+                openLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }, openOnBoarding = {
+                    navController.navigate(Screen.OnBoarding.route)
+                })
         }
 
         composable(Screen.OnBoarding.route) {

@@ -8,18 +8,17 @@ import com.ilhomsoliev.auth.AuthRepository
 import com.ilhomsoliev.chat.chats.repository.ChatsRepository
 import com.ilhomsoliev.chat.model.chat.ChatModel
 import com.ilhomsoliev.chat.model.chat.map
-import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.profile.model.UserModel
+import com.ilhomsoliev.profile.repository.ProfileRepository
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.tgcore.AppDataState
 import com.ilhomsoliev.tgcore.Authentication
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
+class HomeViewModel constructor(
     private val authRepository: AuthRepository,
     val downloadManager: TgDownloadManager,
     private val profileRepository: ProfileRepository,
@@ -43,10 +42,9 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
                 }
 
                 Authentication.WAIT_FOR_NUMBER,
-                Authentication.WAIT_FOR_CODE,
-                Authentication.WAIT_FOR_PASSWORD,
-                Authentication.INCORRECT_CODE -> uiState.value =
-                    UiState.Login
+                is Authentication.WAIT_FOR_CODE,
+                is Authentication.WAIT_FOR_PASSWORD -> uiState.value =
+                    UiState.Login(it)
 
                 Authentication.AUTHENTICATED -> uiState.value = UiState.Loaded
                 Authentication.UNKNOWN -> {
@@ -80,6 +78,9 @@ class HomeViewModel @OptIn(ExperimentalCoroutinesApi::class) constructor(
 
 sealed class UiState {
     object Loading : UiState()
-    object Login : UiState()
+    data class Login(
+        val state: Authentication
+    ) : UiState()
+
     object Loaded : UiState()
 }

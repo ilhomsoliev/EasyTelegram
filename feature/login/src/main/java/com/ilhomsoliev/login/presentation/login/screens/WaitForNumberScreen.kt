@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
@@ -30,10 +31,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ilhomsoliev.login.R
@@ -41,6 +47,7 @@ import com.ilhomsoliev.shared.common.CustomButton
 import com.ilhomsoliev.shared.country.Country
 import com.ilhomsoliev.shared.shared.dialogs.customDialogs.ConfirmPhoneNumberDialog
 import com.ilhomsoliev.shared.shared.textFields.PhoneNumberTextField
+import com.ilhomsoliev.shared.shared.utils.getPhoneNumberStructured
 
 data class WaitForNumberState(
     val phoneNumber: String,
@@ -112,7 +119,9 @@ fun WaitForNumberScreen(
                         callback.onNewNumberEnter(it)
                     }
                 )
-                Text(text = "Регистрируясь, вы соглашаетесь с политикой конфиденциальности ")
+
+                PolicyText()
+
             }
         }
     )
@@ -121,7 +130,7 @@ fun WaitForNumberScreen(
         onDismissRequest = {
             isDialogShow.value = false
         },
-        phoneNumber = state.phoneNumber,
+        phoneNumber = state.phoneNumber.getPhoneNumberStructured(state.pickedCountry?.phoneDial),
         onNegativeButtonClick = {
             isDialogShow.value = false
         },
@@ -191,4 +200,54 @@ private fun PhoneNumberInfoLabel() {
             fontWeight = FontWeight(400)
         )
     )
+}
+
+@Composable
+private fun PolicyText() {
+    val uriTag = "URI"
+    val uriHandler = LocalUriHandler.current
+    val annotatedString = buildAnnotatedString {
+        val text = "Регистрируясь, вы соглашаетесь с политикой конфиденциальности"
+        append(
+            AnnotatedString(
+                text,
+            )
+        )
+        addStyle(
+            style = SpanStyle(fontSize = 12.sp),
+            start = 0,
+            end = text.length
+        )
+        addStyle(
+            style = SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = Color(0xFF007EEC),
+            ),
+            start = 33,
+            end = text.length
+        )
+        addStringAnnotation(
+            tag = uriTag,
+            annotation = "https://developer.android.com/jetpack/compose", // TODO change url
+            start = 33,
+            end = text.length,
+        )
+    }
+
+
+    ClickableText(
+        text = annotatedString,
+        onClick = { position ->
+            // find annotations by tag and current position
+            val annotations = annotatedString.getStringAnnotations(
+                uriTag,
+                start = position,
+                end = position
+            )
+            annotations.firstOrNull()?.let {
+                uriHandler.openUri(it.item)
+            }
+        },
+    )
+
 }

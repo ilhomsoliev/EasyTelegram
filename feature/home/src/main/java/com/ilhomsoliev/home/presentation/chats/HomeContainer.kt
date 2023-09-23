@@ -7,15 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import com.ilhomsoliev.core.Screen
 import com.ilhomsoliev.home.viewmodel.HomeViewModel
 import com.ilhomsoliev.home.viewmodel.UiState
 
 @Composable
 fun HomeContainer(
     vm: HomeViewModel,
-    navController: NavController,
+    openWelcome: () -> Unit,
+    openChat: (id: Long) -> Unit,
+    openNewMessage: () -> Unit,
 ) {
     val uiState by vm.uiState
 
@@ -25,14 +25,15 @@ fun HomeContainer(
         }
 
         UiState.Loaded -> {
-            HomeScreen(vm = vm, navController = navController)
+            HomeScreen(
+                vm = vm,
+                openChat = openChat,
+                openNewMessage = openNewMessage,
+            )
         }
 
-        UiState.Login -> {
-            navController.navigate(Screen.Welcome.route) {
-                popUpTo(Screen.Home.route) { inclusive = true }
-                launchSingleTop = true
-            }
+        is UiState.Login -> {
+            openWelcome()
         }
     }
 }

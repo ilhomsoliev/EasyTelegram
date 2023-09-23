@@ -22,6 +22,7 @@ fun LoginScreen(
 
     val uiState by vm.uiState
     val isLoading by vm.isLoading.collectAsState()
+
     // Phone Number
     val pickedCountry by vm.pickedCountry.collectAsState()
     val phoneNumber by vm.phoneNumber.collectAsState()

@@ -5,16 +5,17 @@ import com.ilhomsoliev.home.viewmodel.HomeViewModel
 import com.ilhomsoliev.home.viewmodel.NewMessagesViewModel
 import com.ilhomsoliev.login.viewmodel.ChooseCountryViewModel
 import com.ilhomsoliev.login.viewmodel.LoginViewModel
+import com.ilhomsoliev.login.viewmodel.WelcomeViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@OptIn(ExperimentalCoroutinesApi::class)
 val viewModelModule = module {
     viewModel { HomeViewModel(get(), get(), get(), get()) }
-    viewModel { NewMessagesViewModel(get(), get(),) }
+    viewModel { NewMessagesViewModel(get(), get()) }
 
     viewModel { LoginViewModel(get(), get()) }
+    viewModel { WelcomeViewModel(get()) }
     viewModel { ChooseCountryViewModel(get()) }
     viewModel { ChatViewModel(get(), get(), get()) }
 }

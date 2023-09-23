@@ -28,7 +28,7 @@ class TelegramClient(
 
     val baseClient: Client = Client.create(this@TelegramClient, null, null)
 
-    val _authState = MutableStateFlow(Authentication.UNKNOWN)
+    val _authState = MutableStateFlow<Authentication>(Authentication.UNKNOWN)
 
     private val requestScope = CoroutineScope(Dispatchers.IO)
     fun setAuth(auth: Authentication) {
@@ -189,13 +189,13 @@ class TelegramClient(
                         val positions = chat.positions
                         // chat.positions = arrayOfNulls(0) // TODO wtf
 
-                         setChatPositions(chat, positions)
+                        setChatPositions(chat, positions)
                     }
                     Log.d("Hello update new message", message.toString())
-                 /*   synchronized(message) {
-                        newUpdateFromTdApi.value = !newUpdateFromTdApi.value
-                        newMessageArrivedFromTdApi.value = message
-                    }*/
+                    /*   synchronized(message) {
+                           newUpdateFromTdApi.value = !newUpdateFromTdApi.value
+                           newMessageArrivedFromTdApi.value = message
+                       }*/
                 }
             }
 
@@ -216,7 +216,7 @@ class TelegramClient(
                                 )
                             )
                         Log.d("Hello isRemoved", isRemoved.toString())
-                   //     assert(isRemoved) // TODO Here we have a problem
+                        //     assert(isRemoved) // TODO Here we have a problem
                     }
                 }
                 chat.positions = positions
@@ -253,13 +253,32 @@ class TelegramClient(
             }
 
             TdApi.AuthorizationStateWaitCode.CONSTRUCTOR -> {
-                Log.d(TAG, "onResult: AuthorizationStateWaitCode -> state = WAIT_FOR_CODE")
-                setAuth(Authentication.WAIT_FOR_CODE)
+                val response = (authorizationState as TdApi.AuthorizationStateWaitCode).codeInfo
+                Log.d(
+                    TAG,
+                    "onResult: AuthorizationStateWaitCode -> state = WAIT_FOR_CODE $response"
+                )
+                setAuth(
+                    Authentication.WAIT_FOR_CODE(
+                        phoneNumber = response.phoneNumber,
+                        type = response.type,
+                        nextType = response.nextType,
+                        timeout = response.timeout,
+                    )
+                )
             }
 
             TdApi.AuthorizationStateWaitPassword.CONSTRUCTOR -> {
+                val response = (authorizationState as TdApi.AuthorizationStateWaitPassword)
                 Log.d(TAG, "onResult: AuthorizationStateWaitPassword")
-                setAuth(Authentication.WAIT_FOR_PASSWORD)
+                setAuth(
+                    Authentication.WAIT_FOR_PASSWORD(
+                        passwordHint = response.passwordHint,
+                        hasRecoveryEmailAddress = response.hasRecoveryEmailAddress,
+                        hasPassportData = response.hasPassportData,
+                        recoveryEmailAddressPattern = response.recoveryEmailAddressPattern,
+                    )
+                )
             }
 
             TdApi.AuthorizationStateReady.CONSTRUCTOR -> {

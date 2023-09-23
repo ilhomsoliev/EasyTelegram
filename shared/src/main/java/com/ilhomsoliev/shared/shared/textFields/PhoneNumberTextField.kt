@@ -17,6 +17,8 @@ fun PhoneNumberTextField(
     phoneNumber: String,
     onPhoneNumberChange: (String) -> Unit,
 ) {
+    // TODO Apply spaces in textField
+
     val separator = "|"
     val textFieldValue = "$code $separator $phoneNumber"
 
@@ -24,8 +26,9 @@ fun PhoneNumberTextField(
         modifier = modifier,
         value = textFieldValue,
         onValueChange = {
-            if (it.contains(separator))
+            if (it.contains(separator)) {
                 onPhoneNumberChange(it.substringAfter("$separator "))
+            }
         },
         trailingIcon = {
             Icon(imageVector = Icons.Default.Phone, contentDescription = null)
