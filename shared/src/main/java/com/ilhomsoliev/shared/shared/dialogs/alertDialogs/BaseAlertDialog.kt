@@ -1,7 +1,8 @@
-package com.ilhomsoliev.shared.shared.dialogs
+package com.ilhomsoliev.shared.shared.dialogs.alertDialogs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,7 @@ fun BaseAlertDialog(
     negativeButtonText: String? = null,
     onPositiveButtonClick: ((Boolean?) -> Unit)? = null,
     onNegativeButtonClick: (() -> Unit)? = null,
+    extra: (@Composable ColumnScope.() -> Unit)?=null,
 ) {
     var isCheckBoxActiveState by remember { mutableStateOf(isCheckBoxActive) }
 
@@ -63,6 +65,9 @@ fun BaseAlertDialog(
                                 })
                             }
                         }
+                    }
+                    extra?.let{
+                        this.it()
                     }
                 }
             },

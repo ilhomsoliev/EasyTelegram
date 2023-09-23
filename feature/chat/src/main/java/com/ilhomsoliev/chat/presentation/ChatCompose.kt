@@ -49,8 +49,8 @@ import com.ilhomsoliev.chat.presentation.message_item.MessageItem
 import com.ilhomsoliev.shared.TgDownloadManager
 import com.ilhomsoliev.shared.common.ChatItemImage
 import com.ilhomsoliev.shared.common.dropdown_menu.Chat3DotsDropdownMenu
-import com.ilhomsoliev.shared.shared.dialogs.CleanChatHistoryDialog
-import com.ilhomsoliev.shared.shared.dialogs.DeleteChatDialog
+import com.ilhomsoliev.shared.shared.dialogs.alertDialogs.CleanChatHistoryDialog
+import com.ilhomsoliev.shared.shared.dialogs.alertDialogs.DeleteChatDialog
 import com.ilhomsoliev.shared.shared.icons.PaperclipIcon
 import com.ilhomsoliev.shared.shared.icons.SendMessageIcon
 import com.ilhomsoliev.shared.shared.icons.SmileFaceIcon

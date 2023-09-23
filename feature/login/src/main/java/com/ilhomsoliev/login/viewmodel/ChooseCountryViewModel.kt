@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import org.drinkless.tdlib.TdApi
+import java.util.Locale
 
 class ChooseCountryViewModel(
     private val countryManager: CountryManager
@@ -29,23 +30,12 @@ class ChooseCountryViewModel(
 
     private val _countries = MutableStateFlow<List<TdApi.CountryInfo>>(emptyList())
     val countries = _countries
-        /*.combine(_country) { list, current -> // Изменение порядка
-            *//*val default = countryManager.defaultCountry
-            (if (default == current) listOf(default) else listOf(default, current)) +
-                    (list - default - current)*//*
-        }*/
         .combine(_query.debounce(250)) { list, str -> // Поиск
             if (str.isEmpty()) list else list.filter {
-                it.name.toLowerCase().contains(
-                    str.toLowerCase()
+                it.name.lowercase(Locale.ROOT).contains(
+                    str.lowercase(Locale.ROOT)
                 )
             }
-            /*list.filter {
-                it.name.contains(str, true)
-                        || it.code.contains(str, true)
-                        || it.phoneDial.contains(str, true)
-                        || it.clearPhoneDial.contains(str, true)
-            }*/
         }.stateIn(viewModelScope, SharingStarted.Eagerly, _countries.value)
 
     suspend fun loadCountries() {

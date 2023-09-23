@@ -1,24 +1,23 @@
-package com.ilhomsoliev.shared.shared.dialogs
+package com.ilhomsoliev.shared.shared.dialogs.alertDialogs
 
 import androidx.compose.runtime.Composable
 
 @Composable
-fun CleanChatHistoryDialog(
+fun DeleteChatDialog(
     isDialogShown: Boolean,
     onDismissRequest: () -> Unit,
     onNegativeButtonClick: () -> Unit = onDismissRequest,
     onPositiveButtonClick: (Boolean) -> Unit,
 ) {
-
     BaseAlertDialog(
         isDialogShown = isDialogShown,
         onDismissRequest = onDismissRequest,
-        title = "Очистить историю",
-        description = "Уверены что хотите очистить историю в чате?",
+        title = "Удалить чат",
+        description = "Уверены что хотите удалить чат?",
         negativeButtonText = "ОТМЕНА",
-        positiveButtonText = "ОЧИСТИТЬ",
+        positiveButtonText = "УДАЛИТЬ",
         isCheckBoxActive = false,
-        checkBoxText = "Очистить только у себя",
+        checkBoxText = "Удалить только у себя",
         onNegativeButtonClick = {
             onNegativeButtonClick()
         },
@@ -26,4 +25,5 @@ fun CleanChatHistoryDialog(
             onPositiveButtonClick(it ?: false)
         },
     )
+
 }
