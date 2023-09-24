@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -72,7 +73,7 @@ fun ChooseCountryContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {
+                IconButton(modifier = Modifier.offset((-8).dp), onClick = {
                     callback.onBack()
                 }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)

@@ -56,6 +56,11 @@ class LoginViewModel(
     }.value)
     val focuses = _focuses.asStateFlow()
 
+    // Password
+    private val _password = MutableStateFlow("")
+    val password = _password.asStateFlow()
+
+
     init {
         authRepository.authState.onEach {
             when (it) {
@@ -148,11 +153,16 @@ class LoginViewModel(
         authRepository.insertCode(code)
     }
 
-    fun insertPassword(password: String) {
+    // Password
+    fun onPasswordChange(password: String) {
+        _password.value = password
+    }
+
+    fun onSendPasswordToCheck() {
         viewModelScope.launch {
             _isLoading.emit(true)
+            authRepository.insertPassword(password.value)
         }
-        authRepository.insertPassword(password)
     }
 
 }

@@ -32,6 +32,9 @@ fun LoginScreen(
     val timer by vm.timer.collectAsState()
     val focuses by vm.focuses.collectAsState()
 
+    // Password
+    val password by vm.password.collectAsState()
+
     val isAuthenticated = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
@@ -48,6 +51,7 @@ fun LoginScreen(
         code = code,
         focuses = focuses,
         sec = timer,
+        password = password,
     ), object : LoginCallback {
         override fun onBack() {
             // TODO
@@ -80,9 +84,13 @@ fun LoginScreen(
             scope.launch { vm.insertCode(value) }
         }
 
-        override fun insertPassword(value: String) {
-            scope.launch { vm.insertPassword(value) }
+        override fun onPasswordChange(value: String) {
+            scope.launch { vm.onPasswordChange(value) }
 
+        }
+
+        override fun onSendPasswordToCheck() {
+            scope.launch { vm.onSendPasswordToCheck() }
         }
 
         override fun onSuccessfulAuthenticated() {

@@ -14,7 +14,9 @@ import com.ilhomsoliev.login.presentation.login.screens.WaitForCodeState
 import com.ilhomsoliev.login.presentation.login.screens.WaitForNumberCallback
 import com.ilhomsoliev.login.presentation.login.screens.WaitForNumberScreen
 import com.ilhomsoliev.login.presentation.login.screens.WaitForNumberState
+import com.ilhomsoliev.login.presentation.login.screens.WaitForPasswordCallback
 import com.ilhomsoliev.login.presentation.login.screens.WaitForPasswordScreen
+import com.ilhomsoliev.login.presentation.login.screens.WaitForPasswordState
 import com.ilhomsoliev.login.viewmodel.UiState
 import com.ilhomsoliev.shared.country.Country
 
@@ -29,18 +31,28 @@ data class LoginState(
     val code: String,
     val focuses: List<FocusRequester>,
     val sec: Int,
+    // Password
+    val password: String,
 )
 
 interface LoginCallback {
+    // General
     fun onBack()
-    fun firstRequest()
+
+    // Phone Number
     fun onPhoneNumberChange(value: String)
-    fun onCodeChange(index: Int, number: String)
-    fun insertCode(value: String)
-    fun insertPassword(value: String)
-    fun onSuccessfulAuthenticated()
     fun onChooseCountryClick()
     fun onNextPhoneNumber()
+
+    // Code
+    fun firstRequest()
+    fun onCodeChange(index: Int, number: String)
+    fun insertCode(value: String)
+
+    // Password
+    fun onPasswordChange(value: String)
+    fun onSendPasswordToCheck()
+    fun onSuccessfulAuthenticated()
 }
 
 @Composable
@@ -109,9 +121,30 @@ fun LoginContent(
                 }
             )
 
-            is UiState.InsertPassword -> WaitForPasswordScreen(state.isLoading) {
-                callback.insertPassword(it)
-            }
+            is UiState.InsertPassword -> WaitForPasswordScreen(
+                WaitForPasswordState(
+                    state.password,
+                    state.isLoading
+                ),
+                object : WaitForPasswordCallback {
+                    override fun onPasswordChange(value: String) {
+                        callback.onPasswordChange(value)
+                    }
+
+                    override fun onPasswordCheck() {
+                        callback.onSendPasswordToCheck()
+                    }
+
+                    override fun onBack() {
+                        callback.onBack()
+                    }
+
+                    override fun onNext() {
+                        callback.onSendPasswordToCheck()
+                    }
+
+                }
+            )
 
             UiState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
