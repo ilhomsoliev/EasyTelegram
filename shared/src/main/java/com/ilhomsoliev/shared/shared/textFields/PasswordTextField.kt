@@ -23,9 +23,7 @@ fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
 ) {
-
     var passwordVisibility: Boolean by remember { mutableStateOf(false) }
-
     OutlinedTextField(
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
         modifier = modifier,
