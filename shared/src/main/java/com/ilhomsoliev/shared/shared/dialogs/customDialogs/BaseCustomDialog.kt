@@ -27,7 +27,7 @@ fun BaseCustomDialog(
             onDismissRequest()
         }) {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(cornerShape))
                     .background(Color.White)
