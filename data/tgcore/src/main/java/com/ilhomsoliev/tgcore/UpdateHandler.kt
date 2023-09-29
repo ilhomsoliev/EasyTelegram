@@ -1,6 +1,8 @@
 package com.ilhomsoliev.tgcore
 
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.internal.synchronized
 import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.Message
 
@@ -16,14 +18,20 @@ object UpdateHandler {
     /**
      * Updates for last messages in chat list
      */
+    @OptIn(InternalCoroutinesApi::class)
     fun onUpdateChatLastMessage(update: TdApi.UpdateChatLastMessage) {
         val chat = AppDataState.getChat(update.chatId)
-        // Log.d("Hello onUpdateChatLastMessage", update.lastMessage?.content.toString())
-        chat?.lastMessage = update.lastMessage
-        chat?.let { AppDataState.putChat(update.chatId, it) }
-        onNewUpdateFromTdApi()
+        chat?.let {
+            synchronized(it) {
+                chat.lastMessage = update.lastMessage
+                AppDataState.putChat(update.chatId, chat)
+                onNewUpdateFromTdApi()
+            }
+        }
+
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     fun onUpdateUserStatus(updateUserStatus: TdApi.UpdateUserStatus) {
         val user: TdApi.User? = AppDataState.getUser(updateUserStatus.userId)
         user?.let { synchronized(it) { user.status = updateUserStatus.status } }

@@ -134,9 +134,17 @@ class TelegramClient(
             TdApi.UpdateChatPermissions.CONSTRUCTOR -> {}
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
                 val newMessage = data as TdApi.UpdateChatLastMessage
-                UpdateHandler.onUpdateChatLastMessage(newMessage)
-                /*val
-                updateChatPosition()*/
+
+                val chat = AppDataState.getChat(newMessage.chatId)
+                chat?.let {
+                    synchronized(it) {
+                        chat.lastMessage = newMessage.lastMessage;
+                        setChatPositions(chat, newMessage.positions);
+                    }
+                }
+                // TODO
+                //UpdateHandler.onUpdateChatLastMessage(newMessage)
+
             }
 
             UpdateChatPosition.CONSTRUCTOR -> run {
@@ -216,7 +224,7 @@ class TelegramClient(
                                 )
                             )
                         Log.d("Hello isRemoved", isRemoved.toString())
-                        //     assert(isRemoved) // TODO Here we have a problem
+                        assert(isRemoved) // TODO Here we have a problem
                     }
                 }
                 chat.positions = positions
