@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -57,9 +58,9 @@ fun OutgoingMessage(
                 )
                 // if (isLastMessage)
                 Image(
-                    modifier = Modifier.align(Alignment.Bottom),
+                    modifier = Modifier.align(Alignment.Bottom).offset(y = (-4).dp, x = (-1).dp),
                     imageVector = MessageTailIcon,
-                    contentDescription = null, colorFilter = ColorFilter.tint(Color.Red)
+                    contentDescription = null, colorFilter = ColorFilter.tint(Color(0xFFE3FFCA))
                 )
             }
         }

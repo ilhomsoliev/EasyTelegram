@@ -51,4 +51,9 @@ object UpdateHandler {
         }*/
     }
 
+    fun onUpdateFile(file: TdApi.UpdateFile) {
+        AppDataState.putFile(file.file)
+        onNewUpdateFromTdApi()
+
+    }
 }

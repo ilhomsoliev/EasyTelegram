@@ -1,5 +1,6 @@
 package com.ilhomsoliev.chat.presentation.message_types
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,7 +15,7 @@ import com.ilhomsoliev.chat.presentation.message_item.MessageStatus
 
 @Composable
 fun TextMessage(message: MessageModel, modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
+    Column(modifier = modifier) {
         TextMessage(message.content as MessageContentModel.MessageTextModel)
         MessageStatus(modifier = Modifier, message = message)
     }

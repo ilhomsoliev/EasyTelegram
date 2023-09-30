@@ -4,6 +4,7 @@ import org.drinkless.tdlib.TdApi
 import org.drinkless.tdlib.TdApi.BasicGroup
 import org.drinkless.tdlib.TdApi.BasicGroupFullInfo
 import org.drinkless.tdlib.TdApi.ChatPosition
+import org.drinkless.tdlib.TdApi.File
 import org.drinkless.tdlib.TdApi.SecretChat
 import org.drinkless.tdlib.TdApi.Supergroup
 import org.drinkless.tdlib.TdApi.SupergroupFullInfo
@@ -24,6 +25,8 @@ object AppDataState {
     private val usersFullInfo: ConcurrentMap<Long, UserFullInfo> = ConcurrentHashMap()
     private val basicGroupsFullInfo: ConcurrentMap<Long, BasicGroupFullInfo> = ConcurrentHashMap()
     private val supergroupsFullInfo: ConcurrentMap<Long, SupergroupFullInfo> = ConcurrentHashMap()
+    private val files = mutableListOf<File>()
+
     val mainChatList: NavigableSet<OrderedChat> = TreeSet<OrderedChat>() // TODO
 
     /**
@@ -64,6 +67,11 @@ object AppDataState {
         messages[key] = value
     }
 
+    fun putFile(file: File) {
+        files.add(file)
+    }
+
+    fun getFile(id: Int) = files.firstOrNull { it.id == id }
     fun getMessage(key: Long) = messages[key]
 
     class OrderedChat internal constructor(

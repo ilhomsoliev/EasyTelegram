@@ -207,6 +207,11 @@ class TelegramClient(
                 }
             }
 
+            TdApi.UpdateFile.CONSTRUCTOR -> {
+                val updateFile = (data as TdApi.UpdateFile)
+                UpdateHandler.onUpdateFile(updateFile)
+            }
+
             else -> Log.d(TAG, "Unhandled onResult call with data: $data.")
         }
     }
