@@ -56,7 +56,7 @@ fun OutgoingMessage(
                         .clickable(onClick = {})
                         .padding(8.dp),
                 )
-                // if (isLastMessage)
+                if (isLastMessage)
                 Image(
                     modifier = Modifier.align(Alignment.Bottom).offset(y = (-4).dp, x = (-1).dp),
                     imageVector = MessageTailIcon,
