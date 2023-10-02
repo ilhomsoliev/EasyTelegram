@@ -11,6 +11,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             EasyTelegramTheme {
                 Navigation()
+
+
             }
         }
     }
